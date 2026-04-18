@@ -1,7 +1,6 @@
 'use client'
 
-export const dynamic = 'force-dynamic'
-
+import { Suspense } from 'react'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -823,7 +822,7 @@ function NewslettersSection({ pending, onAccept, onIgnore, userRole }: any) {
 }
 
 // ── MAIN PAGE ─────────────────────────────────────────────────────────────────
-export default function NetworkPage() {
+function NetworkPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { user, setUser } = useAuthStore()
@@ -1057,5 +1056,13 @@ export default function NetworkPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function NetworkPage() {
+  return (
+    <Suspense fallback={null}>
+      <NetworkPageInner />
+    </Suspense>
   )
 }
