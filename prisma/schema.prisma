@@ -1,0 +1,542 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+  output   = "../server/node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ====================== ENUMS ======================
+
+enum Role {
+  FREELANCER
+  COMPANY
+  CLIENT
+  ADMIN
+}
+
+enum PostType {
+  JOB
+  TASK
+  COLLAB
+  SKILL_EXCHANGE
+}
+
+enum PostStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CLOSED
+}
+
+enum TaskStatus {
+  OPEN
+  PROPOSAL_RECEIVED
+  IN_PROGRESS
+  UNDER_REVIEW
+  COMPLETED
+  CANCELLED
+}
+
+enum ProposalStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+enum EscrowStatus {
+  CREATED
+  FUNDED
+  IN_PROGRESS
+  REVIEW
+  REVISION
+  RELEASED
+  DISPUTED
+  REFUNDED
+}
+
+enum WalletTxType {
+  CREDIT
+  DEBIT
+  ESCROW_HOLD
+  ESCROW_RELEASE
+  WITHDRAWAL
+  REFUND
+}
+
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  BLOCKED
+}
+
+enum AgentJobType {
+  MATCH_SUGGESTION
+  PROPOSAL_DRAFT
+  TASK_ANALYSIS
+  MARKET_INSIGHT
+}
+
+enum AgentJobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum NotificationType {
+  NEW_PROPOSAL
+  PROPOSAL_ACCEPTED
+  PROPOSAL_REJECTED
+  TASK_ASSIGNED
+  TASK_COMPLETED
+  PAYMENT_RELEASED
+  PAYMENT_RECEIVED
+  CONNECTION_REQUEST
+  CONNECTION_ACCEPTED
+  NEW_MESSAGE
+  REVIEW_RECEIVED
+  AGENT_MATCH
+  ESCROW_FUNDED
+  DISPUTE_OPENED
+  DISPUTE_RESOLVED
+  NEW_FOLLOW
+}
+
+enum Proficiency {
+  BASIC
+  CONVERSATIONAL
+  FLUENT
+  NATIVE
+}
+
+enum NoticeperiodType {
+  IMMEDIATELY
+  ONE_WEEK
+  TWO_WEEKS
+  ONE_MONTH
+  MORE_THAN_ONE_MONTH
+}
+
+// ====================== USER & AUTH ======================
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  password      String
+  role          Role
+  isOnboarded   Boolean  @default(false)
+  emailVerified Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Profiles
+  freelancerProfile FreelancerProfile?
+  companyProfile    CompanyProfile?
+  clientProfile     ClientProfile?
+
+  // Posts & Tasks
+  posts           Post[]
+  clientTasks     Task[]     @relation("ClientTasks")
+  freelancerTasks Task[]     @relation("FreelancerTasks")
+  proposals       Proposal[]
+
+  // Chat
+  conversations ConversationParticipant[]
+  messages      Message[]
+
+  // Network
+  connectionsFrom Connection[] @relation("ConnectionFrom")
+  connectionsTo   Connection[] @relation("ConnectionTo")
+  following       Follow[]     @relation("Following")
+  followers       Follow[]     @relation("Followers")
+
+  // Payment
+  wallet            Wallet?
+  clientEscrows     Escrow[] @relation("EscrowClient")
+  freelancerEscrows Escrow[] @relation("EscrowFreelancer")
+
+  // Reviews
+  reviewsGiven    Review[] @relation("ReviewGiven")
+  reviewsReceived Review[] @relation("ReviewReceived")
+
+  // Notifications & Agent
+  notifications Notification[]
+  agentJobs     AgentJob[]
+
+  @@map("users")
+}
+
+// ====================== PROFILES ======================
+
+model FreelancerProfile {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coverImage     String?   // cover/banner image URL
+  // Basic Info
+  fullName       String?
+  title          String?   // e.g. "Senior React Developer"
+  bio            String?
+  profileImage   String?   // URL after upload
+
+  // Location
+  country        String?
+  city           String?
+  timezone       String?
+
+  // Skills & Languages
+  skills         String[]
+  languages      Json?     // [{ language: string, proficiency: Proficiency }]
+
+  // Rates
+  hourlyRate     Float?
+  currency       String    @default("INR")
+  fixedPrice     Boolean   @default(false)
+  minBudget      Float?
+
+  // Availability
+  availability   Boolean   @default(true)
+  noticePeriod   NoticeperiodType?
+
+  // Experience & Education
+  experienceLevel String?
+  experience     Json?     // [{ company, role, startDate, endDate, current, description }]
+  qualifications Json?     // [{ degree, institution, year, description }]
+
+  // Portfolio
+  portfolioUrls  Json?     // [{ label, url }] e.g. GitHub, Behance
+  portfolioFiles String[]  // uploaded PDF/doc URLs
+
+  // Stats
+  avgRating      Float     @default(0)
+  totalReviews   Int       @default(0)
+  totalEarnings  Float     @default(0)
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@map("freelancer_profiles")
+}
+
+model CompanyProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coverImage     String?
+  // Basic Info
+  companyName   String
+  profileImage  String?  // company logo URL
+  description   String?
+  website       String?
+
+  // Details
+  industry      String?
+  employeeCount String?  // "1-10", "11-50", "51-200", "200+"
+  location      String?
+  country       String?
+  city          String?
+  timezone      String?
+
+  // Hiring Preferences
+  workType      String[] // ["FULL_TIME", "PART_TIME", "PROJECT"]
+  hiringSkills  String[] // skills they usually hire for
+
+  // Stats
+  avgRating     Float    @default(0)
+  totalReviews  Int      @default(0)
+  totalSpent    Float    @default(0)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("company_profiles")
+}
+
+model ClientProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coverImage     String?
+  // Basic Info
+  fullName      String?
+  profileImage  String?
+  companyName   String?
+  description   String?
+
+  // Location
+  country       String?
+  city          String?
+  timezone      String?
+
+  // Preferences
+  taskCategories String[] // ["DESIGN", "DEVELOPMENT", "MARKETING", "WRITING", "OTHER"]
+  workPreference String?  // "FIXED", "HOURLY", "SKILL_EXCHANGE"
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("client_profiles")
+}
+
+// ====================== NETWORK ======================
+
+model Connection {
+  id         String           @id @default(cuid())
+  fromUserId String
+  toUserId   String
+  status     ConnectionStatus @default(PENDING)
+  fromUser   User             @relation("ConnectionFrom", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser     User             @relation("ConnectionTo", fields: [toUserId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  @@unique([fromUserId, toUserId])
+  @@map("connections")
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  follower    User     @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+
+  @@unique([followerId, followingId])
+  @@map("follows")
+}
+
+// ====================== POSTS & TASKS ======================
+
+model Post {
+  id          String     @id @default(cuid())
+  type        PostType
+  title       String
+  description String
+  budget      Float?
+  deadline    DateTime?
+  status      PostStatus @default(OPEN)
+  skills      String[]
+  clientId    String
+  client      User       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  proposals   Proposal[]
+  tasks       Task[]
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("posts")
+}
+
+model Task {
+  id           String     @id @default(cuid())
+  title        String
+  description  String
+  budget       Float
+  deadline     DateTime?
+  status       TaskStatus @default(OPEN)
+  skills       String[]
+
+  submissionNote  String?
+  submissionFiles String[]
+
+  clientId     String
+  freelancerId String?
+  client       User       @relation("ClientTasks", fields: [clientId], references: [id])
+  freelancer   User?      @relation("FreelancerTasks", fields: [freelancerId], references: [id])
+
+  postId       String?
+  post         Post?      @relation(fields: [postId], references: [id])
+
+  escrow       Escrow?
+
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@map("tasks")
+}
+
+model Proposal {
+  id           String         @id @default(cuid())
+  postId       String
+  post         Post           @relation(fields: [postId], references: [id], onDelete: Cascade)
+  freelancerId String
+  freelancer   User           @relation(fields: [freelancerId], references: [id])
+  coverLetter  String
+  proposedRate Float?
+  status       ProposalStatus @default(PENDING)
+
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@map("proposals")
+}
+
+// ====================== CHAT ======================
+
+model Conversation {
+  id            String                    @id @default(cuid())
+  participants  ConversationParticipant[]
+  messages      Message[]
+  lastMessage   String?
+  lastMessageAt DateTime?
+
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
+
+  @@map("conversations")
+}
+
+model ConversationParticipant {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id])
+  unreadCount    Int          @default(0)
+
+  @@unique([conversationId, userId])
+  @@map("conversation_participants")
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation(fields: [senderId], references: [id])
+  content        String
+  isRead         Boolean      @default(false)
+  attachmentUrl  String?
+
+  createdAt      DateTime     @default(now())
+
+  @@map("messages")
+}
+
+// ====================== PAYMENT & ESCROW ======================
+
+model Wallet {
+  id           String              @id @default(cuid())
+  userId       String              @unique
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balance      Float               @default(0)
+  heldBalance  Float               @default(0)
+  transactions WalletTransaction[]
+
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  @@map("wallets")
+}
+
+model WalletTransaction {
+  id           String       @id @default(cuid())
+  walletId     String
+  wallet       Wallet       @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  type         WalletTxType
+  amount       Float
+  description  String?
+  reference    String?
+  balanceAfter Float
+
+  createdAt    DateTime     @default(now())
+
+  @@map("wallet_transactions")
+}
+
+model Escrow {
+  id                String       @id @default(cuid())
+  taskId            String       @unique
+  task              Task         @relation(fields: [taskId], references: [id])
+
+  clientId          String
+  freelancerId      String
+  client            User         @relation("EscrowClient", fields: [clientId], references: [id])
+  freelancer        User         @relation("EscrowFreelancer", fields: [freelancerId], references: [id])
+
+  amount            Float
+  platformFee       Float        @default(0)
+  status            EscrowStatus @default(CREATED)
+
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+
+  disputeReason     String?
+  resolvedBy        String?
+  releasedAt        DateTime?
+
+  revisionNote      String?
+  revisionImage     String?
+  revisionCount     Int          @default(0)
+
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  @@map("escrows")
+}
+
+// ====================== REVIEWS ======================
+
+model Review {
+  id         String   @id @default(cuid())
+  reviewerId String
+  reviewedId String
+  reviewer   User     @relation("ReviewGiven", fields: [reviewerId], references: [id])
+  reviewed   User     @relation("ReviewReceived", fields: [reviewedId], references: [id])
+  rating     Int
+  comment    String?
+  taskId     String?
+
+  createdAt  DateTime @default(now())
+
+  @@map("reviews")
+}
+
+// ====================== NOTIFICATIONS ======================
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  entityId  String           // conversationId OR postId OR etc.
+  count     Int              @default(1)
+  title     String
+  message   String
+  isRead    Boolean          @default(false)
+  metadata  Json?
+  link      String?
+  createdAt DateTime         @default(now())
+
+  @@map("notifications")
+  @@index([userId, type, entityId])
+}
+
+// ====================== AI AGENT ======================
+
+model AgentJob {
+  id        String         @id @default(cuid())
+  userId    String
+  user      User           @relation(fields: [userId], references: [id])
+  type      AgentJobType
+  prompt    String
+  response  String?
+  status    AgentJobStatus @default(PENDING)
+  metadata  Json?
+
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@map("agent_jobs")
+}
