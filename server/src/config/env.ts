@@ -1,8 +1,10 @@
 import dotenv from 'dotenv'
 import path from 'path'
 
-// Load .env from root folder
-dotenv.config({ path: path.resolve(__dirname, '../../../.env') })
+// Load .env from root folder (local dev only — Railway injects vars directly)
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config({ path: path.resolve(__dirname, '../../../.env') })
+}
 
 export const env = {
   NODE_ENV: process.env.NODE_ENV || 'development',
