@@ -238,7 +238,7 @@ export default function ClientProfile() {
     if (wallet && n > wallet.balance) return toast.error('Insufficient balance')
     setWithdrawing(true)
     try {
-      await walletService.withdrawFunds(n)
+      await walletService.withdrawFunds({ amount: n, accountHolderName: '', bankName: '', accountNumber: '', ifscCode: '' })
       toast.success('Withdrawal requested!')
       setWithdrawAmount(''); togglePanel('none'); loadWallet()
     } catch (e: any) { toast.error(e?.response?.data?.message ?? 'Withdrawal failed') }
