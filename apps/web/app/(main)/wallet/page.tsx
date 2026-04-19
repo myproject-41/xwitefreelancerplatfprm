@@ -98,7 +98,6 @@ export default function WalletPage() {
         name: 'Xwite',
         description: 'Add funds to wallet',
         order_id: order.orderId,
-        prefill: { name: '', email: '', contact: '' },
         theme: { color: '#0077b5' },
         handler: async (response: any) => {
           try {
