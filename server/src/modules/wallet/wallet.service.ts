@@ -5,23 +5,29 @@ import { env } from '../../config/env'
 
 export class WalletService {
 
+  private async ensureWallet(userId: string) {
+    return prisma.wallet.upsert({
+      where:  { userId },
+      update: {},
+      create: { userId, balance: 0, heldBalance: 0 },
+    })
+  }
+
   async getWallet(userId: string) {
-    const wallet = await prisma.wallet.findUnique({
+    await this.ensureWallet(userId)
+    return prisma.wallet.findUnique({
       where: { userId },
       include: {
         transactions: { orderBy: { createdAt: 'desc' }, take: 20 },
       },
     })
-    if (!wallet) throw new Error('Wallet not found')
-    return wallet
   }
 
   /* ── Step 1: create a Razorpay order ── */
   async createOrder(userId: string, amount: number) {
     if (amount < 1) throw new Error('Minimum add amount is ₹1')
 
-    const wallet = await prisma.wallet.findUnique({ where: { userId } })
-    if (!wallet) throw new Error('Wallet not found')
+    await this.ensureWallet(userId)
 
     // Razorpay amount is in paise (smallest unit), so multiply by 100
     const order = await razorpay.orders.create({
@@ -71,8 +77,7 @@ export class WalletService {
     })
     if (existing) return prisma.wallet.findUnique({ where: { userId } })
 
-    const wallet = await prisma.wallet.findUnique({ where: { userId } })
-    if (!wallet) throw new Error('Wallet not found')
+    const wallet = await this.ensureWallet(userId)
 
     const newBalance = wallet.balance + amountINR
 
@@ -144,8 +149,7 @@ export class WalletService {
 
   /* ── Withdraw (manual payout — record intent, process offline) ── */
   async withdrawFunds(userId: string, amount: number) {
-    const wallet = await prisma.wallet.findUnique({ where: { userId } })
-    if (!wallet) throw new Error('Wallet not found')
+    const wallet = await this.ensureWallet(userId)
     if (wallet.balance < amount) throw new Error('Insufficient balance')
 
     const newBalance = wallet.balance - amount
@@ -170,8 +174,7 @@ export class WalletService {
   }
 
   async getTransactions(userId: string, page = 1, limit = 20) {
-    const wallet = await prisma.wallet.findUnique({ where: { userId } })
-    if (!wallet) throw new Error('Wallet not found')
+    const wallet = await this.ensureWallet(userId)
 
     const skip = (page - 1) * limit
     const [transactions, total] = await Promise.all([
