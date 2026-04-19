@@ -9,7 +9,21 @@ const nextConfig = {
         port: '4000',
         pathname: '/uploads/**',
       },
+      {
+        protocol: 'https',
+        hostname: '**',
+        pathname: '/uploads/**',
+      },
     ],
+  },
+  webpack: (config) => {
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      path: false,
+      os: false,
+    }
+    return config
   },
 }
 
