@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "node scripts/free-port.mjs && tsx watch src/index.ts",
     "build": "tsc",
-    "build:prod": "prisma generate --schema ../prisma/schema.prisma && prisma migrate deploy --schema ../prisma/schema.prisma && tsc",
+    "build:prod": "prisma generate --schema ../prisma/schema.prisma && node scripts/db-setup.mjs && tsc",
     "start": "node dist/index.js",
     "lint": "eslint src/",
     "migrate": "dotenv -e ../.env -- prisma migrate dev --schema ../prisma/schema.prisma",
@@ -33,6 +33,7 @@
     "ioredis": "^5.3.2",
     "jsonwebtoken": "^9.0.2",
     "cloudinary": "^2.5.1",
+    "pg": "^8.11.5",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.13",
     "razorpay": "^2.9.2",
