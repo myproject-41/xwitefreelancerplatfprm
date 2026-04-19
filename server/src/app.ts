@@ -28,10 +28,9 @@ app.use(helmet({
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true)
-      return
-    }
+    if (!origin) { callback(null, true); return }
+    if (allowedOrigins.includes(origin as string)) { callback(null, true); return }
+    if (/^https:\/\/project-5jorl[a-z0-9-]*\.vercel\.app$/.test(origin)) { callback(null, true); return }
     callback(new Error('Not allowed by CORS'))
   },
   credentials: true,
