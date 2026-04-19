@@ -18,6 +18,8 @@ const allowedOrigins = [
   process.env.FRONTEND_URL,
   'http://localhost:3000',
   'http://127.0.0.1:3000',
+  'https://project-5jorl.vercel.app',
+  'https://project-5jorl-git-main-myproject-41s-projects.vercel.app',
 ].filter(Boolean)
 
 app.use(helmet({
