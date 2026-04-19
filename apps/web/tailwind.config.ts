@@ -1,18 +1,15 @@
 // apps/web/tailwind.config.ts
 import type { Config } from 'tailwindcss'
-import path from 'path'
 
 const config: Config = {
   content: [
-    // path.join(__dirname) makes paths absolute so Tailwind finds
-    // files no matter where the dev server is launched from
-    path.join(__dirname, 'app/**/*.{js,ts,jsx,tsx,mdx}'),
-    path.join(__dirname, 'components/**/*.{js,ts,jsx,tsx,mdx}'),
-    path.join(__dirname, 'hooks/**/*.{js,ts,jsx,tsx,mdx}'),
-    path.join(__dirname, 'services/**/*.{js,ts,jsx,tsx,mdx}'),
-    path.join(__dirname, 'store/**/*.{js,ts,jsx,tsx,mdx}'),
-    path.join(__dirname, 'types/**/*.{js,ts,jsx,tsx,mdx}'),
-    path.join(__dirname, 'utils/**/*.{js,ts,jsx,tsx,mdx}'),
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './hooks/**/*.{js,ts,jsx,tsx,mdx}',
+    './services/**/*.{js,ts,jsx,tsx,mdx}',
+    './store/**/*.{js,ts,jsx,tsx,mdx}',
+    './types/**/*.{js,ts,jsx,tsx,mdx}',
+    './utils/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   darkMode: 'class',
   theme: {
