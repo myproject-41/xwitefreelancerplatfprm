@@ -108,16 +108,14 @@ export class EscrowService {
     }
 
     await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`
-        UPDATE "escrows"
-        SET status = 'REVIEW', "revisionNote" = NULL, "revisionImage" = NULL, "updatedAt" = NOW()
-        WHERE id = ${escrowId}
-      `
-      await tx.$executeRaw`
-        UPDATE "tasks"
-        SET status = 'UNDER_REVIEW', "submissionNote" = ${submissionNote}, "submissionFiles" = ${submissionFiles}, "updatedAt" = NOW()
-        WHERE id = ${escrow.taskId}
-      `
+      await tx.escrow.update({
+        where: { id: escrowId },
+        data: { status: 'REVIEW', revisionNote: null, revisionImage: null },
+      })
+      await tx.task.update({
+        where: { id: escrow.taskId },
+        data: { status: 'UNDER_REVIEW', submissionNote, submissionFiles },
+      })
     })
 
     await notificationService.createNotification({
@@ -143,21 +141,18 @@ export class EscrowService {
     if (!escrow) throw new Error('Escrow not found')
     if (escrow.clientId !== clientId) throw new Error('Not authorized')
     if (escrow.status !== 'REVIEW') throw new Error('Can only request revision when work is under review')
-    const [revRow] = await prisma.$queryRaw<Array<{ revisionCount: number }>>`
-      SELECT "revisionCount" FROM "escrows" WHERE id = ${escrowId}
-    `
-    if ((revRow?.revisionCount ?? 0) >= 2) throw new Error('Maximum 2 revision requests allowed per task')
+    if ((escrow.revisionCount ?? 0) >= 2) throw new Error('Maximum 2 revision requests allowed per task')
 
     await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`
-        UPDATE "escrows"
-        SET status = 'REVISION',
-            "revisionNote" = ${revisionNote},
-            "revisionImage" = ${revisionImage ?? null},
-            "revisionCount" = "revisionCount" + 1,
-            "updatedAt" = NOW()
-        WHERE id = ${escrowId}
-      `
+      await tx.escrow.update({
+        where: { id: escrowId },
+        data: {
+          status: 'REVISION',
+          revisionNote,
+          revisionImage: revisionImage ?? null,
+          revisionCount: { increment: 1 },
+        },
+      })
       await tx.task.update({ where: { id: escrow.taskId }, data: { status: 'IN_PROGRESS' } })
     })
 
@@ -439,27 +434,7 @@ export class EscrowService {
     if (escrow.clientId !== userId && escrow.freelancerId !== userId) {
       throw new Error('Not authorized')
     }
-
-    const [extraEscrow] = await prisma.$queryRaw<Array<{
-      status: string; revisionNote: string | null; revisionImage: string | null; revisionCount: number
-    }>>`SELECT status, "revisionNote", "revisionImage", "revisionCount" FROM "escrows" WHERE id = ${escrowId}`
-
-    const [extraTask] = await prisma.$queryRaw<Array<{
-      submissionNote: string | null; submissionFiles: string[]
-    }>>`SELECT "submissionNote", "submissionFiles" FROM "tasks" WHERE id = ${escrow.taskId}`
-
-    return {
-      ...escrow,
-      status: (extraEscrow?.status ?? escrow.status) as any,
-      revisionNote: extraEscrow?.revisionNote ?? null,
-      revisionImage: extraEscrow?.revisionImage ?? null,
-      revisionCount: extraEscrow?.revisionCount ?? 0,
-      task: {
-        ...escrow.task,
-        submissionNote: extraTask?.submissionNote ?? null,
-        submissionFiles: extraTask?.submissionFiles ?? [],
-      },
-    }
+    return escrow
   }
 
   /* ══════════════════════════════════════
