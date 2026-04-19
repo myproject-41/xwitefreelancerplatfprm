@@ -33,7 +33,7 @@ export class WalletService {
     const order = await razorpay.orders.create({
       amount:   Math.round(amount * 100),
       currency: 'INR',
-      receipt:  `wallet_${userId}_${Date.now()}`,
+      receipt:  `w_${userId.slice(-12)}_${Date.now().toString().slice(-8)}`,
       notes:    { userId },
     })
 
