@@ -379,7 +379,7 @@ export default function FreelancerProfile() {
     if (wallet && n > wallet.balance) return toast.error('Insufficient balance')
     setWithdrawing(true)
     try {
-      await walletService.withdrawFunds(n); toast.success('Withdrawal requested!')
+      await walletService.withdrawFunds({ amount: n, accountHolderName: '', bankName: '', accountNumber: '', ifscCode: '' }); toast.success('Withdrawal requested!')
       setWithdrawAmt(''); setActivePanel('none'); loadWallet()
     } catch (e: any) { toast.error(e?.response?.data?.message ?? 'Failed') }
     finally { setWithdrawing(false) }
@@ -433,13 +433,17 @@ export default function FreelancerProfile() {
             <span className="fp-brand">Xwite</span>
           </div>
           <div className="fp-hdr-right">
-            <button className="fp-agent-btn" onClick={() => router.push('/agent')}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7H3a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2M5 15v5h14v-5H5m2 2h2v2H7v-2m4 0h2v2h-2v-2m4 0h2v2h-2v-2z"/></svg>
-              <span className="fp-agent-text">AI Agent</span>
+            <button
+              onClick={() => router.push('/agent')}
+              style={{display:'inline-flex',alignItems:'center',gap:6,borderRadius:999,background:'linear-gradient(135deg,#005d8f 0%,#0077b5 100%)',padding:'7px 14px',fontSize:13,fontWeight:600,color:'white',border:'none',cursor:'pointer',boxShadow:'0 1px 4px rgba(0,93,143,0.18)'}}>
+              <svg viewBox="0 0 24 24" fill="currentColor" style={{width:14,height:14}}><path d="m12 2 1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2Z"/></svg>
+              AI Agent
             </button>
-            <button className="fp-msg-btn" onClick={() => router.push('/messages')}>
-              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#0077b5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            <button
+              onClick={() => router.push('/messages')}
+              style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:38,height:38,borderRadius:999,border:'2px solid rgba(0,93,143,0.2)',background:'white',color:'#005d8f',cursor:'pointer'}}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{width:18,height:18}}>
+                <path d="M5 6.5h14v9H9l-4 3v-12Z"/>
               </svg>
             </button>
           </div>
@@ -519,11 +523,6 @@ export default function FreelancerProfile() {
                     <span className="fp-avail-dot" />
                     {availability ? 'Available' : 'Unavailable'}
                   </div>
-                  <button className="fp-btn-edit-profile"
-                    onClick={() => avatarRef.current?.click()}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                    Edit Profile
-                  </button>
                 </div>
               )}
             </div>
@@ -1203,13 +1202,17 @@ export default function FreelancerProfile() {
 
           {/* Agent + Messaging */}
           <div className="fp-right-hdr">
-            <button className="fp-agent-btn" onClick={() => router.push('/agent')}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7H3a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2M5 15v5h14v-5H5m2 2h2v2H7v-2m4 0h2v2h-2v-2m4 0h2v2h-2v-2z"/></svg>
+            <button
+              onClick={() => router.push('/agent')}
+              style={{display:'inline-flex',alignItems:'center',gap:6,borderRadius:999,background:'linear-gradient(135deg,#005d8f 0%,#0077b5 100%)',padding:'7px 14px',fontSize:13,fontWeight:600,color:'white',border:'none',cursor:'pointer',boxShadow:'0 1px 4px rgba(0,93,143,0.18)'}}>
+              <svg viewBox="0 0 24 24" fill="currentColor" style={{width:14,height:14}}><path d="m12 2 1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2Z"/></svg>
               AI Agent
             </button>
-            <button className="fp-msg-btn" onClick={() => router.push('/messages')}>
-              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#0077b5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            <button
+              onClick={() => router.push('/messages')}
+              style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:38,height:38,borderRadius:999,border:'2px solid rgba(0,93,143,0.2)',background:'white',color:'#005d8f',cursor:'pointer'}}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{width:18,height:18}}>
+                <path d="M5 6.5h14v9H9l-4 3v-12Z"/>
               </svg>
             </button>
           </div>
@@ -1258,22 +1261,6 @@ export default function FreelancerProfile() {
             )}
           </div>
 
-          {/* AI Portfolio Builder */}
-          <AiPortfolioCard
-            fullName={fullName}
-            title={title}
-            bio={bio}
-            skills={skills}
-            experience={experience}
-            onGenerated={(urls) => {
-              setPortfolioUrls(prev => {
-                const merged = [...prev]
-                urls.forEach(u => { if (!merged.find(x => x.url === u.url)) merged.push(u) })
-                return merged
-              })
-              saveProfile({ portfolioUrls: [...portfolioUrls, ...urls] })
-            }}
-          />
 
           {/* Switch Account */}
           <button className="fp-switch" onClick={() => router.push('/profile/client')}>
