@@ -31,6 +31,22 @@ export async function runDbSetup() {
       name: 'Add revisionCount to escrows',
       sql: `ALTER TABLE "escrows" ADD COLUMN IF NOT EXISTS "revisionCount" INTEGER NOT NULL DEFAULT 0`,
     },
+    {
+      name: 'Add accountHolderName to wallet_transactions',
+      sql: `ALTER TABLE "wallet_transactions" ADD COLUMN IF NOT EXISTS "accountHolderName" TEXT`,
+    },
+    {
+      name: 'Add bankName to wallet_transactions',
+      sql: `ALTER TABLE "wallet_transactions" ADD COLUMN IF NOT EXISTS "bankName" TEXT`,
+    },
+    {
+      name: 'Add accountNumber to wallet_transactions',
+      sql: `ALTER TABLE "wallet_transactions" ADD COLUMN IF NOT EXISTS "accountNumber" TEXT`,
+    },
+    {
+      name: 'Add ifscCode to wallet_transactions',
+      sql: `ALTER TABLE "wallet_transactions" ADD COLUMN IF NOT EXISTS "ifscCode" TEXT`,
+    },
   ]
 
   for (const patch of patches) {

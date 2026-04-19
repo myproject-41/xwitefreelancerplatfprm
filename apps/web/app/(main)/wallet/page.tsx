@@ -22,6 +22,24 @@ const TX_COLORS: Record<string, string> = {
   REFUND: 'text-green-600',
 }
 
+interface BankDetails {
+  accountHolderName: string
+  bankName: string
+  accountNumber: string
+  ifscCode: string
+}
+
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if ((window as any).Razorpay) return resolve(true)
+    const script = document.createElement('script')
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+    script.onload = () => resolve(true)
+    script.onerror = () => resolve(false)
+    document.body.appendChild(script)
+  })
+}
+
 export default function WalletPage() {
   const router = useRouter()
   const [wallet, setWallet] = useState<any>(null)
@@ -30,6 +48,13 @@ export default function WalletPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'add' | 'withdraw'>('overview')
   const [amount, setAmount] = useState('')
   const [actionLoading, setActionLoading] = useState(false)
+  const [payError, setPayError] = useState('')
+  const [bankDetails, setBankDetails] = useState<BankDetails>({
+    accountHolderName: '',
+    bankName: '',
+    accountNumber: '',
+    ifscCode: '',
+  })
 
   useEffect(() => {
     loadWallet()
@@ -41,7 +66,7 @@ export default function WalletPage() {
       const res = await walletService.getTransactions()
       setWallet(res.data.wallet)
       setTransactions(res.data.transactions)
-    } catch (error: any) {
+    } catch {
       toast.error('Failed to load wallet')
     } finally {
       setLoading(false)
@@ -50,9 +75,22 @@ export default function WalletPage() {
 
   const handleAddFunds = async () => {
     if (!amount || Number(amount) <= 0) return toast.error('Enter a valid amount')
+    setPayError('')
     setActionLoading(true)
     try {
-      const { data: order } = await walletService.createOrder(Number(amount))
+      const ready = await loadRazorpayScript()
+      if (!ready) {
+        setPayError('Could not load Razorpay. Check your internet connection.')
+        setActionLoading(false)
+        return
+      }
+      const res = await walletService.createOrder(Number(amount))
+      const order = res?.data
+      if (!order?.orderId) {
+        setPayError('Server did not return an order. Check Railway logs.')
+        setActionLoading(false)
+        return
+      }
       const options = {
         key: order.keyId,
         amount: order.amount,
@@ -64,7 +102,7 @@ export default function WalletPage() {
         handler: async (response: any) => {
           try {
             await walletService.verifyPayment({
-              razorpayOrderId: response.razorpay_order_id,
+              razorpayOrderId:   response.razorpay_order_id,
               razorpayPaymentId: response.razorpay_payment_id,
               razorpaySignature: response.razorpay_signature,
             })
@@ -72,28 +110,46 @@ export default function WalletPage() {
             setAmount('')
             setActiveTab('overview')
             loadWallet()
-          } catch { toast.error('Payment verification failed') }
-          finally { setActionLoading(false) }
+          } catch (e: any) {
+            setPayError('Payment verification failed: ' + (e?.response?.data?.message || e?.message || 'unknown'))
+          } finally {
+            setActionLoading(false)
+          }
         },
-        modal: { ondismiss: () => { setActionLoading(false) } },
+        modal: { ondismiss: () => setActionLoading(false) },
       }
       const rzp = new (window as any).Razorpay(options)
-      rzp.on('payment.failed', () => { toast.error('Payment failed'); setActionLoading(false) })
+      rzp.on('payment.failed', (resp: any) => {
+        setPayError('Payment failed: ' + (resp?.error?.description || 'unknown reason'))
+        setActionLoading(false)
+      })
       rzp.open()
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to initiate payment')
+      const msg = error?.response?.data?.message || error?.message || 'Failed to initiate payment'
+      setPayError(msg)
       setActionLoading(false)
     }
   }
 
   const handleWithdraw = async () => {
     if (!amount || Number(amount) <= 0) return toast.error('Enter a valid amount')
+    if (Number(amount) < 100) return toast.error('Minimum withdrawal is ₹100')
     if (wallet && Number(amount) > wallet.balance) return toast.error('Insufficient balance')
+    if (!bankDetails.accountHolderName.trim()) return toast.error('Enter account holder name')
+    if (!bankDetails.bankName.trim()) return toast.error('Enter bank name')
+    if (!bankDetails.accountNumber.trim()) return toast.error('Enter account number')
+    if (!bankDetails.ifscCode.trim()) return toast.error('Enter IFSC code')
+
     setActionLoading(true)
     try {
-      await walletService.withdrawFunds(Number(amount))
-      toast.success(`₹${amount} withdrawal requested!`)
+      await walletService.withdrawFunds({
+        amount: Number(amount),
+        ...bankDetails,
+        ifscCode: bankDetails.ifscCode.toUpperCase(),
+      })
+      toast.success(`₹${amount} withdrawal requested! Funds will be transferred in 1–3 business days.`)
       setAmount('')
+      setBankDetails({ accountHolderName: '', bankName: '', accountNumber: '', ifscCode: '' })
       setActiveTab('overview')
       loadWallet()
     } catch (error: any) {
@@ -134,16 +190,15 @@ export default function WalletPage() {
               🔒 ₹{wallet.heldBalance.toLocaleString()} held in escrow
             </p>
           )}
-
           <div className="flex gap-3 mt-5">
             <button
-              onClick={() => setActiveTab('add')}
+              onClick={() => { setActiveTab('add'); setAmount('') }}
               className="flex-1 bg-white text-blue-600 py-2.5 rounded-xl font-bold text-sm hover:bg-blue-50"
             >
               + Add Funds
             </button>
             <button
-              onClick={() => setActiveTab('withdraw')}
+              onClick={() => { setActiveTab('withdraw'); setAmount('') }}
               className="flex-1 bg-blue-700 text-white py-2.5 rounded-xl font-bold text-sm hover:bg-blue-800"
             >
               Withdraw
@@ -160,7 +215,15 @@ export default function WalletPage() {
                 className="text-gray-400 hover:text-gray-600 text-sm">✕ Cancel</button>
             </div>
 
-            {/* Quick amounts */}
+            {/* Accepted payment methods badge */}
+            <div className="flex flex-wrap gap-2">
+              {['UPI', 'Google Pay', 'PhonePe', 'Paytm', 'Cards', 'Net Banking'].map(m => (
+                <span key={m} className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold">
+                  {m}
+                </span>
+              ))}
+            </div>
+
             <div>
               <p className="text-xs font-bold text-gray-500 mb-2">Quick Select</p>
               <div className="flex flex-wrap gap-2">
@@ -192,13 +255,23 @@ export default function WalletPage() {
               />
             </div>
 
+            {payError && (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700 font-medium break-all">
+                ❌ {payError}
+              </div>
+            )}
+
             <button
               onClick={handleAddFunds}
               disabled={actionLoading || !amount}
               className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 disabled:opacity-60"
             >
-              {actionLoading ? 'Processing...' : `Add ₹${amount || '0'} to Wallet`}
+              {actionLoading ? 'Processing...' : `Pay ₹${amount || '0'} via Razorpay`}
             </button>
+
+            <p className="text-xs text-center text-gray-400">
+              Secured by Razorpay · UPI / QR / Cards / Net Banking
+            </p>
           </div>
         )}
 
@@ -218,6 +291,7 @@ export default function WalletPage() {
               </p>
             </div>
 
+            {/* Amount */}
             <div>
               <label className="text-sm font-bold text-gray-700">Amount to withdraw (₹)</label>
               <input
@@ -225,22 +299,80 @@ export default function WalletPage() {
                 value={amount}
                 onChange={e => setAmount(e.target.value)}
                 className="mt-1 w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter amount"
-                min={1}
+                placeholder="Minimum ₹100"
+                min={100}
                 max={wallet?.balance}
               />
             </div>
 
+            {/* Bank Details */}
+            <div className="space-y-3">
+              <p className="text-sm font-extrabold text-gray-700 border-t border-gray-100 pt-3">
+                Bank Account Details
+              </p>
+
+              <div>
+                <label className="text-xs font-bold text-gray-600">Account Holder Name</label>
+                <input
+                  type="text"
+                  value={bankDetails.accountHolderName}
+                  onChange={e => setBankDetails(d => ({ ...d, accountHolderName: e.target.value }))}
+                  className="mt-1 w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="As per bank records"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-gray-600">Bank Name</label>
+                <input
+                  type="text"
+                  value={bankDetails.bankName}
+                  onChange={e => setBankDetails(d => ({ ...d, bankName: e.target.value }))}
+                  className="mt-1 w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="e.g. State Bank of India"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-gray-600">Account Number</label>
+                <input
+                  type="text"
+                  value={bankDetails.accountNumber}
+                  onChange={e => setBankDetails(d => ({ ...d, accountNumber: e.target.value.replace(/\D/g, '') }))}
+                  className="mt-1 w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter account number"
+                  inputMode="numeric"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-gray-600">IFSC Code</label>
+                <input
+                  type="text"
+                  value={bankDetails.ifscCode}
+                  onChange={e => setBankDetails(d => ({ ...d, ifscCode: e.target.value.toUpperCase() }))}
+                  className="mt-1 w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="e.g. SBIN0001234"
+                  maxLength={11}
+                />
+              </div>
+            </div>
+
             <div className="bg-orange-50 rounded-xl p-3 text-xs text-orange-700">
-              ⚠️ Withdrawals are processed within 2-3 business days to your bank account
+              ⚠️ Withdrawals are processed within 1–3 business days. Ensure bank details are correct before submitting.
             </div>
 
             <button
               onClick={handleWithdraw}
-              disabled={actionLoading || !amount || Number(amount) > wallet?.balance}
+              disabled={
+                actionLoading ||
+                !amount ||
+                Number(amount) < 100 ||
+                Number(amount) > (wallet?.balance ?? 0)
+              }
               className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 disabled:opacity-60"
             >
-              {actionLoading ? 'Processing...' : `Withdraw ₹${amount || '0'}`}
+              {actionLoading ? 'Processing...' : `Request Withdrawal of ₹${amount || '0'}`}
             </button>
           </div>
         )}
@@ -269,6 +401,11 @@ export default function WalletPage() {
                       <p className="text-sm font-bold text-gray-800 truncate">
                         {tx.description || tx.type}
                       </p>
+                      {tx.type === 'WITHDRAWAL' && tx.bankName && (
+                        <p className="text-xs text-gray-500 truncate">
+                          {tx.bankName} · ****{tx.accountNumber?.slice(-4)}
+                        </p>
+                      )}
                       <p className="text-xs text-gray-400 mt-0.5">
                         {new Date(tx.createdAt).toLocaleDateString('en-IN', {
                           day: 'numeric', month: 'short', year: 'numeric',

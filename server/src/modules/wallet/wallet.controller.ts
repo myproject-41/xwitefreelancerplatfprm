@@ -23,7 +23,8 @@ export class WalletController {
       const data = await walletService.createOrder(req.user!.userId, Number(amount))
       res.json({ success: true, data })
     } catch (error: any) {
-      res.status(400).json({ success: false, message: error.message })
+      console.error('[createOrder] ERROR:', error?.message, error?.error ?? '')
+      res.status(400).json({ success: false, message: error?.error?.description || error?.message || 'Order creation failed' })
     }
   }
 
@@ -65,12 +66,20 @@ export class WalletController {
 
   async withdrawFunds(req: Request, res: Response): Promise<void> {
     try {
-      const { amount } = req.body
+      const { amount, accountHolderName, bankName, accountNumber, ifscCode } = req.body
       if (!amount || Number(amount) <= 0) {
         res.status(400).json({ success: false, message: 'Invalid amount' })
         return
       }
-      const wallet = await walletService.withdrawFunds(req.user!.userId, Number(amount))
+      if (!accountHolderName || !bankName || !accountNumber || !ifscCode) {
+        res.status(400).json({ success: false, message: 'Bank details are required for withdrawal' })
+        return
+      }
+      const wallet = await walletService.withdrawFunds(
+        req.user!.userId,
+        Number(amount),
+        { accountHolderName, bankName, accountNumber, ifscCode },
+      )
       res.json({ success: true, data: wallet })
     } catch (error: any) {
       res.status(400).json({ success: false, message: error.message })

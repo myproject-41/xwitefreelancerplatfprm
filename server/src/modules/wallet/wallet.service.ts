@@ -148,9 +148,19 @@ export class WalletService {
   }
 
   /* ── Withdraw (manual payout — record intent, process offline) ── */
-  async withdrawFunds(userId: string, amount: number) {
+  async withdrawFunds(
+    userId: string,
+    amount: number,
+    bankDetails?: {
+      accountHolderName: string
+      bankName:          string
+      accountNumber:     string
+      ifscCode:          string
+    },
+  ) {
     const wallet = await this.ensureWallet(userId)
     if (wallet.balance < amount) throw new Error('Insufficient balance')
+    if (amount < 100) throw new Error('Minimum withdrawal amount is ₹100')
 
     const newBalance = wallet.balance - amount
 
@@ -162,6 +172,7 @@ export class WalletService {
           amount,
           description: 'Withdrawal requested — processing in 1–3 business days',
           balanceAfter: newBalance,
+          ...(bankDetails ?? {}),
         },
       }),
       prisma.wallet.update({
