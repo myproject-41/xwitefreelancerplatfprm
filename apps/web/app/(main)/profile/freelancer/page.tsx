@@ -140,7 +140,7 @@ export default function FreelancerProfile() {
   const [myProposals,     setMyProposals]     = useState<any[]>([])
 
   /* ── Sidebar accordion ── */
-  const [sidebarSection, setSidebarSection] = useState<'posts'|'completed'|'inprogress'|'request'|'none'>('none')
+  const [sidebarSection, setSidebarSection] = useState<'posts'|'completed'|'inprogress'|'request'|'none'>('posts')
 
   /* ── Skills inline edit ── */
   const [skillsEditing, setSkillsEditing] = useState(false)
