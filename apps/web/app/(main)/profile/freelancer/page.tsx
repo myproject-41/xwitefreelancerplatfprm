@@ -608,31 +608,32 @@ export default function FreelancerProfile() {
 
                     {/* Skills — inline edit */}
                     <div className="fp-skills-inline">
-                      <div className="fp-skills-inline-hdr">
+                      <div className="fp-skills-tags-row">
+                        <ul className="fp-tags" style={{flex:1}}>
+                          {skills.map(s => (
+                            <li key={s} className={`fp-tag${skillsEditing ? ' fp-tag-removable' : ''}`}>
+                              {s}
+                              {skillsEditing && (
+                                <button className="fp-tag-x" onClick={() => removeSkill(s)} aria-label={`Remove ${s}`}>
+                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                                </button>
+                              )}
+                            </li>
+                          ))}
+                          {skills.length === 0 && !skillsEditing && (
+                            <li><button className="fp-skills-add-prompt" onClick={() => setSkillsEditing(true)}>+ Add skills</button></li>
+                          )}
+                        </ul>
                         <button className="fp-edit-icon-btn"
                           onClick={() => setSkillsEditing(v => !v)}
-                          title={skillsEditing ? 'Close' : 'Edit skills'}>
+                          title={skillsEditing ? 'Close' : 'Edit skills'}
+                          style={{alignSelf:'flex-start',flexShrink:0}}>
                           {skillsEditing
                             ? <svg width="15" height="15" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                             : <svg width="15" height="15" viewBox="0 0 24 24" fill="#0077b5"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                           }
                         </button>
                       </div>
-                      <ul className="fp-tags">
-                        {skills.map(s => (
-                          <li key={s} className={`fp-tag${skillsEditing ? ' fp-tag-removable' : ''}`}>
-                            {s}
-                            {skillsEditing && (
-                              <button className="fp-tag-x" onClick={() => removeSkill(s)} aria-label={`Remove ${s}`}>
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-                              </button>
-                            )}
-                          </li>
-                        ))}
-                        {skills.length === 0 && !skillsEditing && (
-                          <li><button className="fp-skills-add-prompt" onClick={() => setSkillsEditing(true)}>+ Add skills</button></li>
-                        )}
-                      </ul>
                       {skillsEditing && (
                         <div className="fp-skills-inline-editor">
                           <div className="fp-skill-input-row">
@@ -1786,7 +1787,7 @@ const STYLES = `
 .fp-btn-edit-profile:active{transform:scale(.96);}
 
 /* ── PROFILE INFO ── */
-.fp-profile-info{padding:2px 18px 22px 20px;display:flex;flex-direction:column;gap:7px;}
+.fp-profile-info{padding:2px 18px 18px 20px;display:flex;flex-direction:column;gap:5px;}
 @media(min-width:900px){.fp-profile-info{padding:2px 24px 22px;}}
 .fp-conn-count{font-size:12px;font-weight:700;color:#0077b5;display:flex;align-items:center;gap:4px;opacity:.85;}
 .fp-name-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
@@ -1928,8 +1929,8 @@ const STYLES = `
 
 /* ── RIGHT SIDEBAR ── */
 .fp-sidebar-right{display:none;grid-area:right-sidebar;}
-@media(min-width:900px){.fp-sidebar-right{display:flex;flex-direction:column;gap:14px;padding:24px 14px 40px;background:#f1f5f9;position:sticky;top:0;height:100dvh;overflow-y:auto;overflow-x:hidden;min-width:0;width:100%;}}
-.fp-right-hdr{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border-radius:14px;padding:10px 12px;border:0.5px solid #e8edf2;box-shadow:0 1px 4px rgba(0,0,0,0.05);min-width:0;overflow:hidden;}
+@media(min-width:900px){.fp-sidebar-right{display:flex;flex-direction:column;gap:10px;padding:16px 12px 32px;background:#f1f5f9;position:sticky;top:0;height:100dvh;overflow-y:auto;overflow-x:visible;min-width:0;width:100%;box-sizing:border-box;}}
+.fp-right-hdr{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border-radius:14px;padding:10px 12px;border:0.5px solid #e8edf2;box-shadow:0 1px 4px rgba(0,0,0,0.05);min-width:0;flex-shrink:0;}
 .fp-wallet{background:linear-gradient(145deg,#cce8ff 0%,#d4eeff 45%,#e4f3ff 100%);border:1px solid #93c5fd;border-radius:16px;padding:16px;min-width:0;}
 .fp-wallet-head{display:flex;justify-content:space-between;align-items:flex-start;}
 .fp-wallet-lbl{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#0369a1;font-family:'Inter',sans-serif;}
@@ -1941,7 +1942,7 @@ const STYLES = `
 .fp-btn-withdraw:active{transform:scale(.97);}
 .fp-btn-add{width:100%;background:linear-gradient(135deg,#0077b5,#005d8f);color:#fff;border:none;font-weight:800;font-size:13px;padding:8px;border-radius:12px;cursor:pointer;margin-top:8px;font-family:'Inter',sans-serif;box-shadow:0 2px 8px rgba(0,119,181,0.22);transition:box-shadow .15s;}
 .fp-btn-add:hover{box-shadow:0 4px 14px rgba(0,119,181,0.34);}
-.fp-conn-card{background:#fff;border-radius:16px;padding:16px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.06);min-width:0;overflow:hidden;}
+.fp-conn-card{background:#fff;border-radius:16px;padding:14px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.06);min-width:0;}
 .fp-conn-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin-bottom:12px;}
 .fp-conn-empty{font-size:13px;color:#94a3b8;}
 .fp-conn-list{list-style:none;display:flex;flex-direction:column;gap:10px;}
@@ -2005,8 +2006,8 @@ const STYLES = `
 .fp-combined-divider{height:1px;background:linear-gradient(90deg,transparent,#e2e8f0 20%,#e2e8f0 80%,transparent);margin:0 16px;}
 
 /* ── SKILLS INLINE EDIT ── */
-.fp-skills-inline{display:flex;flex-direction:column;gap:7px;}
-.fp-skills-inline-hdr{display:flex;align-items:center;justify-content:flex-end;}
+.fp-skills-inline{display:flex;flex-direction:column;gap:6px;}
+.fp-skills-tags-row{display:flex;align-items:flex-start;gap:8px;}
 .fp-tag-removable{padding-right:6px!important;}
 .fp-tag-x{background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.75);padding:0 0 0 4px;line-height:1;display:flex;align-items:center;transition:color .1s;}
 .fp-tag-x:hover{color:#fff;}
