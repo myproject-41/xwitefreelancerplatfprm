@@ -213,14 +213,15 @@ export default function FreelancerProfile() {
 
   async function loadPostsAndTasks(userId: string) {
     const [postsRes, tasksRes, escrowsRes, proposalsRes] = await Promise.allSettled([
-      postService.getUserPosts(userId),
+      postService.getMyPosts(),
       escrowService.getFreelancerCompletedTasks(userId),
       escrowService.getMyEscrows(),
       postService.getMyProposals(),
     ])
     if (postsRes.status === 'fulfilled') {
       const d = postsRes.value
-      setMyPosts(Array.isArray(d) ? d : (d?.data ?? []))
+      const posts = Array.isArray(d) ? d : Array.isArray(d?.data) ? d.data : (d?.data?.posts ?? d?.posts ?? [])
+      setMyPosts(posts)
     }
     if (tasksRes.status === 'fulfilled') {
       const d = tasksRes.value
