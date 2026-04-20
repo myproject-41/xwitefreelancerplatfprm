@@ -241,12 +241,39 @@ export default function FreelancerProfile() {
   /* ═══════════════════
      SAVE PROFILE
   ═══════════════════ */
-  async function saveProfile(patch: Record<string, unknown>) { 
-    console.log("CLICKED");
+  async function saveProfile(patch: Record<string, unknown>) {
     setSaving(true)
     try {
-      await apiClient.put('/api/users/profile/freelancer', patch)
-      const res = await authService.getMe(); setUser(res.data)
+      // Always send full profile — server overwrites arrays with [] if fields are missing
+      const fullPatch = {
+        fullName, title, bio, country, city, timezone, currency,
+        experienceLevel, noticePeriod, availability, fixedPrice,
+        hourlyRate, minBudget,
+        skills, languages, portfolioUrls, experience, qualifications,
+        ...patch,
+      }
+      await apiClient.put('/api/users/profile/freelancer', fullPatch)
+      const res = await authService.getMe()
+      const d   = res.data
+      setUser(d)
+      const p   = d.freelancerProfile ?? {}
+      setSkills(p.skills            ?? [])
+      setLanguages(p.languages?.length ? p.languages : [{ language:'English', proficiency:'FLUENT' }])
+      setPortfolioUrls(p.portfolioUrls?.length ? p.portfolioUrls : [{ label:'GitHub', url:'' }])
+      setHourlyRate(p.hourlyRate    ?? 0)
+      setMinBudget(p.minBudget      ?? 0)
+      setFixedPrice(p.fixedPrice    ?? false)
+      setExperience((p.experience ?? []).map((e: any) => ({
+        title: e.title ?? e.role ?? '', company: e.company ?? '',
+        from: e.from ?? e.startDate ?? '', to: e.to ?? e.endDate ?? '',
+        current: e.current ?? false, description: e.description ?? '',
+      })))
+      setQualifications(p.qualifications ?? [])
+      setFullName(p.fullName ?? d.email ?? '')
+      setTitle(p.title ?? '')
+      setBio(p.bio ?? '')
+      setCountry(p.country ?? '')
+      setCity(p.city ?? '')
       toast.success('Profile updated')
       setEditSection('none')
     } catch (e: any) { toast.error(e?.response?.data?.message ?? 'Save failed') }
@@ -594,32 +621,26 @@ export default function FreelancerProfile() {
 
                     {/* Skills — inline edit */}
                     <div className="fp-skills-inline">
-                      <div className="fp-skills-tags-row">
-                        <ul className="fp-tags" style={{flex:1}}>
-                          {skills.map(s => (
-                            <li key={s} className={`fp-tag${skillsEditing ? ' fp-tag-removable' : ''}`}>
-                              {s}
-                              {skillsEditing && (
-                                <button className="fp-tag-x" onClick={() => removeSkill(s)} aria-label={`Remove ${s}`}>
-                                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-                                </button>
-                              )}
-                            </li>
-                          ))}
-                          {skills.length === 0 && !skillsEditing && (
-                            <li><button className="fp-skills-add-prompt" onClick={() => setSkillsEditing(true)}>+ Add skills</button></li>
-                          )}
-                        </ul>
-                        <button className="fp-edit-icon-btn"
-                          onClick={() => setSkillsEditing(v => !v)}
-                          title={skillsEditing ? 'Close' : 'Edit skills'}
-                          style={{alignSelf:'flex-start',flexShrink:0}}>
-                          {skillsEditing
-                            ? <svg width="15" height="15" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-                            : <svg width="15" height="15" viewBox="0 0 24 24" fill="#0077b5"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                          }
-                        </button>
-                      </div>
+                      <ul className="fp-tags">
+                        {skills.map(s => (
+                          <li key={s} className={`fp-tag${skillsEditing ? ' fp-tag-removable' : ''}`}>
+                            {s}
+                            {skillsEditing && (
+                              <button className="fp-tag-x" onClick={() => removeSkill(s)} aria-label={`Remove ${s}`}>
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                              </button>
+                            )}
+                          </li>
+                        ))}
+                        {!skillsEditing && (
+                          <li>
+                            <button className="fp-add-skill-chip" onClick={() => setSkillsEditing(true)}>
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                              Add Skill
+                            </button>
+                          </li>
+                        )}
+                      </ul>
                       {skillsEditing && (
                         <div className="fp-skills-inline-editor">
                           <div className="fp-skill-input-row">
@@ -639,44 +660,36 @@ export default function FreelancerProfile() {
                           {skills.length < 3 && (
                             <p className="fp-warn">Add {3 - skills.length} more skill{3 - skills.length > 1 ? 's' : ''} (min 3)</p>
                           )}
-                          <button className="fp-btn-primary" style={{marginTop:8}}
-                            onClick={() => { saveProfile({ skills }); setSkillsEditing(false) }}
-                            disabled={saving || skills.length < 3}>
-                            {saving ? 'Saving…' : 'Save Skills'}
-                          </button>
+                          <div style={{display:'flex',gap:8,marginTop:8}}>
+                            <button className="fp-btn-primary" style={{flex:2}}
+                              onClick={() => { saveProfile({ skills }); setSkillsEditing(false) }}
+                              disabled={saving || skills.length < 3}>
+                              {saving ? 'Saving…' : 'Save Skills'}
+                            </button>
+                            <button className="fp-btn-sec" style={{flex:1}}
+                              onClick={() => setSkillsEditing(false)}>Cancel</button>
+                          </div>
                         </div>
                       )}
                     </div>
 
 
-                    {/* Portfolio links — visible below rates */}
-                    {portfolioUrls.filter(p => p.url).length > 0 && (
-                      <div className="fp-portfolio-inline">
-                        <div className="fp-portfolio-inline-hdr">
-                          <p className="fp-portfolio-inline-lbl">Portfolio & Links</p>
-                        </div>
-                        <div className="fp-portfolio-inline-links">
-                          {portfolioUrls.filter(p => p.url).map((p, i) => (
-                            <a key={i} href={p.url} target="_blank" rel="noopener noreferrer"
-                              className="fp-portfolio-inline-link">
-                              <svg width="12" height="12" viewBox="0 0 24 24" fill="#0077b5"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
-                              <span>{p.label || p.url}</span>
-                            </a>
-                          ))}
-                          <button className="fp-portfolio-inline-edit"
-                            onClick={() => setEditSection('portfolio')}>
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="#0077b5"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                            Edit
-                          </button>
-                        </div>
+                    {/* Portfolio links — always visible */}
+                    <div className="fp-portfolio-inline">
+                      <div className="fp-portfolio-inline-links">
+                        {portfolioUrls.filter(p => p.url).map((p, i) => (
+                          <a key={i} href={p.url} target="_blank" rel="noopener noreferrer"
+                            className="fp-portfolio-inline-link">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="#0077b5"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+                            <span>{p.label || p.url}</span>
+                          </a>
+                        ))}
+                        <button className="fp-portfolio-inline-edit" onClick={() => setEditSection('portfolio')}>
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                          {portfolioUrls.filter(p => p.url).length === 0 ? 'Add Portfolio' : 'Edit Links'}
+                        </button>
                       </div>
-                    )}
-                    {portfolioUrls.filter(p => p.url).length === 0 && (
-                      <button className="fp-btn-add-portfolio" onClick={() => setEditSection('portfolio')}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                        Add Portfolio Links
-                      </button>
-                    )}
+                    </div>
                   </>
               }
             </div>
@@ -1802,15 +1815,15 @@ const STYLES = `
 @media(min-width:900px){.fp-card{border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,0.05),0 8px 28px rgba(0,0,0,0.09);}}
 
 /* ── COVER ── */
-.fp-cover{position:relative;margin:0;border-radius:20px 20px 0 0;overflow:hidden;height:160px;cursor:pointer;}
+.fp-cover{position:relative;margin:0;border-radius:20px 20px 0 0;overflow:hidden;height:120px;cursor:pointer;}
 .fp-cover-inner{width:100%;height:100%;}
-.fp-cover-img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform .3s ease;}
-.fp-cover:hover .fp-cover-img{transform:scale(1.02);}
-.fp-cover-ph{width:100%;height:100%;background:linear-gradient(135deg,#0f4c75 0%,#1b6ca8 25%,#0077b5 50%,#1a9fd8 75%,#56c1e8 100%);}
-.fp-cover-ph::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 40%,rgba(255,255,255,0.12) 0%,transparent 60%),radial-gradient(ellipse at 70% 70%,rgba(255,255,255,0.07) 0%,transparent 50%);pointer-events:none;}
-.fp-cover::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,0.18) 100%);pointer-events:none;}
+.fp-cover-img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform .35s ease;}
+.fp-cover:hover .fp-cover-img{transform:scale(1.03);}
+.fp-cover-ph{width:100%;height:100%;background:linear-gradient(135deg,#0f4c75 0%,#1b6ca8 30%,#0077b5 55%,#2196c4 80%,#4db8d9 100%);}
+.fp-cover-ph::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(255,255,255,0.15) 0%,transparent 55%),radial-gradient(ellipse at 80% 30%,rgba(255,255,255,0.08) 0%,transparent 45%);pointer-events:none;}
+.fp-cover::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 35%,rgba(0,0,0,0.22) 100%);pointer-events:none;}
 .fp-cover-loader{position:absolute;inset:0;z-index:6;background:rgba(255,255,255,0.72);display:flex;align-items:center;justify-content:center;}
-@media(min-width:900px){.fp-cover{height:210px;}}
+@media(min-width:900px){.fp-cover{height:150px;}}
 .fp-btn-cover{position:absolute;bottom:12px;right:12px;z-index:10;background:rgba(255,255,255,0.92);color:#0077b5;border:none;padding:7px 14px;border-radius:999px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;cursor:pointer;backdrop-filter:blur(12px);box-shadow:0 2px 12px rgba(0,0,0,0.18);font-family:'Inter',sans-serif;transition:all .15s;}
 .fp-btn-cover:hover{background:#fff;box-shadow:0 4px 16px rgba(0,0,0,0.22);}
 .fp-btn-cover:active{transform:scale(.95);}
@@ -2073,7 +2086,8 @@ const STYLES = `
 
 /* ── SKILLS INLINE EDIT ── */
 .fp-skills-inline{display:flex;flex-direction:column;gap:6px;}
-.fp-skills-tags-row{display:flex;align-items:flex-start;gap:8px;}
+.fp-add-skill-chip{display:inline-flex;align-items:center;gap:4px;background:none;border:1.5px dashed #bae6fd;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:700;color:#0077b5;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;}
+.fp-add-skill-chip:hover{background:#f0f9ff;border-style:solid;}
 .fp-tag-removable{padding-right:6px!important;}
 .fp-tag-x{background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.75);padding:0 0 0 4px;line-height:1;display:flex;align-items:center;transition:color .1s;}
 .fp-tag-x:hover{color:#fff;}
