@@ -434,7 +434,9 @@ export default function FreelancerProfile() {
           </div>
           <div className="fp-hdr-right">
             <button className="fp-agent-btn" onClick={() => router.push('/agent')}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7H3a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2M5 15v5h14v-5H5m2 2h2v2H7v-2m4 0h2v2h-2v-2m4 0h2v2h-2v-2z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                <path d="m12 2 1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2Z" />
+              </svg>
               <span className="fp-agent-text">AI Agent</span>
             </button>
             <button className="fp-msg-btn" onClick={() => router.push('/messages')}>
@@ -1170,7 +1172,9 @@ export default function FreelancerProfile() {
           {/* Agent + Messaging */}
           <div className="fp-right-hdr">
             <button className="fp-agent-btn" onClick={() => router.push('/agent')}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7H3a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2M5 15v5h14v-5H5m2 2h2v2H7v-2m4 0h2v2h-2v-2m4 0h2v2h-2v-2z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                <path d="m12 2 1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2Z" />
+              </svg>
               AI Agent
             </button>
             <button className="fp-msg-btn" onClick={() => router.push('/messages')}>
@@ -1639,9 +1643,9 @@ const STYLES = `
 .fp-btn-cover:active{transform:scale(.95);}
 
 /* ── BELOW COVER (avatar + availability + edit profile) ── */
-.fp-below-cover{display:flex;align-items:flex-end;justify-content:space-between;padding:0 18px;margin-top:-42px;margin-bottom:10px;position:relative;z-index:20;}
+.fp-below-cover{display:flex;align-items:flex-end;justify-content:space-between;padding:0 18px;margin-top:-42px;margin-bottom:10px;position:relative;z-index:20;pointer-events:none;}
 @media(min-width:900px){.fp-below-cover{padding:0 22px;margin-top:-46px;margin-bottom:16px;}}
-.fp-avatar{position:relative;margin-left:2px;width:80px;height:80px;border-radius:14px;overflow:hidden;background:#e2e5e9;border:3px solid #fff;box-shadow:0 2px 12px rgba(0,0,0,0.18);cursor:pointer;padding:0;flex-shrink:0;display:block;transition:box-shadow .2s;}
+.fp-avatar{position:relative;margin-left:2px;width:80px;height:80px;border-radius:14px;overflow:hidden;background:#e2e5e9;border:3px solid #fff;box-shadow:0 2px 12px rgba(0,0,0,0.18);cursor:pointer;padding:0;flex-shrink:0;display:block;transition:box-shadow .2s;pointer-events:auto;}
 .fp-avatar:hover{box-shadow:0 4px 18px rgba(0,0,0,0.26);}
 .fp-avatar img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;}
 .fp-avatar-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#dde4ea;}
