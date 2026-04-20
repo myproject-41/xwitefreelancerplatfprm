@@ -510,22 +510,6 @@ export default function FreelancerProfile() {
                 {avatarUploading && <div className="fp-avatar-loader"><Spin light /></div>}
               </button>
 
-              {/* Availability badge */}
-              {!pageLoading && (
-                <div style={{display:'flex',alignItems:'center',gap:10}}>
-                  <div className={`fp-avail-badge${availability ? ' available' : ' unavailable'}`}
-                    onClick={() => { setAvailability(!availability); saveProfile({ availability: !availability }) }}
-                    role="button">
-                    <span className="fp-avail-dot" />
-                    {availability ? 'Available' : 'Unavailable'}
-                  </div>
-                  <button className="fp-btn-edit-profile"
-                    onClick={() => avatarRef.current?.click()}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                    Edit Profile
-                  </button>
-                </div>
-              )}
             </div>
 
             {/* Profile info */}
@@ -597,16 +581,7 @@ export default function FreelancerProfile() {
                       <div className="fp-portfolio-inline">
                         <div className="fp-portfolio-inline-hdr">
                           <p className="fp-portfolio-inline-lbl">Portfolio & Links</p>
-                          <button className="fp-ai-inline-btn"
-                            onClick={() => {
-                              document.getElementById('fp-ai-portfolio-card')?.scrollIntoView({ behavior:'smooth', block:'center' })
-                              const btn = document.getElementById('fp-ai-generate-trigger')
-                              if (btn) btn.click()
-                            }}>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7H3a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2M5 15v5h14v-5H5m2 2h2v2H7v-2m4 0h2v2h-2v-2m4 0h2v2h-2v-2z"/></svg>
-                            Generate with AI
-                          </button>
-                        </div>{/* end fp-portfolio-inline-hdr */}
+                        </div>
                         <div className="fp-portfolio-inline-links">
                           {portfolioUrls.filter(p => p.url).map((p, i) => (
                             <a key={i} href={p.url} target="_blank" rel="noopener noreferrer"
@@ -1041,15 +1016,6 @@ export default function FreelancerProfile() {
               <ProfileSection
                 title="Portfolio & Links"
                 onEdit={() => setEditSection('portfolio')}
-                onAiClick={() => {
-                  // scroll to / open AI card — use a custom event so AiPortfolioCard can respond
-                  document.getElementById('fp-ai-portfolio-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                  document.getElementById('fp-ai-portfolio-card')?.classList.add('fp-ai-card-highlight')
-                  setTimeout(() => document.getElementById('fp-ai-portfolio-card')?.classList.remove('fp-ai-card-highlight'), 1500)
-                  // On mobile where sidebar isn't visible, trigger generate inline
-                  const btn = document.getElementById('fp-ai-generate-trigger')
-                  if (btn) btn.click()
-                }}
                 empty={portfolioUrls.filter(p => p.url).length === 0}>
                 <div className="fp-portfolio-display">
                   {portfolioUrls.filter(p => p.url).map((p, i) => (
@@ -1258,23 +1224,6 @@ export default function FreelancerProfile() {
             )}
           </div>
 
-          {/* AI Portfolio Builder */}
-          <AiPortfolioCard
-            fullName={fullName}
-            title={title}
-            bio={bio}
-            skills={skills}
-            experience={experience}
-            onGenerated={(urls) => {
-              setPortfolioUrls(prev => {
-                const merged = [...prev]
-                urls.forEach(u => { if (!merged.find(x => x.url === u.url)) merged.push(u) })
-                return merged
-              })
-              saveProfile({ portfolioUrls: [...portfolioUrls, ...urls] })
-            }}
-          />
-
           {/* Switch Account */}
           <button className="fp-switch" onClick={() => router.push('/profile/client')}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="#0077b5"><path d="M6.99 11 3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg>
@@ -1304,132 +1253,6 @@ export default function FreelancerProfile() {
   )
 }
 
-
-/* ═══════════════════════════════════════════════
-   AI PORTFOLIO BUILDER CARD
-═══════════════════════════════════════════════ */
-function AiPortfolioCard({ fullName, title, bio, skills, experience, onGenerated }: {
-  fullName: string
-  title: string
-  bio: string
-  skills: string[]
-  experience: Experience[]
-  onGenerated: (urls: PortfolioUrl[]) => void
-}) {
-  const [generating, setGenerating] = useState(false)
-  const [result,     setResult]     = useState<string>('')
-  const [expanded,   setExpanded]   = useState(false)
-  const [error,      setError]      = useState('')
-
-  async function generate() {
-    setGenerating(true); setError(''); setResult('')
-    try {
-      const prompt = `You are a professional portfolio advisor helping a freelancer named "${fullName}" who works as "${title}".
-
-Their bio: "${bio}"
-Skills: ${skills.join(', ')}
-Experience: ${experience.map(e => `${e.title} at ${e.company}`).join('; ') || 'Not provided'}
-
-Generate a concise, actionable portfolio strategy for this freelancer. Include:
-1. What type of portfolio projects to showcase (3-4 specific ideas based on their skills)
-2. Recommended platforms where they should build presence (e.g. GitHub for devs, Dribbble for designers, Behance for creatives)
-3. One specific portfolio link structure/format they should use
-4. A short "portfolio pitch" sentence they can use on their profile
-
-Keep the total response under 250 words. Be specific to their actual skills and field, not generic.`
-
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          messages: [{ role: 'user', content: prompt }],
-        }),
-      })
-      const data = await response.json()
-      const text = data.content?.find((b: any) => b.type === 'text')?.text ?? ''
-      setResult(text)
-      setExpanded(true)
-    } catch {
-      setError('Could not generate suggestions. Please try again.')
-    } finally {
-      setGenerating(false) }
-  }
-
-  return (
-    <div className="fp-ai-card" id="fp-ai-portfolio-card">
-      {/* Header */}
-      <div className="fp-ai-card-hdr">
-        <div className="fp-ai-card-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-            <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7H3a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2M5 15v5h14v-5H5m2 2h2v2H7v-2m4 0h2v2h-2v-2m4 0h2v2h-2v-2z"/>
-          </svg>
-        </div>
-        <div>
-          <p className="fp-ai-card-title">AI Portfolio Builder</p>
-          <p className="fp-ai-card-sub">Get personalised portfolio advice</p>
-        </div>
-      </div>
-
-      {/* Body */}
-      <div className="fp-ai-card-body">
-        {!result && !generating && (
-          <p className="fp-ai-card-desc">
-            Let AI analyse your skills and experience to suggest the best portfolio strategy for your profile.
-          </p>
-        )}
-
-        {generating && (
-          <div className="fp-ai-card-loading">
-            <div className="fp-ai-spinner" />
-            <span>Analysing your profile…</span>
-          </div>
-        )}
-
-        {error && <p className="fp-ai-card-error">{error}</p>}
-
-        {result && (
-          <div className="fp-ai-result">
-            <div className={`fp-ai-result-text${expanded ? ' expanded' : ''}`}>
-              {result.split('\n').map((line, i) => (
-                line.trim()
-                  ? <p key={i} style={{margin:'0 0 6px',lineHeight:1.6,fontSize:12,color:'#334155'}}>
-                      {line}
-                    </p>
-                  : <br key={i} />
-              ))}
-            </div>
-            {!expanded && (
-              <button className="fp-ai-see-more" onClick={() => setExpanded(true)}>
-                See full advice ↓
-              </button>
-            )}
-            {expanded && (
-              <button className="fp-ai-see-more" onClick={() => setExpanded(false)}>
-                Collapse ↑
-              </button>
-            )}
-          </div>
-        )}
-
-        <button
-          id="fp-ai-generate-trigger"
-          className="fp-ai-generate-btn"
-          onClick={generate}
-          disabled={generating}
-        >
-          {generating
-            ? 'Generating…'
-            : result
-              ? '↻ Regenerate'
-              : '✦ Generate Portfolio Strategy'
-          }
-        </button>
-      </div>
-    </div>
-  )
-}
 
 /* ═══════════════════════════════════════════════
    SUB-COMPONENTS

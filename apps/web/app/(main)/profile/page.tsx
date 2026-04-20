@@ -310,9 +310,8 @@ export default function ClientProfile() {
           </div>
           <div className="cp-hdr-right">
             <button className="cp-agent-btn" onClick={() => router.push('/agent')}>
-              {/* robot SVG instead of icon font */}
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="white">
-                <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7H3a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2M5 15v5h14v-5H5m2 2h2v2H7v-2m4 0h2v2h-2v-2m4 0h2v2h-2v-2z"/>
+              <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                <path d="m12 2 1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2Z" />
               </svg>
               <span className="cp-agent-text">AI Agent</span>
             </button>
