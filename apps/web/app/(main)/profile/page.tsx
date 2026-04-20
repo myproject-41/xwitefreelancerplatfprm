@@ -197,11 +197,24 @@ export default function ClientProfile() {
   }
 
   /* ─── WALLET ─── */
+  function loadRazorpayScript(): Promise<boolean> {
+    return new Promise(resolve => {
+      if ((window as any).Razorpay) return resolve(true)
+      const script = document.createElement('script')
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+      script.onload = () => resolve(true)
+      script.onerror = () => resolve(false)
+      document.body.appendChild(script)
+    })
+  }
+
   async function handleAddFunds() {
     const n = Number(addAmount)
     if (!n || n <= 0) return toast.error('Enter a valid amount')
     setAddingFunds(true)
     try {
+      const ready = await loadRazorpayScript()
+      if (!ready) { toast.error('Could not load Razorpay. Check your internet connection.'); setAddingFunds(false); return }
       const { data: order } = await walletService.createOrder(n)
       const options = {
         key: order.keyId,
