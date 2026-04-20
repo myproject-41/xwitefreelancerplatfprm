@@ -238,7 +238,7 @@ export default function ClientProfile() {
     if (wallet && n > wallet.balance) return toast.error('Insufficient balance')
     setWithdrawing(true)
     try {
-      await walletService.withdrawFunds({ amount: n, accountHolderName: '', bankName: '', accountNumber: '', ifscCode: '' })
+      await walletService.withdrawFunds({ amount: n })
       toast.success('Withdrawal requested!')
       setWithdrawAmount(''); togglePanel('none'); loadWallet()
     } catch (e: any) { toast.error(e?.response?.data?.message ?? 'Withdrawal failed') }
@@ -309,17 +309,17 @@ export default function ClientProfile() {
             <span className="cp-brand">Xwite</span>
           </div>
           <div className="cp-hdr-right">
-            <button
-              onClick={() => router.push('/agent')}
-              style={{display:'inline-flex',alignItems:'center',gap:6,borderRadius:999,background:'linear-gradient(135deg,#005d8f 0%,#0077b5 100%)',padding:'7px 14px',fontSize:13,fontWeight:600,color:'white',border:'none',cursor:'pointer',boxShadow:'0 1px 4px rgba(0,93,143,0.18)'}}>
-              <svg viewBox="0 0 24 24" fill="currentColor" style={{width:14,height:14}}><path d="m12 2 1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2Z"/></svg>
-              AI Agent
+            <button className="cp-agent-btn" onClick={() => router.push('/agent')}>
+              {/* robot SVG instead of icon font */}
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="white">
+                <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7H3a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2M5 15v5h14v-5H5m2 2h2v2H7v-2m4 0h2v2h-2v-2m4 0h2v2h-2v-2z"/>
+              </svg>
+              <span className="cp-agent-text">AI Agent</span>
             </button>
-            <button
-              onClick={() => router.push('/messages')}
-              style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:38,height:38,borderRadius:999,border:'2px solid rgba(0,93,143,0.2)',background:'white',color:'#005d8f',cursor:'pointer'}}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{width:18,height:18}}>
-                <path d="M5 6.5h14v9H9l-4 3v-12Z"/>
+            <button className="cp-msg-btn" onClick={() => router.push('/messages')}>
+              {/* chat bubble SVG */}
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0077b5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
               <span className="cp-msg-dot" />
             </button>
@@ -435,6 +435,18 @@ export default function ClientProfile() {
                 {avatarUploading && <div className="cp-avatar-loader"><Spin light /></div>}
               </button>
 
+              {/* Edit Profile button — right side, same row as avatar */}
+              {!pageLoading && (
+                <button
+                  className="cp-btn-edit-profile"
+                  onClick={() => avatarInputRef.current?.click()}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                  </svg>
+                  Edit Profile
+                </button>
+              )}
             </div>
 
             {/* Profile info */}
@@ -552,17 +564,15 @@ export default function ClientProfile() {
 
           {/* Agent + Messaging */}
           <div className="cp-right-hdr">
-            <button
-              onClick={() => router.push('/agent')}
-              style={{display:'inline-flex',alignItems:'center',gap:6,borderRadius:999,background:'linear-gradient(135deg,#005d8f 0%,#0077b5 100%)',padding:'7px 14px',fontSize:13,fontWeight:600,color:'white',border:'none',cursor:'pointer',boxShadow:'0 1px 4px rgba(0,93,143,0.18)'}}>
-              <svg viewBox="0 0 24 24" fill="currentColor" style={{width:14,height:14}}><path d="m12 2 1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2Z"/></svg>
+            <button className="cp-agent-btn" onClick={() => router.push('/agent')}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="white">
+                <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7H3a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2M5 15v5h14v-5H5m2 2h2v2H7v-2m4 0h2v2h-2v-2m4 0h2v2h-2v-2z"/>
+              </svg>
               AI Agent
             </button>
-            <button
-              onClick={() => router.push('/messages')}
-              style={{position:'relative',display:'flex',alignItems:'center',justifyContent:'center',width:38,height:38,borderRadius:999,border:'2px solid rgba(0,93,143,0.2)',background:'white',color:'#005d8f',cursor:'pointer'}}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{width:18,height:18}}>
-                <path d="M5 6.5h14v9H9l-4 3v-12Z"/>
+            <button className="cp-msg-btn" onClick={() => router.push('/messages')}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0077b5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
               <span className="cp-msg-dot" />
             </button>
@@ -1362,10 +1372,10 @@ const STYLES = `
   grid-template-areas:"header""main""mobile-nav";
   grid-template-rows:60px 1fr 60px;
   grid-template-columns:1fr;
-  background:#EDF1F7;
+  background:#f1f5f9;
   min-height:100dvh;
   font-family:'Manrope','Inter',sans-serif;
-  color:#0D1B2A;
+  color:#0f172a;
 }
 @media(min-width:900px){
   .cp-root{
@@ -1437,7 +1447,7 @@ const STYLES = `
   transition:background .15s,color .15s;
 }
 .cp-nav-item:hover{background:#f0f9ff;color:#0077b5;}
-.cp-nav-item.active{background:#e8f4fd;color:#0077b5;font-weight:700;}
+.cp-nav-item.active{background:linear-gradient(135deg,#e8f4fd,#dbeffe);color:#0077b5;font-weight:700;box-shadow:inset 0 0 0 1px rgba(0,119,181,0.15);}
 .cp-nav-label{flex:1;}
 .cp-sidebar-bottom{display:flex;flex-direction:column;gap:3px;border-top:1px solid #f1f5f9;padding-top:10px;}
 .cp-nav-danger{color:#dc2626!important;}
@@ -1448,8 +1458,8 @@ const STYLES = `
 @media(min-width:900px){.cp-main{padding:28px 24px 40px;display:flex;flex-direction:column;gap:16px;}}
 
 /* ── PROFILE CARD ── */
-.cp-card{background:#fff;border-radius:0 0 24px 24px;overflow:visible;box-shadow:0 2px 12px rgba(0,0,0,0.06);}
-@media(min-width:900px){.cp-card{border-radius:20px;box-shadow:0 2px 20px rgba(0,0,0,0.08);}}
+.cp-card{background:#fff;border-radius:0 0 24px 24px;overflow:visible;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 6px 20px rgba(0,0,0,0.08);}
+@media(min-width:900px){.cp-card{border-radius:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 8px 32px rgba(0,0,0,0.1);border:1px solid rgba(0,0,0,0.04);}}
 
 /* ── COVER — side margins + rounded corners matching screenshot ── */
 .cp-cover{
@@ -1544,15 +1554,15 @@ const STYLES = `
 
 /* ── EDIT PROFILE BUTTON ── */
 .cp-btn-edit-profile{
-  background:#0077b5;color:#fff;border:none;
+  background:linear-gradient(135deg,#0284c7,#0077b5);color:#fff;border:none;
   padding:11px 20px;border-radius:999px;
   font-size:13px;font-weight:800;
   display:flex;align-items:center;gap:7px;
   cursor:pointer;font-family:'Manrope',sans-serif;
-  box-shadow:0 3px 12px rgba(0,119,181,0.3);
+  box-shadow:0 3px 14px rgba(0,119,181,0.38);
   transition:transform .15s,box-shadow .15s;
 }
-.cp-btn-edit-profile:hover{box-shadow:0 5px 18px rgba(0,119,181,0.4);}
+.cp-btn-edit-profile:hover{box-shadow:0 5px 20px rgba(0,119,181,0.48);transform:translateY(-1px);}
 .cp-btn-edit-profile:active{transform:scale(.96);}
 @media(min-width:900px){.cp-btn-edit-profile{padding:12px 22px;font-size:14px;}}
 
@@ -1565,29 +1575,30 @@ const STYLES = `
   display:flex;align-items:center;gap:4px;
   opacity:0.85;
 }
-.cp-name{font-size:22px;font-weight:800;line-height:1.15;color:#0D1B2A;letter-spacing:-0.01em;}
+.cp-name{font-size:22px;font-weight:800;line-height:1.15;color:#0f172a;letter-spacing:-0.02em;}
 @media(min-width:900px){.cp-name{font-size:28px;}}
-.cp-bio{font-size:14px;font-weight:500;color:#536279;line-height:1.7;}
+.cp-bio{font-size:14px;font-weight:500;color:#475569;line-height:1.75;}
 .cp-tags{display:flex;flex-wrap:wrap;gap:6px;list-style:none;margin-top:2px;}
 .cp-tag{
-  background:#dbeeff;color:#005d8f;
-  padding:5px 12px;border-radius:999px;
-  font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+  background:linear-gradient(135deg,#e0f2fe,#dbeffe);color:#0369a1;
+  padding:5px 13px;border-radius:999px;
+  font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;border:1px solid #bae6fd;
 }
 .cp-btn-edit-bio{
-  width:100%;background:#0077b5;color:#fff;border:none;
+  width:100%;background:linear-gradient(135deg,#0284c7,#0077b5);color:#fff;border:none;
   padding:13px;border-radius:14px;font-size:14px;font-weight:800;
   cursor:pointer;font-family:'Manrope',sans-serif;
-  box-shadow:0 3px 14px rgba(0,119,181,0.25);
+  box-shadow:0 4px 16px rgba(0,119,181,0.35);
   transition:transform .15s,box-shadow .15s;
   margin-top:2px;
 }
 .cp-btn-edit-bio:active{transform:scale(.98);}
+.cp-btn-edit-bio:hover{box-shadow:0 6px 22px rgba(0,119,181,0.45);}
 
 /* ── INLINE PANELS ── */
-.cp-panel{background:#fff;border-radius:18px;box-shadow:0 2px 20px rgba(0,0,0,0.09);overflow:hidden;}
-.cp-panel-hdr{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 18px 12px;border-bottom:1px solid #f1f5f9;}
-.cp-panel-h{font-size:15px;font-weight:800;color:#0D1B2A;}
+.cp-panel{background:#fff;border-radius:18px;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 8px 24px rgba(0,0,0,0.09);overflow:hidden;border:1px solid rgba(0,0,0,0.04);}
+.cp-panel-hdr{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 18px 12px;border-bottom:1px solid #f1f5f9;border-left:3px solid #0077b5;}
+.cp-panel-h{font-size:15px;font-weight:800;color:#0f172a;}
 .cp-panel-x{background:none;border:none;cursor:pointer;padding:3px;display:flex;transition:opacity .15s;}
 .cp-panel-x:hover{opacity:.7;}
 .cp-panel-body{padding:15px 18px 18px;display:flex;flex-direction:column;gap:12px;}
@@ -1616,22 +1627,23 @@ const STYLES = `
 .cp-row>*{flex:1;}
 .cp-divider{height:1px;background:#f1f5f9;}
 .cp-btn-p{
-  background:#0077b5;color:#fff;border:none;border-radius:10px;
+  background:linear-gradient(135deg,#0284c7,#0077b5);color:#fff;border:none;border-radius:12px;
   padding:12px 16px;font-size:14px;font-weight:800;
   cursor:pointer;font-family:'Manrope',sans-serif;width:100%;
   display:flex;align-items:center;justify-content:center;gap:7px;
-  transition:filter .15s;
+  box-shadow:0 3px 12px rgba(0,119,181,0.3);transition:all .15s;
 }
 .cp-btn-p:disabled{opacity:.6;cursor:not-allowed;}
+.cp-btn-p:not(:disabled):hover{box-shadow:0 5px 18px rgba(0,119,181,0.4);}
 .cp-btn-p:not(:disabled):active{filter:brightness(.88);}
 .cp-btn-s{
-  background:#f8fafc;color:#64748b;border:1.5px solid #e2e8f0;border-radius:10px;
+  background:#f8fafc;color:#64748b;border:1.5px solid #e2e8f0;border-radius:12px;
   padding:12px 16px;font-size:14px;font-weight:700;cursor:pointer;
   font-family:'Manrope',sans-serif;width:100%;transition:background .15s;
 }
 .cp-btn-s:active{background:#f1f5f9;}
 .cp-btn-danger{
-  background:transparent;color:#dc2626;border:1.5px solid #fca5a5;border-radius:10px;
+  background:transparent;color:#dc2626;border:1.5px solid #fca5a5;border-radius:12px;
   padding:12px 16px;font-size:14px;font-weight:700;cursor:pointer;
   font-family:'Manrope',sans-serif;width:100%;
   display:flex;align-items:center;justify-content:center;gap:7px;transition:background .15s;
@@ -1656,42 +1668,43 @@ const STYLES = `
   box-shadow:0 1px 4px rgba(0,0,0,0.05);
   min-width:0;overflow:hidden;
 }
-.cp-wallet{background:#dbeeff;border-radius:16px;padding:16px;min-width:0;overflow:hidden;}
+.cp-wallet{background:linear-gradient(145deg,#cce8ff 0%,#d4eeff 45%,#e4f3ff 100%);border-radius:18px;padding:18px;min-width:0;overflow:hidden;border:1px solid rgba(147,197,253,0.6);}
 .cp-wallet-head{display:flex;justify-content:space-between;align-items:flex-start;}
-.cp-wallet-lbl{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#005d8f;}
-.cp-wallet-icon{background:rgba(0,93,143,0.1);border:none;border-radius:10px;
+.cp-wallet-lbl{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#0369a1;}
+.cp-wallet-icon{background:rgba(3,105,161,0.12);border:none;border-radius:12px;
   width:40px;height:40px;display:flex;align-items:center;justify-content:center;
   cursor:pointer;transition:background .15s,transform .15s;flex-shrink:0;}
-.cp-wallet-icon:hover{background:rgba(0,93,143,0.18);}
+.cp-wallet-icon:hover{background:rgba(3,105,161,0.2);}
 .cp-wallet-icon:active{transform:scale(.93);}
-.cp-wallet-amt{font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1;color:#0D1B2A;margin-top:8px;}
-.cp-wallet-escrow{font-size:11px;font-weight:700;color:#005d8f;margin-top:5px;}
-.cp-btn-withdraw{width:100%;background:#4ade80;color:#14532d;font-weight:800;font-size:14px;
+.cp-wallet-amt{font-size:24px;font-weight:800;letter-spacing:-.03em;line-height:1;color:#0f172a;margin-top:10px;}
+.cp-wallet-escrow{font-size:11px;font-weight:700;color:#0369a1;margin-top:5px;}
+.cp-btn-withdraw{width:100%;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-weight:800;font-size:14px;
   padding:12px;border-radius:12px;border:none;cursor:pointer;margin-top:14px;
-  font-family:'Manrope',sans-serif;transition:transform .15s;}
+  font-family:'Manrope',sans-serif;box-shadow:0 3px 12px rgba(34,197,94,0.35);transition:transform .15s,box-shadow .15s;}
 .cp-btn-withdraw:active{transform:scale(.97);}
-.cp-btn-add{width:100%;background:transparent;color:#0077b5;border:1.5px solid #0077b5;
-  font-weight:800;font-size:13px;padding:9px;border-radius:12px;cursor:pointer;margin-top:8px;
-  font-family:'Manrope',sans-serif;transition:background .15s;}
-.cp-btn-add:hover{background:#e8f4fd;}
-.cp-conn-card{background:#fff;border-radius:16px;padding:16px;border:0.5px solid #e8edf2;min-width:0;overflow:hidden;}
-.cp-conn-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin-bottom:12px;}
+.cp-btn-withdraw:hover{box-shadow:0 5px 18px rgba(34,197,94,0.45);}
+.cp-btn-add{width:100%;background:linear-gradient(135deg,#0077b5,#005d8f);color:#fff;border:none;
+  font-weight:800;font-size:13px;padding:10px;border-radius:12px;cursor:pointer;margin-top:8px;
+  font-family:'Manrope',sans-serif;box-shadow:0 2px 10px rgba(0,119,181,0.3);transition:all .15s;}
+.cp-btn-add:hover{box-shadow:0 4px 16px rgba(0,119,181,0.4);}
+.cp-conn-card{background:#fff;border-radius:16px;padding:16px;border:1px solid #e2e8f0;min-width:0;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);}
+.cp-conn-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#94a3b8;margin-bottom:14px;}
 .cp-conn-empty{font-size:13px;color:#94a3b8;}
 .cp-conn-list{list-style:none;display:flex;flex-direction:column;gap:10px;}
 .cp-conn-item{display:flex;align-items:center;gap:10px;min-width:0;}
 .cp-conn-av{width:34px;height:34px;border-radius:50%;overflow:hidden;background:#e2e5e9;
   flex-shrink:0;display:flex;align-items:center;justify-content:center;}
 .cp-conn-av img{width:100%;height:100%;object-fit:cover;}
-.cp-conn-name{font-size:13px;font-weight:600;color:#0D1B2A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cp-conn-name{font-size:13px;font-weight:600;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .cp-conn-more{width:100%;background:none;border:none;cursor:pointer;color:#0077b5;
   font-size:12px;font-weight:700;padding:8px 0 0;font-family:'Manrope',sans-serif;text-align:left;}
 .cp-conn-more:hover{opacity:.75;}
-.cp-switch{background:#fff;border-radius:16px;padding:12px 14px;border:0.5px solid #e8edf2;cursor:pointer;
+.cp-switch{background:linear-gradient(135deg,#f8fafc,#f0f9ff);border-radius:16px;padding:12px 14px;border:1px solid #e2e8f0;cursor:pointer;
   display:flex;align-items:center;gap:10px;font-family:'Manrope',sans-serif;
   text-align:left;width:100%;min-width:0;overflow:hidden;
   box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:box-shadow .15s;}
 .cp-switch:hover{box-shadow:0 3px 14px rgba(0,0,0,0.1);}
-.cp-switch-title{font-size:13px;font-weight:700;color:#0D1B2A;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cp-switch-title{font-size:13px;font-weight:700;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .cp-switch-sub{font-size:12px;color:#94a3b8;margin-top:2px;}
 
 /* ── MOBILE BOTTOM NAV ── */

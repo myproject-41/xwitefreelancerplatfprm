@@ -21,11 +21,11 @@ export const walletService = {
   },
 
   async withdrawFunds(payload: {
-    amount:            number
-    accountHolderName: string
-    bankName:          string
-    accountNumber:     string
-    ifscCode:          string
+    amount:             number
+    accountHolderName?: string
+    bankName?:          string
+    accountNumber?:     string
+    ifscCode?:          string
   }) {
     const res = await apiClient.post('/api/wallet/withdraw', payload)
     return res.data
