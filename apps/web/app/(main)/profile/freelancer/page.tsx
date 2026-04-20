@@ -1703,7 +1703,7 @@ const STYLES = `
 .fp-section-empty:hover{background:#f8fafc;}
 
 /* ── EDIT CARDS ── */
-.fp-edit-card{background:#fff;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06),0 8px 28px rgba(0,0,0,0.09);border:1px solid rgba(0,0,0,0.04);overflow:hidden;}
+.fp-edit-card{background:#fff;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06),0 8px 28px rgba(0,0,0,0.09);border:1px solid rgba(0,0,0,0.04);overflow:visible;position:relative;z-index:2;}
 .fp-edit-card-hdr{display:flex;align-items:center;justify-content:space-between;padding:15px 18px 12px;border-bottom:1px solid #f1f5f9;}
 .fp-edit-card-title{font-size:15px;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;}
 .fp-edit-close{background:none;border:none;cursor:pointer;padding:3px;display:flex;transition:opacity .15s;}
@@ -1807,7 +1807,7 @@ const STYLES = `
 .fp-sidebar-right{display:none;grid-area:right-sidebar;}
 @media(min-width:900px){.fp-sidebar-right{display:flex;flex-direction:column;gap:14px;padding:24px 14px 40px;background:#f1f5f9;position:sticky;top:0;height:100dvh;overflow-y:auto;overflow-x:hidden;min-width:0;width:100%;}}
 .fp-right-hdr{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border-radius:14px;padding:10px 12px;border:0.5px solid #e8edf2;box-shadow:0 1px 4px rgba(0,0,0,0.05);min-width:0;overflow:hidden;}
-.fp-wallet{background:linear-gradient(145deg,#cce8ff 0%,#d4eeff 45%,#e4f3ff 100%);border:1px solid #93c5fd;border-radius:16px;padding:16px;min-width:0;overflow:hidden;}
+.fp-wallet{background:linear-gradient(145deg,#cce8ff 0%,#d4eeff 45%,#e4f3ff 100%);border:1px solid #93c5fd;border-radius:16px;padding:16px;min-width:0;}
 .fp-wallet-head{display:flex;justify-content:space-between;align-items:flex-start;}
 .fp-wallet-lbl{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#0369a1;font-family:'Inter',sans-serif;}
 .fp-wallet-icon{background:rgba(0,93,143,0.1);border:none;border-radius:10px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;}
