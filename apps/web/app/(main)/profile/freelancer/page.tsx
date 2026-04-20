@@ -133,9 +133,17 @@ export default function FreelancerProfile() {
   const [confirmPw, setConfirmPw] = useState('')
   const [pwLoading, setPwLoading] = useState(false)
 
-  /* ── Posts & completed tasks ── */
+  /* ── Posts & tasks ── */
   const [myPosts,         setMyPosts]         = useState<any[]>([])
   const [completedTasks,  setCompletedTasks]  = useState<any[]>([])
+  const [inProgressTasks, setInProgressTasks] = useState<any[]>([])
+  const [myProposals,     setMyProposals]     = useState<any[]>([])
+
+  /* ── Sidebar accordion ── */
+  const [sidebarSection, setSidebarSection] = useState<'posts'|'completed'|'inprogress'|'request'|'none'>('none')
+
+  /* ── Skills inline edit ── */
+  const [skillsEditing, setSkillsEditing] = useState(false)
 
   /* ── Skill input ── */
   const [skillInput, setSkillInput] = useState('')
@@ -204,12 +212,30 @@ export default function FreelancerProfile() {
   }, [])
 
   async function loadPostsAndTasks(userId: string) {
-    const [postsRes, tasksRes] = await Promise.allSettled([
+    const [postsRes, tasksRes, escrowsRes, proposalsRes] = await Promise.allSettled([
       postService.getUserPosts(userId),
       escrowService.getFreelancerCompletedTasks(userId),
+      escrowService.getMyEscrows(),
+      postService.getMyProposals(),
     ])
-    if (postsRes.status === 'fulfilled') setMyPosts(postsRes.value?.data ?? [])
-    if (tasksRes.status === 'fulfilled') setCompletedTasks(tasksRes.value?.data ?? [])
+    if (postsRes.status === 'fulfilled') {
+      const d = postsRes.value
+      setMyPosts(Array.isArray(d) ? d : (d?.data ?? []))
+    }
+    if (tasksRes.status === 'fulfilled') {
+      const d = tasksRes.value
+      setCompletedTasks(Array.isArray(d) ? d : (d?.data ?? []))
+    }
+    if (escrowsRes.status === 'fulfilled') {
+      const all = escrowsRes.value
+      const arr: any[] = Array.isArray(all) ? all : (all?.data ?? [])
+      setInProgressTasks(arr.filter((e: any) => !['COMPLETED','RELEASED','CANCELLED'].includes(e.status)))
+    }
+    if (proposalsRes.status === 'fulfilled') {
+      const all = proposalsRes.value
+      const arr: any[] = Array.isArray(all) ? all : (all?.data ?? [])
+      setMyProposals(arr.filter((p: any) => p.status === 'PENDING'))
+    }
   }
 
   /* ═══════════════════
@@ -580,12 +606,61 @@ export default function FreelancerProfile() {
                       </div>
                     )}
 
-                    {/* Skills */}
-                    {skills.length > 0 && (
+                    {/* Skills — inline edit */}
+                    <div className="fp-skills-inline">
+                      <div className="fp-skills-inline-hdr">
+                        <span className="fp-skills-inline-lbl">Skills</span>
+                        <button className="fp-edit-icon-btn"
+                          onClick={() => setSkillsEditing(v => !v)}
+                          title={skillsEditing ? 'Close' : 'Edit skills'}>
+                          {skillsEditing
+                            ? <svg width="15" height="15" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                            : <svg width="15" height="15" viewBox="0 0 24 24" fill="#0077b5"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                          }
+                        </button>
+                      </div>
                       <ul className="fp-tags">
-                        {skills.map(s => <li key={s} className="fp-tag">{s}</li>)}
+                        {skills.map(s => (
+                          <li key={s} className={`fp-tag${skillsEditing ? ' fp-tag-removable' : ''}`}>
+                            {s}
+                            {skillsEditing && (
+                              <button className="fp-tag-x" onClick={() => removeSkill(s)} aria-label={`Remove ${s}`}>
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                              </button>
+                            )}
+                          </li>
+                        ))}
+                        {skills.length === 0 && !skillsEditing && (
+                          <li><button className="fp-skills-add-prompt" onClick={() => setSkillsEditing(true)}>+ Add skills</button></li>
+                        )}
                       </ul>
-                    )}
+                      {skillsEditing && (
+                        <div className="fp-skills-inline-editor">
+                          <div className="fp-skill-input-row">
+                            <input className="fp-input" value={skillInput}
+                              onChange={e => setSkillInput(e.target.value)}
+                              onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addSkill(skillInput) } }}
+                              placeholder="Type a skill and press Enter" />
+                            <button className="fp-btn-add-item" onClick={() => addSkill(skillInput)}>Add</button>
+                          </div>
+                          <div className="fp-suggestions">
+                            {SKILL_SUGGESTIONS.filter(s => !skills.includes(s) &&
+                              (skillInput === '' || s.toLowerCase().includes(skillInput.toLowerCase()))
+                            ).slice(0, 8).map(s => (
+                              <button key={s} className="fp-suggestion" onClick={() => addSkill(s)}>{s}</button>
+                            ))}
+                          </div>
+                          {skills.length < 3 && (
+                            <p className="fp-warn">Add {3 - skills.length} more skill{3 - skills.length > 1 ? 's' : ''} (min 3)</p>
+                          )}
+                          <button className="fp-btn-primary" style={{marginTop:8}}
+                            onClick={() => { saveProfile({ skills }); setSkillsEditing(false) }}
+                            disabled={saving || skills.length < 3}>
+                            {saving ? 'Saving…' : 'Save Skills'}
+                          </button>
+                        </div>
+                      )}
+                    </div>
 
                     {/* Rates */}
                     <div className="fp-rates-row">
@@ -1011,21 +1086,6 @@ export default function FreelancerProfile() {
           {/* READ-ONLY profile sections */}
           {!pageLoading && (
             <>
-              {/* Portfolio section */}
-              <ProfileSection
-                title="Portfolio & Links"
-                onEdit={() => setEditSection('portfolio')}
-                empty={portfolioUrls.filter(p => p.url).length === 0}>
-                <div className="fp-portfolio-display">
-                  {portfolioUrls.filter(p => p.url).map((p, i) => (
-                    <a key={i} href={p.url} target="_blank" rel="noopener noreferrer" className="fp-portfolio-link">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="#0077b5"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
-                      <span>{p.label || p.url}</span>
-                    </a>
-                  ))}
-                </div>
-              </ProfileSection>
-
               {/* Combined Experience & Education card */}
               <div className="fp-section-card">
                 <div className="fp-combined-card-hdr">
@@ -1097,55 +1157,8 @@ export default function FreelancerProfile() {
                 </div>
               </div>
 
-              {/* My Posts */}
-              {myPosts.length > 0 && (() => {
-                const POST_COLORS: Record<string, { bg: string; text: string }> = {
-                  JOB: { bg: '#dbeafe', text: '#1e40af' }, TASK: { bg: '#dcfce7', text: '#166534' },
-                  COLLAB: { bg: '#fef9c3', text: '#854d0e' }, SKILL_EXCHANGE: { bg: '#fae8ff', text: '#7e22ce' },
-                }
-                const scrollRef = { current: null as HTMLDivElement | null }
-                return (
-                  <div className="fp-section-card" style={{ marginTop: 14 }}>
-                    <div className="fp-section-hdr">
-                      <h3 className="fp-section-title">My Posts</h3>
-                      <div style={{ display: 'flex', gap: 6 }}>
-                        {(['left', 'right'] as const).map(d => (
-                          <button key={d} onClick={() => scrollRef.current?.scrollBy({ left: d === 'right' ? 260 : -260, behavior: 'smooth' })}
-                            style={{ width: 30, height: 30, borderRadius: '50%', border: '1px solid #e2e8f0', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#475569', fontSize: 16 }}>
-                            {d === 'left' ? '‹' : '›'}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="fp-section-body">
-                      <div ref={(el) => { scrollRef.current = el }} style={{ display: 'flex', gap: 12, overflowX: 'auto', scrollSnapType: 'x mandatory', scrollbarWidth: 'none', paddingBottom: 4 }}>
-                        {myPosts.map((p: any) => {
-                          const col = POST_COLORS[p.type] ?? { bg: '#f1f5f9', text: '#475569' }
-                          const skills: string[] = Array.isArray(p.skills) ? p.skills : []
-                          return (
-                            <div key={p.id} style={{ flex: '0 0 230px', scrollSnapAlign: 'start', borderRadius: 14, border: '1px solid #e2e8f0', background: '#f8fbfe', padding: 14, display: 'flex', flexDirection: 'column', gap: 9 }}>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 6 }}>
-                                <span style={{ ...col, padding: '3px 9px', borderRadius: 999, fontSize: 10, fontWeight: 700, textTransform: 'uppercase' }}>{p.type?.replace('_', ' ')}</span>
-                                {p._count?.proposals != null && <span style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>{p._count.proposals} proposals</span>}
-                              </div>
-                              <p style={{ fontWeight: 700, fontSize: 13, lineHeight: 1.4, color: '#0f172a' }}>{p.title}</p>
-                              {skills.length > 0 && (
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                                  {skills.slice(0, 3).map((s: string) => <span key={s} style={{ padding: '2px 8px', borderRadius: 999, background: '#eff6ff', color: '#1d4f73', fontSize: 10, fontWeight: 600 }}>{s}</span>)}
-                                  {skills.length > 3 && <span style={{ padding: '2px 8px', borderRadius: 999, background: '#f1f5f9', color: '#64748b', fontSize: 10, fontWeight: 600 }}>+{skills.length - 3}</span>}
-                                </div>
-                              )}
-                              {p.status && <span style={{ marginTop: 'auto', fontSize: 10, color: p.status === 'OPEN' ? '#16a34a' : '#64748b', fontWeight: 700 }}>{p.status}</span>}
-                            </div>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                )
-              })()}
 
-            </>
+</>
           )}
         </main>
 
@@ -1211,42 +1224,164 @@ export default function FreelancerProfile() {
             )}
           </div>
 
-          {/* Completed Tasks */}
-          {completedTasks.length > 0 && (
-            <div className="fp-sidebar-tasks">
-              <p className="fp-sidebar-tasks-title">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="#16a34a"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-                Completed Tasks
-              </p>
-              <div className="fp-sidebar-tasks-list">
-                {completedTasks.map((t: any) => {
-                  const postId: string | undefined = t.task?.post?.id
-                  const clientName = t.client?.clientProfile?.fullName ?? t.client?.companyProfile?.companyName ?? 'Client'
-                  const taskSkills: string[] = Array.isArray(t.task?.skills) ? t.task.skills : []
-                  return (
-                    <div key={t.id} className={`fp-sidebar-task-item${postId ? ' clickable' : ''}`}
-                      onClick={() => postId && router.push(`/posts/${postId}`)}>
-                      <div className="fp-sidebar-task-top">
-                        <span className="fp-sidebar-task-badge">✓ Done</span>
-                        {t.amount > 0 && <span className="fp-sidebar-task-amt">₹{t.amount.toLocaleString()}</span>}
-                      </div>
-                      <p className="fp-sidebar-task-name">{t.task?.title || 'Task'}</p>
-                      {taskSkills.length > 0 && (
-                        <div className="fp-sidebar-task-skills">
-                          {taskSkills.slice(0, 2).map((s: string) => <span key={s}>{s}</span>)}
-                          {taskSkills.length > 2 && <span>+{taskSkills.length - 2}</span>}
-                        </div>
-                      )}
-                      <div className="fp-sidebar-task-footer">
-                        <span className="fp-sidebar-task-client">by {clientName}</span>
-                        {postId && <span className="fp-sidebar-task-link">View post →</span>}
-                      </div>
-                    </div>
-                  )
-                })}
+          {/* ── My Posts accordion ── */}
+          {(() => {
+            const POST_COLORS: Record<string, { bg: string; text: string }> = {
+              JOB: { bg: '#dbeafe', text: '#1e40af' }, TASK: { bg: '#dcfce7', text: '#166534' },
+              COLLAB: { bg: '#fef9c3', text: '#854d0e' }, SKILL_EXCHANGE: { bg: '#fae8ff', text: '#7e22ce' },
+            }
+            const open = sidebarSection === 'posts'
+            return (
+              <div className="fp-sb-accordion">
+                <button className="fp-sb-acc-hdr" onClick={() => setSidebarSection(open ? 'none' : 'posts')}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                  <span>My Posts</span>
+                  {myPosts.length > 0 && <span className="fp-sb-acc-badge">{myPosts.length}</span>}
+                  <svg className={`fp-sb-acc-chevron${open ? ' open' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="#94a3b8"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+                </button>
+                {open && (
+                  <div className="fp-sb-acc-body">
+                    {myPosts.length === 0
+                      ? <p className="fp-sb-empty">No posts yet</p>
+                      : myPosts.map((p: any) => {
+                          const col = POST_COLORS[p.type] ?? { bg: '#f1f5f9', text: '#475569' }
+                          return (
+                            <div key={p.id} className="fp-sb-post-item" onClick={() => router.push(`/posts/${p.id}`)}>
+                              <div className="fp-sb-post-top">
+                                <span className="fp-sb-post-type" style={{background:col.bg, color:col.text}}>{p.type?.replace('_',' ')}</span>
+                                {p.status && <span className="fp-sb-post-status" style={{color: p.status==='OPEN'?'#16a34a':'#94a3b8'}}>{p.status}</span>}
+                              </div>
+                              <p className="fp-sb-post-title">{p.title}</p>
+                              {p._count?.proposals != null && <span className="fp-sb-post-proposals">{p._count.proposals} proposals</span>}
+                            </div>
+                          )
+                        })
+                    }
+                  </div>
+                )}
               </div>
-            </div>
-          )}
+            )
+          })()}
+
+          {/* ── Tasks accordion group ── */}
+          <div className="fp-sb-tasks-group">
+            <p className="fp-sb-tasks-group-lbl">Tasks</p>
+
+            {/* Completed */}
+            {(() => {
+              const open = sidebarSection === 'completed'
+              return (
+                <div className="fp-sb-accordion">
+                  <button className="fp-sb-acc-hdr fp-sb-acc-completed" onClick={() => setSidebarSection(open ? 'none' : 'completed')}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#16a34a"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                    <span>Completed</span>
+                    {completedTasks.length > 0 && <span className="fp-sb-acc-badge fp-sb-acc-badge-green">{completedTasks.length}</span>}
+                    <svg className={`fp-sb-acc-chevron${open ? ' open' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="#94a3b8"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+                  </button>
+                  {open && (
+                    <div className="fp-sb-acc-body">
+                      {completedTasks.length === 0
+                        ? <p className="fp-sb-empty">No completed tasks</p>
+                        : completedTasks.map((t: any) => {
+                            const postId: string | undefined = t.task?.post?.id
+                            const clientName = t.client?.clientProfile?.fullName ?? t.client?.companyProfile?.companyName ?? 'Client'
+                            return (
+                              <div key={t.id} className={`fp-sb-task-item${postId ? ' clickable' : ''}`}
+                                onClick={() => postId && router.push(`/posts/${postId}`)}>
+                                <div className="fp-sb-task-top">
+                                  <span className="fp-sb-task-badge fp-sb-task-badge-green">✓ Done</span>
+                                  {t.amount > 0 && <span className="fp-sb-task-amt">₹{t.amount.toLocaleString()}</span>}
+                                </div>
+                                <p className="fp-sb-task-name">{t.task?.title || 'Task'}</p>
+                                <span className="fp-sb-task-client">by {clientName}</span>
+                                {postId && <span className="fp-sb-task-link">View post →</span>}
+                              </div>
+                            )
+                          })
+                      }
+                    </div>
+                  )}
+                </div>
+              )
+            })()}
+
+            {/* In Progress */}
+            {(() => {
+              const open = sidebarSection === 'inprogress'
+              return (
+                <div className="fp-sb-accordion">
+                  <button className="fp-sb-acc-hdr fp-sb-acc-inprogress" onClick={() => setSidebarSection(open ? 'none' : 'inprogress')}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#d97706"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+                    <span>In Progress</span>
+                    {inProgressTasks.length > 0 && <span className="fp-sb-acc-badge fp-sb-acc-badge-amber">{inProgressTasks.length}</span>}
+                    <svg className={`fp-sb-acc-chevron${open ? ' open' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="#94a3b8"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+                  </button>
+                  {open && (
+                    <div className="fp-sb-acc-body">
+                      {inProgressTasks.length === 0
+                        ? <p className="fp-sb-empty">No in-progress tasks</p>
+                        : inProgressTasks.map((t: any) => {
+                            const postId: string | undefined = t.task?.post?.id ?? t.post?.id
+                            const title = t.task?.title ?? t.title ?? 'Task'
+                            const clientName = t.client?.clientProfile?.fullName ?? t.client?.companyProfile?.companyName ?? 'Client'
+                            return (
+                              <div key={t.id} className={`fp-sb-task-item${postId ? ' clickable' : ''}`}
+                                onClick={() => postId && router.push(`/posts/${postId}`)}>
+                                <div className="fp-sb-task-top">
+                                  <span className="fp-sb-task-badge fp-sb-task-badge-amber">⏳ Active</span>
+                                  {(t.amount ?? t.agreedAmount) > 0 && <span className="fp-sb-task-amt">₹{(t.amount ?? t.agreedAmount).toLocaleString()}</span>}
+                                </div>
+                                <p className="fp-sb-task-name">{title}</p>
+                                <span className="fp-sb-task-client">by {clientName}</span>
+                                {postId && <span className="fp-sb-task-link">View post →</span>}
+                              </div>
+                            )
+                          })
+                      }
+                    </div>
+                  )}
+                </div>
+              )
+            })()}
+
+            {/* Request (pending proposals) */}
+            {(() => {
+              const open = sidebarSection === 'request'
+              return (
+                <div className="fp-sb-accordion">
+                  <button className="fp-sb-acc-hdr fp-sb-acc-request" onClick={() => setSidebarSection(open ? 'none' : 'request')}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#0077b5"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-1 14H5c-.55 0-1-.45-1-1V7l7.5 6L19 7v10c0 .55-.45 1-1 1zm-6-7.27L4.5 6h15l-6.5 4.73z"/></svg>
+                    <span>Requests</span>
+                    {myProposals.length > 0 && <span className="fp-sb-acc-badge">{myProposals.length}</span>}
+                    <svg className={`fp-sb-acc-chevron${open ? ' open' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="#94a3b8"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+                  </button>
+                  {open && (
+                    <div className="fp-sb-acc-body">
+                      {myProposals.length === 0
+                        ? <p className="fp-sb-empty">No pending requests</p>
+                        : myProposals.map((pr: any) => {
+                            const postId: string | undefined = pr.postId ?? pr.post?.id
+                            const postTitle = pr.post?.title ?? 'Post'
+                            return (
+                              <div key={pr.id} className={`fp-sb-task-item${postId ? ' clickable' : ''}`}
+                                onClick={() => postId && router.push(`/posts/${postId}`)}>
+                                <div className="fp-sb-task-top">
+                                  <span className="fp-sb-task-badge">⏸ Pending</span>
+                                  {pr.proposedRate > 0 && <span className="fp-sb-task-amt">₹{pr.proposedRate.toLocaleString()}</span>}
+                                </div>
+                                <p className="fp-sb-task-name">{postTitle}</p>
+                                {pr.coverLetter && <p className="fp-sb-task-client" style={{fontStyle:'italic'}}>"{pr.coverLetter.slice(0,50)}…"</p>}
+                                {postId && <span className="fp-sb-task-link">View post →</span>}
+                              </div>
+                            )
+                          })
+                      }
+                    </div>
+                  )}
+                </div>
+              )
+            })()}
+          </div>
 
           {/* Switch Account */}
           <button className="fp-switch" onClick={() => router.push('/profile/client')}>
@@ -1317,37 +1452,6 @@ function EditCard({ title, onClose, children }: { title:string; onClose:()=>void
   )
 }
 
-function ProfileSection({ title, onEdit, onAiClick, empty, children }: {
-  title:string; onEdit:()=>void; onAiClick?:()=>void; empty:boolean; children:React.ReactNode
-}) {
-  return (
-    <section className="fp-section-card">
-      <div className="fp-section-hdr">
-        <h3 className="fp-section-title">{title}</h3>
-        <div style={{display:'flex',alignItems:'center',gap:6}}>
-          {onAiClick && (
-            <button className="fp-ai-inline-btn" onClick={onAiClick} title="Generate with AI">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7H3a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2M5 15v5h14v-5H5m2 2h2v2H7v-2m4 0h2v2h-2v-2m4 0h2v2h-2v-2z"/></svg>
-              Generate
-            </button>
-          )}
-          <button className="fp-edit-icon-btn" onClick={onEdit} title={`Edit ${title}`}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="#0077b5"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-          </button>
-        </div>
-      </div>
-      {empty
-        ? (
-          <button className="fp-section-empty" onClick={onEdit}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="#94a3b8"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-            Add {title}
-          </button>
-        )
-        : <div className="fp-section-body">{children}</div>
-      }
-    </section>
-  )
-}
 
 function FormRow({ label, children }: { label:string; children:React.ReactNode }) {
   return (
@@ -1901,22 +2005,58 @@ const STYLES = `
 .fp-combined-add-link{background:none;border:none;color:#0077b5;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;padding:0;text-decoration:underline;}
 .fp-combined-divider{height:1px;background:linear-gradient(90deg,transparent,#e2e8f0 20%,#e2e8f0 80%,transparent);margin:0 16px;}
 
-/* ── SIDEBAR COMPLETED TASKS ── */
-.fp-sidebar-tasks{background:#fff;border-radius:16px;padding:14px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.04);min-width:0;overflow:hidden;}
-.fp-sidebar-tasks-title{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#16a34a;margin-bottom:10px;}
-.fp-sidebar-tasks-list{display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto;scrollbar-width:thin;}
-.fp-sidebar-task-item{border-radius:12px;border:1px solid #dcfce7;background:#f0fdf4;padding:10px 12px;display:flex;flex-direction:column;gap:5px;transition:box-shadow .15s,border-color .15s;}
-.fp-sidebar-task-item.clickable{cursor:pointer;}
-.fp-sidebar-task-item.clickable:hover{box-shadow:0 3px 10px rgba(22,163,74,0.18);border-color:#86efac;}
-.fp-sidebar-task-top{display:flex;justify-content:space-between;align-items:center;}
-.fp-sidebar-task-badge{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;background:#dcfce7;color:#15803d;border-radius:999px;padding:2px 7px;}
-.fp-sidebar-task-amt{font-size:11px;font-weight:800;color:#15803d;}
-.fp-sidebar-task-name{font-size:12px;font-weight:700;color:#0f172a;line-height:1.4;}
-.fp-sidebar-task-skills{display:flex;flex-wrap:wrap;gap:3px;}
-.fp-sidebar-task-skills span{font-size:9px;font-weight:700;background:#eff6ff;color:#1d4f73;border-radius:999px;padding:2px 6px;}
-.fp-sidebar-task-footer{display:flex;justify-content:space-between;align-items:center;margin-top:2px;}
-.fp-sidebar-task-client{font-size:10px;color:#64748b;font-weight:600;}
-.fp-sidebar-task-link{font-size:10px;font-weight:700;color:#0077b5;}
+/* ── SKILLS INLINE EDIT ── */
+.fp-skills-inline{display:flex;flex-direction:column;gap:7px;}
+.fp-skills-inline-hdr{display:flex;align-items:center;justify-content:space-between;}
+.fp-skills-inline-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;}
+.fp-tag-removable{padding-right:6px!important;}
+.fp-tag-x{background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.75);padding:0 0 0 4px;line-height:1;display:flex;align-items:center;transition:color .1s;}
+.fp-tag-x:hover{color:#fff;}
+.fp-skills-add-prompt{background:none;border:1.5px dashed #e2e8f0;border-radius:999px;padding:4px 12px;font-size:11px;font-weight:600;color:#94a3b8;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;}
+.fp-skills-add-prompt:hover{border-color:#0077b5;color:#0077b5;}
+.fp-skills-inline-editor{display:flex;flex-direction:column;gap:8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;margin-top:4px;}
+
+/* ── SIDEBAR ACCORDION ── */
+.fp-sb-accordion{background:#fff;border-radius:13px;border:1px solid #e2e8f0;overflow:hidden;}
+.fp-sb-acc-hdr{width:100%;display:flex;align-items:center;gap:7px;padding:10px 12px;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;color:#0f172a;text-align:left;transition:background .15s;}
+.fp-sb-acc-hdr:hover{background:#f8fafc;}
+.fp-sb-acc-hdr span{flex:1;}
+.fp-sb-acc-completed{color:#15803d;}
+.fp-sb-acc-inprogress{color:#b45309;}
+.fp-sb-acc-request{color:#0369a1;}
+.fp-sb-acc-badge{font-size:10px;font-weight:800;background:#e2e8f0;color:#475569;border-radius:999px;padding:1px 7px;min-width:20px;text-align:center;}
+.fp-sb-acc-badge-green{background:#dcfce7;color:#15803d;}
+.fp-sb-acc-badge-amber{background:#fef9c3;color:#92400e;}
+.fp-sb-acc-chevron{transition:transform .2s;flex-shrink:0;}
+.fp-sb-acc-chevron.open{transform:rotate(180deg);}
+.fp-sb-acc-body{display:flex;flex-direction:column;gap:6px;padding:0 10px 10px;max-height:280px;overflow-y:auto;scrollbar-width:thin;}
+.fp-sb-empty{font-size:12px;color:#94a3b8;padding:4px 0;}
+
+/* My Posts items */
+.fp-sb-post-item{border-radius:10px;border:1px solid #e2e8f0;background:#f8fbfe;padding:9px 10px;display:flex;flex-direction:column;gap:5px;cursor:pointer;transition:box-shadow .15s,border-color .15s;}
+.fp-sb-post-item:hover{border-color:#93c5fd;box-shadow:0 2px 8px rgba(0,119,181,0.12);}
+.fp-sb-post-top{display:flex;align-items:center;justify-content:space-between;gap:6px;}
+.fp-sb-post-type{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;border-radius:999px;padding:2px 7px;}
+.fp-sb-post-status{font-size:9px;font-weight:700;}
+.fp-sb-post-title{font-size:12px;font-weight:700;color:#0f172a;line-height:1.4;}
+.fp-sb-post-proposals{font-size:10px;color:#64748b;font-weight:600;}
+
+/* Task items */
+.fp-sb-task-item{border-radius:10px;border:1px solid #e2e8f0;background:#f8fafc;padding:9px 10px;display:flex;flex-direction:column;gap:4px;transition:box-shadow .15s;}
+.fp-sb-task-item.clickable{cursor:pointer;}
+.fp-sb-task-item.clickable:hover{border-color:#93c5fd;box-shadow:0 2px 8px rgba(0,119,181,0.1);}
+.fp-sb-task-top{display:flex;align-items:center;justify-content:space-between;}
+.fp-sb-task-badge{font-size:9px;font-weight:800;background:#e2e8f0;color:#475569;border-radius:999px;padding:2px 7px;}
+.fp-sb-task-badge-green{background:#dcfce7;color:#15803d;}
+.fp-sb-task-badge-amber{background:#fef9c3;color:#92400e;}
+.fp-sb-task-amt{font-size:10px;font-weight:800;color:#0f172a;}
+.fp-sb-task-name{font-size:12px;font-weight:700;color:#0f172a;line-height:1.35;}
+.fp-sb-task-client{font-size:10px;color:#64748b;}
+.fp-sb-task-link{font-size:10px;font-weight:700;color:#0077b5;}
+
+/* Tasks group label */
+.fp-sb-tasks-group{display:flex;flex-direction:column;gap:6px;}
+.fp-sb-tasks-group-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#94a3b8;padding:0 2px;}
 .fp-ai-card-desc{font-size:12px;color:#64748b;line-height:1.6;font-family:'Inter',sans-serif;}
 .fp-ai-card-loading{display:flex;align-items:center;gap:8px;font-size:12px;color:#64748b;font-family:'Inter',sans-serif;}
 .fp-ai-spinner{width:14px;height:14px;border-radius:50%;border:2px solid #e2e8f0;border-top-color:#0077b5;animation:fp-spin .7s linear infinite;flex-shrink:0;}
