@@ -565,12 +565,20 @@ export default function FreelancerProfile() {
 
                     {bio && <p className="fp-bio">{bio}</p>}
 
-                    {/* Notice period only */}
-                    <div className="fp-badges-row">
-                      <span className="fp-badge fp-badge-notice">
-                        {noticePeriod === 'IMMEDIATELY' ? 'Available Now' : noticePeriod.replace('_', ' ')}
-                      </span>
-                    </div>
+                    {/* Languages (replaces notice period badge) */}
+                    {languages.length > 0 && (
+                      <div className="fp-badges-row fp-lang-badges-row">
+                        {languages.map((l, i) => (
+                          <span key={i} className="fp-lang-inline-chip">
+                            <span className="fp-lang-inline-name">{l.language}</span>
+                            <span className="fp-lang-inline-prof">{l.proficiency}</span>
+                          </span>
+                        ))}
+                        <button className="fp-lang-edit-btn" onClick={() => setEditSection('languages')} title="Edit languages">
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="#0077b5"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                        </button>
+                      </div>
+                    )}
 
                     {/* Skills */}
                     {skills.length > 0 && (
@@ -1003,35 +1011,6 @@ export default function FreelancerProfile() {
           {/* READ-ONLY profile sections */}
           {!pageLoading && (
             <>
-              {/* Rates section */}
-              <ProfileSection
-                title="Rates & Pricing"
-                onEdit={() => setEditSection('rates')}
-                empty={!hourlyRate && !minBudget}>
-                <div className="fp-rates-display">
-                  {hourlyRate > 0 && <div className="fp-rate-display-chip"><span>Hourly Rate</span><strong>{fmt(hourlyRate, currency)}/hr</strong></div>}
-                  {minBudget  > 0 && <div className="fp-rate-display-chip"><span>Min. Budget</span><strong>{fmt(minBudget, currency)}</strong></div>}
-                  <div className="fp-rate-display-chip"><span>Fixed Price</span><strong>{fixedPrice ? 'Yes' : 'No'}</strong></div>
-                </div>
-              </ProfileSection>
-
-              {/* Skills section */}
-              <ProfileSection title="Skills" onEdit={() => setEditSection('skills')} empty={skills.length === 0}>
-                <ul className="fp-tags">{skills.map(s => <li key={s} className="fp-tag">{s}</li>)}</ul>
-              </ProfileSection>
-
-              {/* Languages section */}
-              <ProfileSection title="Languages" onEdit={() => setEditSection('languages')} empty={languages.length === 0}>
-                <div className="fp-lang-display">
-                  {languages.map((l, i) => (
-                    <div key={i} className="fp-lang-chip">
-                      <span className="fp-lang-name">{l.language}</span>
-                      <span className="fp-lang-prof-badge">{l.proficiency}</span>
-                    </div>
-                  ))}
-                </div>
-              </ProfileSection>
-
               {/* Portfolio section */}
               <ProfileSection
                 title="Portfolio & Links"
@@ -1047,36 +1026,76 @@ export default function FreelancerProfile() {
                 </div>
               </ProfileSection>
 
-              {/* Experience section */}
-              <ProfileSection title="Work Experience" onEdit={() => setEditSection('experience')} empty={experience.length === 0}>
-                <div className="fp-timeline">
-                  {experience.map((exp, i) => (
-                    <div key={i} className="fp-timeline-item">
-                      <div className="fp-timeline-dot" />
-                      <div className="fp-timeline-body">
-                        <p className="fp-timeline-title">{exp.title}</p>
-                        <p className="fp-timeline-sub">{exp.company} · {exp.from}{exp.current ? ' – Present' : exp.to ? ` – ${exp.to}` : ''}</p>
-                        {exp.description && <p className="fp-timeline-desc">{exp.description}</p>}
-                      </div>
-                    </div>
-                  ))}
+              {/* Combined Experience & Education card */}
+              <div className="fp-section-card">
+                <div className="fp-combined-card-hdr">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#0077b5"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.36C18 2.53 15.5 1 13 1c-1.35 0-2.56.48-3.5 1.26A4.98 4.98 0 0 0 6 1C3.5 1 1 2.53 1 4.64c0 .48.11.92.18 1.36H1C-.1 6 0 7 0 7v13c0 1.1.9 2 2 2h20c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM13 3c1.3 0 3 .88 3 1.64 0 .75-1.7 2.36-3 2.36S10 5.39 10 4.64C10 3.88 11.7 3 13 3zm-7 0c1.3 0 3 .88 3 1.64 0 .75-1.7 2.36-3 2.36S3 5.39 3 4.64C3 3.88 4.7 3 6 3z"/></svg>
+                  <h3 className="fp-combined-card-title">Experience & Education</h3>
                 </div>
-              </ProfileSection>
 
-              {/* Qualifications section */}
-              <ProfileSection title="Education & Qualifications" onEdit={() => setEditSection('qualifications')} empty={qualifications.length === 0}>
-                <div className="fp-timeline">
-                  {qualifications.map((q, i) => (
-                    <div key={i} className="fp-timeline-item">
-                      <div className="fp-timeline-dot" />
-                      <div className="fp-timeline-body">
-                        <p className="fp-timeline-title">{q.degree}</p>
-                        <p className="fp-timeline-sub">{q.institution}{q.year ? ` · ${q.year}` : ''}</p>
-                      </div>
+                {/* Work Experience sub-section */}
+                <div className="fp-combined-section">
+                  <div className="fp-combined-sub-hdr">
+                    <div className="fp-combined-sub-icon">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="#0077b5"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.36C18 2.53 15.5 1 13 1c-1.35 0-2.56.48-3.5 1.26A4.98 4.98 0 0 0 6 1C3.5 1 1 2.53 1 4.64c0 .48.11.92.18 1.36H1C-.1 6 0 7 0 7v2h22V8c0-1.1-.9-2-2-2z"/></svg>
                     </div>
-                  ))}
+                    <span className="fp-combined-sub-label">Work Experience</span>
+                    <button className="fp-combined-edit-btn" onClick={() => setEditSection('experience')} title="Edit experience">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="#0077b5"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                      Edit
+                    </button>
+                  </div>
+                  {experience.length === 0
+                    ? <p className="fp-combined-empty">No work experience added yet · <button className="fp-combined-add-link" onClick={() => setEditSection('experience')}>Add experience</button></p>
+                    : (
+                      <div className="fp-timeline">
+                        {experience.map((exp, i) => (
+                          <div key={i} className="fp-timeline-item">
+                            <div className="fp-timeline-dot" />
+                            <div className="fp-timeline-body">
+                              <p className="fp-timeline-title">{exp.title}</p>
+                              <p className="fp-timeline-sub">{exp.company} · {exp.from}{exp.current ? ' – Present' : exp.to ? ` – ${exp.to}` : ''}</p>
+                              {exp.description && <p className="fp-timeline-desc">{exp.description}</p>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )
+                  }
                 </div>
-              </ProfileSection>
+
+                <div className="fp-combined-divider" />
+
+                {/* Education sub-section */}
+                <div className="fp-combined-section">
+                  <div className="fp-combined-sub-hdr">
+                    <div className="fp-combined-sub-icon" style={{background:'linear-gradient(135deg,#fef9c3,#fef3c7)',border:'1px solid #fde68a'}}>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="#b45309"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3 1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>
+                    </div>
+                    <span className="fp-combined-sub-label">Education & Qualifications</span>
+                    <button className="fp-combined-edit-btn" onClick={() => setEditSection('qualifications')} title="Edit qualifications">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="#0077b5"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                      Edit
+                    </button>
+                  </div>
+                  {qualifications.length === 0
+                    ? <p className="fp-combined-empty">No qualifications added yet · <button className="fp-combined-add-link" onClick={() => setEditSection('qualifications')}>Add education</button></p>
+                    : (
+                      <div className="fp-timeline">
+                        {qualifications.map((q, i) => (
+                          <div key={i} className="fp-timeline-item">
+                            <div className="fp-timeline-dot" style={{background:'#b45309',boxShadow:'0 0 0 3px rgba(180,83,9,0.18)'}} />
+                            <div className="fp-timeline-body">
+                              <p className="fp-timeline-title">{q.degree}</p>
+                              <p className="fp-timeline-sub">{q.institution}{q.year ? ` · ${q.year}` : ''}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )
+                  }
+                </div>
+              </div>
 
               {/* My Posts */}
               {myPosts.length > 0 && (() => {
@@ -1126,60 +1145,6 @@ export default function FreelancerProfile() {
                 )
               })()}
 
-              {/* Completed Tasks */}
-              {completedTasks.length > 0 && (() => {
-                const scrollRef = { current: null as HTMLDivElement | null }
-                return (
-                  <div className="fp-section-card" style={{ marginTop: 14 }}>
-                    <div className="fp-section-hdr">
-                      <h3 className="fp-section-title">Completed Tasks</h3>
-                      <div style={{ display: 'flex', gap: 6 }}>
-                        {(['left', 'right'] as const).map(d => (
-                          <button key={d} onClick={() => scrollRef.current?.scrollBy({ left: d === 'right' ? 260 : -260, behavior: 'smooth' })}
-                            style={{ width: 30, height: 30, borderRadius: '50%', border: '1px solid #e2e8f0', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#475569', fontSize: 16 }}>
-                            {d === 'left' ? '‹' : '›'}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="fp-section-body">
-                      <div ref={(el) => { scrollRef.current = el }} style={{ display: 'flex', gap: 12, overflowX: 'auto', scrollSnapType: 'x mandatory', scrollbarWidth: 'none', paddingBottom: 4 }}>
-                        {completedTasks.map((t: any) => {
-                          const clientName = t.client?.clientProfile?.fullName ?? t.client?.companyProfile?.companyName ?? 'Client'
-                          const skills: string[] = Array.isArray(t.task?.skills) ? t.task.skills : []
-                          const postId: string | undefined = t.task?.post?.id
-                          return (
-                            <div key={t.id} style={{ flex: '0 0 230px', scrollSnapAlign: 'start', borderRadius: 14, border: '1px solid #e2e8f0', background: '#f0fdf4', padding: 14, display: 'flex', flexDirection: 'column', gap: 9 }}>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 6 }}>
-                                <span style={{ background: '#dcfce7', color: '#166534', padding: '3px 9px', borderRadius: 999, fontSize: 10, fontWeight: 700 }}>COMPLETED</span>
-                                {t.amount > 0 && <span style={{ fontSize: 11, color: '#15803d', fontWeight: 700 }}>₹{t.amount.toLocaleString()}</span>}
-                              </div>
-                              <p style={{ fontWeight: 700, fontSize: 13, lineHeight: 1.4, color: '#0f172a' }}>{t.task?.title || 'Task'}</p>
-                              {skills.length > 0 && (
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                                  {skills.slice(0, 3).map((s: string) => <span key={s} style={{ padding: '2px 8px', borderRadius: 999, background: '#eff6ff', color: '#1d4f73', fontSize: 10, fontWeight: 600 }}>{s}</span>)}
-                                  {skills.length > 3 && <span style={{ padding: '2px 8px', borderRadius: 999, background: '#f1f5f9', color: '#64748b', fontSize: 10, fontWeight: 600 }}>+{skills.length - 3}</span>}
-                                </div>
-                              )}
-                              <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                <p style={{ fontSize: 10, color: '#64748b', fontWeight: 600 }}>by {clientName}</p>
-                                {postId && (
-                                  <button
-                                    onClick={() => router.push(`/posts/${postId}`)}
-                                    title="View post"
-                                    style={{ width: 26, height: 26, borderRadius: '50%', border: '1px solid #86efac', background: '#dcfce7', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#15803d"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6-6-6z"/></svg>
-                                  </button>
-                                )}
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                )
-              })()}
             </>
           )}
         </main>
@@ -1245,6 +1210,43 @@ export default function FreelancerProfile() {
               </button>
             )}
           </div>
+
+          {/* Completed Tasks */}
+          {completedTasks.length > 0 && (
+            <div className="fp-sidebar-tasks">
+              <p className="fp-sidebar-tasks-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#16a34a"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                Completed Tasks
+              </p>
+              <div className="fp-sidebar-tasks-list">
+                {completedTasks.map((t: any) => {
+                  const postId: string | undefined = t.task?.post?.id
+                  const clientName = t.client?.clientProfile?.fullName ?? t.client?.companyProfile?.companyName ?? 'Client'
+                  const taskSkills: string[] = Array.isArray(t.task?.skills) ? t.task.skills : []
+                  return (
+                    <div key={t.id} className={`fp-sidebar-task-item${postId ? ' clickable' : ''}`}
+                      onClick={() => postId && router.push(`/posts/${postId}`)}>
+                      <div className="fp-sidebar-task-top">
+                        <span className="fp-sidebar-task-badge">✓ Done</span>
+                        {t.amount > 0 && <span className="fp-sidebar-task-amt">₹{t.amount.toLocaleString()}</span>}
+                      </div>
+                      <p className="fp-sidebar-task-name">{t.task?.title || 'Task'}</p>
+                      {taskSkills.length > 0 && (
+                        <div className="fp-sidebar-task-skills">
+                          {taskSkills.slice(0, 2).map((s: string) => <span key={s}>{s}</span>)}
+                          {taskSkills.length > 2 && <span>+{taskSkills.length - 2}</span>}
+                        </div>
+                      )}
+                      <div className="fp-sidebar-task-footer">
+                        <span className="fp-sidebar-task-client">by {clientName}</span>
+                        {postId && <span className="fp-sidebar-task-link">View post →</span>}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Switch Account */}
           <button className="fp-switch" onClick={() => router.push('/profile/client')}>
@@ -1877,6 +1879,44 @@ const STYLES = `
 .fp-ai-card-title{font-size:13px;font-weight:700;color:#fff;font-family:'Inter',sans-serif;}
 .fp-ai-card-sub{font-size:10px;color:rgba(255,255,255,0.75);margin-top:1px;font-family:'Inter',sans-serif;}
 .fp-ai-card-body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:10px;background:#fff;border-radius:0 0 16px 16px;flex:1;}
+
+/* ── LANGUAGE INLINE CHIPS (replaces notice badge) ── */
+.fp-lang-badges-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;}
+.fp-lang-inline-chip{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#f0f9ff,#e8f4fd);border:1px solid #bae6fd;border-radius:999px;padding:4px 10px;font-family:'Inter',sans-serif;}
+.fp-lang-inline-name{font-size:12px;font-weight:700;color:#0077b5;}
+.fp-lang-inline-prof{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:#0369a1;background:#dbeffe;border-radius:999px;padding:1px 6px;}
+.fp-lang-edit-btn{display:flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;border:1px dashed #bae6fd;background:none;cursor:pointer;transition:background .15s;flex-shrink:0;}
+.fp-lang-edit-btn:hover{background:#f0f9ff;}
+
+/* ── COMBINED EXPERIENCE & EDUCATION CARD ── */
+.fp-combined-card-hdr{display:flex;align-items:center;gap:10px;padding:14px 16px 12px;border-bottom:1px solid #f1f5f9;}
+.fp-combined-card-title{font-size:15px;font-weight:800;color:#0f172a;letter-spacing:-.01em;}
+.fp-combined-section{padding:14px 16px;}
+.fp-combined-sub-hdr{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.fp-combined-sub-icon{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#e0f2fe,#dbeffe);border:1px solid #bae6fd;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.fp-combined-sub-label{font-size:13px;font-weight:800;color:#0f172a;flex:1;letter-spacing:-.01em;}
+.fp-combined-edit-btn{display:flex;align-items:center;gap:4px;background:none;border:1px solid #e2e8f0;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;color:#0077b5;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;flex-shrink:0;}
+.fp-combined-edit-btn:hover{background:#f0f9ff;border-color:#bae6fd;}
+.fp-combined-empty{font-size:13px;color:#94a3b8;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.fp-combined-add-link{background:none;border:none;color:#0077b5;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;padding:0;text-decoration:underline;}
+.fp-combined-divider{height:1px;background:linear-gradient(90deg,transparent,#e2e8f0 20%,#e2e8f0 80%,transparent);margin:0 16px;}
+
+/* ── SIDEBAR COMPLETED TASKS ── */
+.fp-sidebar-tasks{background:#fff;border-radius:16px;padding:14px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.04);min-width:0;overflow:hidden;}
+.fp-sidebar-tasks-title{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#16a34a;margin-bottom:10px;}
+.fp-sidebar-tasks-list{display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto;scrollbar-width:thin;}
+.fp-sidebar-task-item{border-radius:12px;border:1px solid #dcfce7;background:#f0fdf4;padding:10px 12px;display:flex;flex-direction:column;gap:5px;transition:box-shadow .15s,border-color .15s;}
+.fp-sidebar-task-item.clickable{cursor:pointer;}
+.fp-sidebar-task-item.clickable:hover{box-shadow:0 3px 10px rgba(22,163,74,0.18);border-color:#86efac;}
+.fp-sidebar-task-top{display:flex;justify-content:space-between;align-items:center;}
+.fp-sidebar-task-badge{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;background:#dcfce7;color:#15803d;border-radius:999px;padding:2px 7px;}
+.fp-sidebar-task-amt{font-size:11px;font-weight:800;color:#15803d;}
+.fp-sidebar-task-name{font-size:12px;font-weight:700;color:#0f172a;line-height:1.4;}
+.fp-sidebar-task-skills{display:flex;flex-wrap:wrap;gap:3px;}
+.fp-sidebar-task-skills span{font-size:9px;font-weight:700;background:#eff6ff;color:#1d4f73;border-radius:999px;padding:2px 6px;}
+.fp-sidebar-task-footer{display:flex;justify-content:space-between;align-items:center;margin-top:2px;}
+.fp-sidebar-task-client{font-size:10px;color:#64748b;font-weight:600;}
+.fp-sidebar-task-link{font-size:10px;font-weight:700;color:#0077b5;}
 .fp-ai-card-desc{font-size:12px;color:#64748b;line-height:1.6;font-family:'Inter',sans-serif;}
 .fp-ai-card-loading{display:flex;align-items:center;gap:8px;font-size:12px;color:#64748b;font-family:'Inter',sans-serif;}
 .fp-ai-spinner{width:14px;height:14px;border-radius:50%;border:2px solid #e2e8f0;border-top-color:#0077b5;animation:fp-spin .7s linear infinite;flex-shrink:0;}
