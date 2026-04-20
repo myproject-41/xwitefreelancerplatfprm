@@ -222,6 +222,8 @@ export default function FreelancerProfile() {
       const d = postsRes.value
       const posts = Array.isArray(d) ? d : Array.isArray(d?.data) ? d.data : (d?.data?.posts ?? d?.posts ?? [])
       setMyPosts(posts)
+    } else {
+      console.error('My Posts fetch failed:', postsRes.reason)
     }
     if (tasksRes.status === 'fulfilled') {
       const d = tasksRes.value
