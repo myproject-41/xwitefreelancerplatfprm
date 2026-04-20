@@ -591,20 +591,6 @@ export default function FreelancerProfile() {
 
                     {bio && <p className="fp-bio">{bio}</p>}
 
-                    {/* Languages (replaces notice period badge) */}
-                    {languages.length > 0 && (
-                      <div className="fp-badges-row fp-lang-badges-row">
-                        {languages.map((l, i) => (
-                          <span key={i} className="fp-lang-inline-chip">
-                            <span className="fp-lang-inline-name">{l.language}</span>
-                            <span className="fp-lang-inline-prof">{l.proficiency}</span>
-                          </span>
-                        ))}
-                        <button className="fp-lang-edit-btn" onClick={() => setEditSection('languages')} title="Edit languages">
-                          <svg width="11" height="11" viewBox="0 0 24 24" fill="#0077b5"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                        </button>
-                      </div>
-                    )}
 
                     {/* Skills — inline edit */}
                     <div className="fp-skills-inline">
@@ -662,22 +648,6 @@ export default function FreelancerProfile() {
                       )}
                     </div>
 
-                    {/* Rates */}
-                    <div className="fp-rates-row">
-                      {hourlyRate > 0 && (
-                        <div className="fp-rate-chip">
-                          <span className="fp-rate-lbl">Hourly</span>
-                          <span className="fp-rate-val">{fmt(hourlyRate, currency)}/hr</span>
-                        </div>
-                      )}
-                      {minBudget > 0 && (
-                        <div className="fp-rate-chip">
-                          <span className="fp-rate-lbl">Min. Project</span>
-                          <span className="fp-rate-val">{fmt(minBudget, currency)}</span>
-                        </div>
-                      )}
-                      {fixedPrice && <span className="fp-badge fp-badge-fixed">Fixed Price</span>}
-                    </div>
 
                     {/* Portfolio links — visible below rates */}
                     {portfolioUrls.filter(p => p.url).length > 0 && (
@@ -711,6 +681,82 @@ export default function FreelancerProfile() {
               }
             </div>
           </section>
+
+          {/* ── MINI STATS CARDS ── */}
+          {!pageLoading && (hourlyRate > 0 || minBudget > 0 || fixedPrice || languages.length > 0) && (
+            <div className="fp-mini-cards-row">
+
+              {/* Hourly Rate */}
+              {hourlyRate > 0 && (
+                <div className="fp-mini-card fp-mini-card-rate">
+                  <div className="fp-mini-card-icon-wrap" style={{background:'linear-gradient(135deg,#dbeafe,#bfdbfe)'}}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#1d4ed8"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+                  </div>
+                  <div className="fp-mini-card-text">
+                    <p className="fp-mini-card-lbl">Hourly Rate</p>
+                    <p className="fp-mini-card-val">{fmt(hourlyRate, currency)}<span>/hr</span></p>
+                  </div>
+                  <button className="fp-mini-card-edit" onClick={() => setEditSection('rates')} title="Edit rate">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="#0077b5"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                  </button>
+                </div>
+              )}
+
+              {/* Min Budget */}
+              {minBudget > 0 && (
+                <div className="fp-mini-card fp-mini-card-budget">
+                  <div className="fp-mini-card-icon-wrap" style={{background:'linear-gradient(135deg,#d1fae5,#a7f3d0)'}}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#065f46"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+                  </div>
+                  <div className="fp-mini-card-text">
+                    <p className="fp-mini-card-lbl">Min. Budget</p>
+                    <p className="fp-mini-card-val">{fmt(minBudget, currency)}</p>
+                  </div>
+                  <button className="fp-mini-card-edit" onClick={() => setEditSection('rates')} title="Edit budget">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="#0077b5"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                  </button>
+                </div>
+              )}
+
+              {/* Fixed Price */}
+              {fixedPrice && (
+                <div className="fp-mini-card fp-mini-card-fixed">
+                  <div className="fp-mini-card-icon-wrap" style={{background:'linear-gradient(135deg,#fef3c7,#fde68a)'}}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#92400e"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+                  </div>
+                  <div className="fp-mini-card-text">
+                    <p className="fp-mini-card-lbl">Pricing</p>
+                    <p className="fp-mini-card-val">Fixed Price</p>
+                  </div>
+                  <button className="fp-mini-card-edit" onClick={() => setEditSection('rates')} title="Edit pricing">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="#0077b5"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                  </button>
+                </div>
+              )}
+
+              {/* Languages */}
+              {languages.length > 0 && (
+                <div className="fp-mini-card fp-mini-card-lang">
+                  <div className="fp-mini-card-icon-wrap" style={{background:'linear-gradient(135deg,#ede9fe,#ddd6fe)'}}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#5b21b6"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95a15.65 15.65 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.92 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A7.987 7.987 0 0 1 5.08 16zm2.95-8H5.08a7.987 7.987 0 0 1 4.33-3.56A15.65 15.65 0 0 0 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2s.07-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/></svg>
+                  </div>
+                  <div className="fp-mini-card-text">
+                    <p className="fp-mini-card-lbl">Languages</p>
+                    <div className="fp-mini-lang-chips">
+                      {languages.slice(0, 2).map((l, i) => (
+                        <span key={i} className="fp-mini-lang-chip">{l.language}</span>
+                      ))}
+                      {languages.length > 2 && <span className="fp-mini-lang-more">+{languages.length - 2}</span>}
+                    </div>
+                  </div>
+                  <button className="fp-mini-card-edit" onClick={() => setEditSection('languages')} title="Edit languages">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="#0077b5"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                  </button>
+                </div>
+              )}
+
+            </div>
+          )}
 
           {/* ── EDIT SECTIONS ── */}
 
@@ -1756,14 +1802,17 @@ const STYLES = `
 @media(min-width:900px){.fp-card{border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,0.05),0 8px 28px rgba(0,0,0,0.09);}}
 
 /* ── COVER ── */
-.fp-cover{position:relative;margin:14px 14px 0;border-radius:18px;overflow:hidden;height:155px;cursor:pointer;}
+.fp-cover{position:relative;margin:0;border-radius:20px 20px 0 0;overflow:hidden;height:160px;cursor:pointer;}
 .fp-cover-inner{width:100%;height:100%;}
-.fp-cover-img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;}
-.fp-cover-ph{width:100%;height:100%;background:linear-gradient(120deg,#b8cfd8 0%,#c8d9e4 30%,#d5e2e8 55%,#dce5db 80%,#e2ddd0 100%);}
-.fp-cover::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,0.04);pointer-events:none;}
+.fp-cover-img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform .3s ease;}
+.fp-cover:hover .fp-cover-img{transform:scale(1.02);}
+.fp-cover-ph{width:100%;height:100%;background:linear-gradient(135deg,#0f4c75 0%,#1b6ca8 25%,#0077b5 50%,#1a9fd8 75%,#56c1e8 100%);}
+.fp-cover-ph::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 40%,rgba(255,255,255,0.12) 0%,transparent 60%),radial-gradient(ellipse at 70% 70%,rgba(255,255,255,0.07) 0%,transparent 50%);pointer-events:none;}
+.fp-cover::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,0.18) 100%);pointer-events:none;}
 .fp-cover-loader{position:absolute;inset:0;z-index:6;background:rgba(255,255,255,0.72);display:flex;align-items:center;justify-content:center;}
-@media(min-width:900px){.fp-cover{height:200px;border-radius:18px 18px 0 0;}}
-.fp-btn-cover{position:absolute;top:12px;right:12px;z-index:10;background:rgba(255,255,255,0.93);color:#0077b5;border:1.5px solid rgba(255,255,255,0.93);padding:7px 16px;border-radius:999px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;cursor:pointer;backdrop-filter:blur(10px);box-shadow:0 2px 10px rgba(0,0,0,0.12);font-family:'Inter',sans-serif;transition:transform .15s;}
+@media(min-width:900px){.fp-cover{height:210px;}}
+.fp-btn-cover{position:absolute;bottom:12px;right:12px;z-index:10;background:rgba(255,255,255,0.92);color:#0077b5;border:none;padding:7px 14px;border-radius:999px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;cursor:pointer;backdrop-filter:blur(12px);box-shadow:0 2px 12px rgba(0,0,0,0.18);font-family:'Inter',sans-serif;transition:all .15s;}
+.fp-btn-cover:hover{background:#fff;box-shadow:0 4px 16px rgba(0,0,0,0.22);}
 .fp-btn-cover:active{transform:scale(.95);}
 
 /* ── BELOW COVER (avatar + availability + edit profile) ── */
@@ -1810,6 +1859,23 @@ const STYLES = `
 .fp-tag{background:linear-gradient(135deg,#e0f2fe,#dbeffe);color:#0369a1;border:1px solid #bae6fd;padding:5px 12px;border-radius:999px;font-size:10.5px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;font-family:'Inter',sans-serif;}
 .fp-rates-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
 .fp-rate-chip{display:flex;flex-direction:column;gap:1px;background:linear-gradient(135deg,#f0f9ff,#e8f4fd);border:1px solid #bae6fd;padding:6px 12px;border-radius:10px;}
+
+/* ── MINI CARDS ROW ── */
+.fp-mini-cards-row{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding:0 2px 4px;}
+.fp-mini-cards-row::-webkit-scrollbar{display:none;}
+.fp-mini-card{display:flex;align-items:center;gap:10px;background:#fff;border-radius:16px;padding:12px 14px;border:1px solid rgba(0,0,0,0.06);box-shadow:0 2px 8px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);flex-shrink:0;min-width:0;transition:box-shadow .18s,transform .18s;position:relative;}
+.fp-mini-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.1);transform:translateY(-2px);}
+.fp-mini-card-icon-wrap{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.fp-mini-card-text{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.fp-mini-card-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;white-space:nowrap;}
+.fp-mini-card-val{font-size:15px;font-weight:800;color:#0f172a;line-height:1.2;white-space:nowrap;}
+.fp-mini-card-val span{font-size:11px;font-weight:600;color:#64748b;}
+.fp-mini-card-edit{position:absolute;top:7px;right:7px;width:22px;height:22px;border-radius:6px;border:none;background:rgba(0,119,181,0.08);cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s,background .15s;}
+.fp-mini-card:hover .fp-mini-card-edit{opacity:1;}
+.fp-mini-card-edit:hover{background:rgba(0,119,181,0.18);}
+.fp-mini-lang-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px;}
+.fp-mini-lang-chip{font-size:11px;font-weight:700;background:linear-gradient(135deg,#ede9fe,#ddd6fe);color:#5b21b6;border-radius:999px;padding:2px 8px;}
+.fp-mini-lang-more{font-size:11px;font-weight:700;color:#94a3b8;padding:2px 0;}
 .fp-rate-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;}
 .fp-rate-val{font-size:14px;font-weight:800;color:#0f172a;}
 .fp-edit-icon-btn{background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0;}
