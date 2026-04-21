@@ -145,6 +145,9 @@ export default function FreelancerProfile() {
   /* ── Switch account menu ── */
   const [showSwitchMenu, setShowSwitchMenu] = useState(false)
 
+  /* ── My Posts open state (independent from task accordion) ── */
+  const [postsOpen, setPostsOpen] = useState(true)
+
   /* ── Skills inline edit ── */
   const [skillsEditing, setSkillsEditing] = useState(false)
 
@@ -1289,32 +1292,32 @@ export default function FreelancerProfile() {
             )}
           </div>
 
-          {/* ── My Posts accordion ── */}
-          <div className="fp-sb-accordion posts-acc">
-            <button className="fp-sb-acc-hdr" onClick={() => setSidebarSection(sidebarSection === 'posts' ? 'none' : 'posts')}>
+          {/* ── My Posts ── */}
+          <div className="fp-myposts-card">
+            <button className="fp-myposts-hdr" onClick={() => setPostsOpen(v => !v)}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
               <span>My Posts</span>
-              {myPosts.length > 0 && <span className="fp-sb-acc-badge">{myPosts.length}</span>}
-              <svg className={`fp-sb-acc-chevron${sidebarSection === 'posts' ? ' open' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="#94a3b8"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+              {myPosts.length > 0 && <span className="fp-myposts-count">{myPosts.length}</span>}
+              <svg className={`fp-sb-acc-chevron${postsOpen ? ' open' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="#94a3b8"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
             </button>
-            {sidebarSection === 'posts' && (
-              <div className="fp-sb-acc-body">
+            {postsOpen && (
+              <div className="fp-myposts-body">
                 {myPosts.length === 0
-                  ? <p className="fp-sb-empty">No posts yet</p>
+                  ? <p className="fp-sb-empty">No posts yet.<br/><span style={{fontSize:10}}>Create a post to see it here.</span></p>
                   : myPosts.map((p: any) => {
-                      const POST_COLORS: Record<string, { bg: string; text: string }> = {
-                        JOB: { bg: '#dbeafe', text: '#1e40af' }, TASK: { bg: '#dcfce7', text: '#166534' },
-                        COLLAB: { bg: '#fef9c3', text: '#854d0e' }, SKILL_EXCHANGE: { bg: '#fae8ff', text: '#7e22ce' },
+                      const POST_COLORS: Record<string, {bg:string;text:string}> = {
+                        JOB: {bg:'#dbeafe',text:'#1e40af'}, TASK: {bg:'#dcfce7',text:'#166534'},
+                        COLLAB: {bg:'#fef9c3',text:'#854d0e'}, SKILL_EXCHANGE: {bg:'#fae8ff',text:'#7e22ce'},
                       }
-                      const col = POST_COLORS[p.type] ?? { bg: '#f1f5f9', text: '#475569' }
+                      const col = POST_COLORS[p.type] ?? {bg:'#f1f5f9',text:'#475569'}
                       return (
-                        <div key={p.id} className="fp-sb-post-item" onClick={() => router.push(`/posts/${p.id}`)}>
-                          <div className="fp-sb-post-top">
-                            <span className="fp-sb-post-type" style={{background:col.bg, color:col.text}}>{p.type?.replace('_',' ')}</span>
-                            {p.status && <span className="fp-sb-post-status" style={{color: p.status==='OPEN'?'#16a34a':'#94a3b8'}}>{p.status}</span>}
+                        <div key={p.id} className="fp-myposts-item" onClick={() => router.push(`/posts/${p.id}`)}>
+                          <div className="fp-myposts-item-top">
+                            <span className="fp-myposts-type" style={{background:col.bg,color:col.text}}>{p.type?.replace('_',' ')}</span>
+                            <span className="fp-myposts-status" style={{color:p.status==='OPEN'?'#16a34a':'#94a3b8'}}>{p.status}</span>
                           </div>
-                          <p className="fp-sb-post-title">{p.title}</p>
-                          {p._count?.proposals != null && <span className="fp-sb-post-proposals">{p._count.proposals} proposals</span>}
+                          <p className="fp-myposts-title">{p.title}</p>
+                          {p._count?.proposals != null && <span className="fp-myposts-proposals">{p._count.proposals} proposal{p._count.proposals !== 1 ? 's' : ''}</span>}
                         </div>
                       )
                     })
@@ -2130,9 +2133,20 @@ const STYLES = `
 .fp-sb-acc-body{display:flex;flex-direction:column;gap:6px;padding:2px 10px 12px;max-height:300px;overflow-y:auto;scrollbar-width:thin;border-top:1px solid #f1f5f9;}
 .fp-sb-empty{font-size:11px;color:#94a3b8;padding:8px 2px;text-align:center;}
 
-/* My Posts accordion — special header */
-.fp-sb-accordion.posts-acc .fp-sb-acc-hdr{background:linear-gradient(135deg,#f0f9ff,#e8f4fd);border-bottom:1px solid #bae6fd;}
-.fp-sb-accordion.posts-acc .fp-sb-acc-hdr:hover{background:linear-gradient(135deg,#e8f4fd,#dbeffe);}
+/* ── My Posts card ── */
+.fp-myposts-card{background:#fff;border-radius:14px;border:1px solid #bae6fd;overflow:hidden;box-shadow:0 1px 4px rgba(0,119,181,0.07);}
+.fp-myposts-hdr{width:100%;display:flex;align-items:center;gap:8px;padding:11px 13px;background:linear-gradient(135deg,#f0f9ff,#e8f4fd);border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;color:#0077b5;text-align:left;transition:background .15s;}
+.fp-myposts-hdr:hover{background:linear-gradient(135deg,#e0f2fe,#dbeffe);}
+.fp-myposts-hdr>span:first-of-type{flex:1;}
+.fp-myposts-count{font-size:10px;font-weight:800;background:#0077b5;color:#fff;border-radius:999px;padding:1px 8px;flex-shrink:0;}
+.fp-myposts-body{display:flex;flex-direction:column;gap:6px;padding:8px 10px 12px;max-height:320px;overflow-y:auto;scrollbar-width:thin;}
+.fp-myposts-item{background:#f8fafc;border-radius:10px;padding:9px 11px;cursor:pointer;border:1px solid #f1f5f9;transition:all .15s;}
+.fp-myposts-item:hover{background:#f0f9ff;border-color:#bae6fd;transform:translateY(-1px);}
+.fp-myposts-item-top{display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+.fp-myposts-type{font-size:9px;font-weight:800;border-radius:6px;padding:2px 7px;text-transform:uppercase;letter-spacing:.04em;}
+.fp-myposts-status{font-size:10px;font-weight:700;margin-left:auto;}
+.fp-myposts-title{font-size:12px;font-weight:600;color:#1e293b;line-height:1.4;margin:0 0 4px;}
+.fp-myposts-proposals{font-size:10px;color:#64748b;font-weight:600;}
 
 /* My Posts items */
 .fp-sb-post-item{border-radius:10px;border:1px solid #e8f0f8;background:linear-gradient(135deg,#f8fbff,#f4f8ff);padding:10px 11px;display:flex;flex-direction:column;gap:5px;cursor:pointer;transition:all .18s;}
