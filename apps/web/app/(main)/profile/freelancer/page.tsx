@@ -1225,6 +1225,55 @@ export default function FreelancerProfile() {
                 </div>
               </div>
 
+              {/* ── MY POSTS SECTION ── */}
+              <div className="fp-section-card">
+                <div className="fp-combined-card-hdr">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                  <h3 className="fp-combined-card-title">My Posts</h3>
+                  <button className="fp-combined-edit-btn" onClick={() => router.push('/post')}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                    New Post
+                  </button>
+                </div>
+                <div className="fp-combined-section">
+                  {myPosts.length === 0 ? (
+                    <p className="fp-combined-empty">
+                      No posts yet ·{' '}
+                      <button className="fp-combined-add-link" onClick={() => router.push('/post')}>Create your first post</button>
+                    </p>
+                  ) : (
+                    <>
+                      <div className="fp-posts-list">
+                        {myPosts.slice(0, 3).map((p: any) => {
+                          const POST_COLORS: Record<string, {bg:string;text:string}> = {
+                            JOB: {bg:'#dbeafe',text:'#1e40af'}, TASK: {bg:'#dcfce7',text:'#166534'},
+                            COLLAB: {bg:'#fef9c3',text:'#854d0e'}, SKILL_EXCHANGE: {bg:'#fae8ff',text:'#7e22ce'},
+                          }
+                          const col = POST_COLORS[p.type] ?? {bg:'#f1f5f9',text:'#475569'}
+                          return (
+                            <div key={p.id} className="fp-post-card" onClick={() => router.push(`/posts/${p.id}`)}>
+                              <div className="fp-post-card-top">
+                                <span className="fp-post-card-type" style={{background:col.bg,color:col.text}}>{p.type?.replace('_',' ')}</span>
+                                <span className="fp-post-card-status" style={{color:p.status==='OPEN'?'#16a34a':'#94a3b8'}}>{p.status}</span>
+                                {p._count?.proposals != null && (
+                                  <span className="fp-post-card-proposals">{p._count.proposals} proposal{p._count.proposals !== 1 ? 's' : ''}</span>
+                                )}
+                              </div>
+                              <p className="fp-post-card-title">{p.title}</p>
+                              {p.description && <p className="fp-post-card-desc">{p.description.slice(0, 100)}{p.description.length > 100 ? '…' : ''}</p>}
+                            </div>
+                          )
+                        })}
+                      </div>
+                      {myPosts.length > 3 && (
+                        <button className="fp-posts-view-all" onClick={() => router.push('/my-posts')}>
+                          View all {myPosts.length} posts →
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
 
 </>
           )}
@@ -2174,6 +2223,19 @@ const STYLES = `
 .fp-sb-tasks-group{display:flex;flex-direction:column;gap:6px;}
 .fp-sb-tasks-group-lbl{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;padding:2px 4px;}
 .fp-sb-tasks-group-lbl::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,#e2e8f0,transparent);}
+
+/* ── MY POSTS (main area) ── */
+.fp-posts-list{display:flex;flex-direction:column;gap:10px;}
+.fp-post-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:13px 15px;cursor:pointer;transition:all .18s;}
+.fp-post-card:hover{background:#f0f9ff;border-color:#bae6fd;box-shadow:0 3px 12px rgba(0,119,181,0.1);transform:translateY(-1px);}
+.fp-post-card-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
+.fp-post-card-type{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;border-radius:6px;padding:3px 9px;}
+.fp-post-card-status{font-size:11px;font-weight:700;}
+.fp-post-card-proposals{font-size:11px;color:#64748b;font-weight:600;margin-left:auto;}
+.fp-post-card-title{font-size:14px;font-weight:700;color:#0f172a;line-height:1.4;margin-bottom:4px;}
+.fp-post-card-desc{font-size:13px;color:#64748b;line-height:1.6;}
+.fp-posts-view-all{margin-top:12px;background:none;border:1.5px solid #bae6fd;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700;color:#0077b5;cursor:pointer;width:100%;font-family:'Inter',sans-serif;transition:all .15s;}
+.fp-posts-view-all:hover{background:#f0f9ff;}
 .fp-ai-card-desc{font-size:12px;color:#64748b;line-height:1.6;font-family:'Inter',sans-serif;}
 .fp-ai-card-loading{display:flex;align-items:center;gap:8px;font-size:12px;color:#64748b;font-family:'Inter',sans-serif;}
 .fp-ai-spinner{width:14px;height:14px;border-radius:50%;border:2px solid #e2e8f0;border-top-color:#0077b5;animation:fp-spin .7s linear infinite;flex-shrink:0;}
