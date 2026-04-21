@@ -142,6 +142,9 @@ export default function FreelancerProfile() {
   /* ── Sidebar accordion ── */
   const [sidebarSection, setSidebarSection] = useState<'posts'|'completed'|'inprogress'|'request'|'none'>('posts')
 
+  /* ── Switch account menu ── */
+  const [showSwitchMenu, setShowSwitchMenu] = useState(false)
+
   /* ── Skills inline edit ── */
   const [skillsEditing, setSkillsEditing] = useState(false)
 
@@ -1287,43 +1290,38 @@ export default function FreelancerProfile() {
           </div>
 
           {/* ── My Posts accordion ── */}
-          {(() => {
-            const POST_COLORS: Record<string, { bg: string; text: string }> = {
-              JOB: { bg: '#dbeafe', text: '#1e40af' }, TASK: { bg: '#dcfce7', text: '#166534' },
-              COLLAB: { bg: '#fef9c3', text: '#854d0e' }, SKILL_EXCHANGE: { bg: '#fae8ff', text: '#7e22ce' },
-            }
-            const open = sidebarSection === 'posts'
-            return (
-              <div className="fp-sb-accordion posts-acc">
-                <button className="fp-sb-acc-hdr" onClick={() => setSidebarSection(open ? 'none' : 'posts')}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-                  <span>My Posts</span>
-                  {myPosts.length > 0 && <span className="fp-sb-acc-badge">{myPosts.length}</span>}
-                  <svg className={`fp-sb-acc-chevron${open ? ' open' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="#94a3b8"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
-                </button>
-                {open && (
-                  <div className="fp-sb-acc-body">
-                    {myPosts.length === 0
-                      ? <p className="fp-sb-empty">No posts yet</p>
-                      : myPosts.map((p: any) => {
-                          const col = POST_COLORS[p.type] ?? { bg: '#f1f5f9', text: '#475569' }
-                          return (
-                            <div key={p.id} className="fp-sb-post-item" onClick={() => router.push(`/posts/${p.id}`)}>
-                              <div className="fp-sb-post-top">
-                                <span className="fp-sb-post-type" style={{background:col.bg, color:col.text}}>{p.type?.replace('_',' ')}</span>
-                                {p.status && <span className="fp-sb-post-status" style={{color: p.status==='OPEN'?'#16a34a':'#94a3b8'}}>{p.status}</span>}
-                              </div>
-                              <p className="fp-sb-post-title">{p.title}</p>
-                              {p._count?.proposals != null && <span className="fp-sb-post-proposals">{p._count.proposals} proposals</span>}
-                            </div>
-                          )
-                        })
-                    }
-                  </div>
-                )}
+          <div className="fp-sb-accordion posts-acc">
+            <button className="fp-sb-acc-hdr" onClick={() => setSidebarSection(sidebarSection === 'posts' ? 'none' : 'posts')}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+              <span>My Posts</span>
+              {myPosts.length > 0 && <span className="fp-sb-acc-badge">{myPosts.length}</span>}
+              <svg className={`fp-sb-acc-chevron${sidebarSection === 'posts' ? ' open' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="#94a3b8"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+            </button>
+            {sidebarSection === 'posts' && (
+              <div className="fp-sb-acc-body">
+                {myPosts.length === 0
+                  ? <p className="fp-sb-empty">No posts yet</p>
+                  : myPosts.map((p: any) => {
+                      const POST_COLORS: Record<string, { bg: string; text: string }> = {
+                        JOB: { bg: '#dbeafe', text: '#1e40af' }, TASK: { bg: '#dcfce7', text: '#166534' },
+                        COLLAB: { bg: '#fef9c3', text: '#854d0e' }, SKILL_EXCHANGE: { bg: '#fae8ff', text: '#7e22ce' },
+                      }
+                      const col = POST_COLORS[p.type] ?? { bg: '#f1f5f9', text: '#475569' }
+                      return (
+                        <div key={p.id} className="fp-sb-post-item" onClick={() => router.push(`/posts/${p.id}`)}>
+                          <div className="fp-sb-post-top">
+                            <span className="fp-sb-post-type" style={{background:col.bg, color:col.text}}>{p.type?.replace('_',' ')}</span>
+                            {p.status && <span className="fp-sb-post-status" style={{color: p.status==='OPEN'?'#16a34a':'#94a3b8'}}>{p.status}</span>}
+                          </div>
+                          <p className="fp-sb-post-title">{p.title}</p>
+                          {p._count?.proposals != null && <span className="fp-sb-post-proposals">{p._count.proposals} proposals</span>}
+                        </div>
+                      )
+                    })
+                }
               </div>
-            )
-          })()}
+            )}
+          </div>
 
           {/* ── Tasks accordion group ── */}
           <div className="fp-sb-tasks-group">
@@ -1446,14 +1444,28 @@ export default function FreelancerProfile() {
           </div>
 
           {/* Switch Account */}
-          <button className="fp-switch" onClick={() => router.push('/profile/client')}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="#0077b5"><path d="M6.99 11 3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg>
-            <div style={{flex:1,minWidth:0}}>
-              <p className="fp-switch-title">Switch Account</p>
-              <p className="fp-switch-sub">Switch to Client</p>
-            </div>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="#94a3b8"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6-6-6z"/></svg>
-          </button>
+          <div className="fp-switch-wrap" style={{position:'relative',marginTop:'auto',flexShrink:0}}>
+            {showSwitchMenu && (
+              <div className="fp-switch-menu">
+                <button className="fp-switch-menu-item" onClick={() => { setShowSwitchMenu(false); router.push('/onboarding/company') }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#0077b5"><path d="M12 7V3H2v18h20V7H12zm-2 12H4v-2h6v2zm0-4H4v-2h6v2zm0-4H4V9h6v2zm0-4H4V5h6v2zm10 12h-8V9h8v10zm-2-8h-4v2h4v-2zm0 4h-4v2h4v-2z"/></svg>
+                  <span>Company Account</span>
+                </button>
+                <button className="fp-switch-menu-item" onClick={() => { setShowSwitchMenu(false); router.push('/profile/client') }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#0077b5"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                  <span>Client Account</span>
+                </button>
+              </div>
+            )}
+            <button className="fp-switch" onClick={() => setShowSwitchMenu(v => !v)}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#0077b5"><path d="M6.99 11 3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg>
+              <div style={{flex:1,minWidth:0}}>
+                <p className="fp-switch-title">Switch Account</p>
+                <p className="fp-switch-sub">Company / Client</p>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#94a3b8" style={{transform: showSwitchMenu ? 'rotate(-90deg)' : 'none', transition:'transform .2s'}}><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6-6-6z"/></svg>
+            </button>
+          </div>
         </aside>
 
         {/* ══ MOBILE BOTTOM NAV ══ */}
@@ -2034,10 +2046,14 @@ const STYLES = `
 .fp-conn-name{font-size:13px;font-weight:600;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .fp-conn-more{width:100%;background:none;border:none;cursor:pointer;color:#0077b5;font-size:12px;font-weight:700;padding:8px 0 0;font-family:'Inter',sans-serif;text-align:left;}
 .fp-conn-more:hover{opacity:.75;}
-.fp-switch{background:linear-gradient(135deg,#f8fafc,#f0f9ff);border-radius:16px;padding:12px 14px;border:1px solid #e2e8f0;cursor:pointer;display:flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;text-align:left;width:100%;min-width:0;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:box-shadow .15s;margin-top:auto;flex-shrink:0;}
+.fp-switch{background:linear-gradient(135deg,#f8fafc,#f0f9ff);border-radius:16px;padding:12px 14px;border:1px solid #e2e8f0;cursor:pointer;display:flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;text-align:left;width:100%;min-width:0;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:box-shadow .15s;}
 .fp-switch:hover{box-shadow:0 3px 14px rgba(0,0,0,0.1);}
 .fp-switch-title{font-size:13px;font-weight:700;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .fp-switch-sub{font-size:12px;color:#94a3b8;margin-top:2px;}
+.fp-switch-menu{position:absolute;bottom:calc(100% + 8px);left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,0.12);overflow:hidden;z-index:100;}
+.fp-switch-menu-item{display:flex;align-items:center;gap:10px;width:100%;padding:12px 14px;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:#0f172a;text-align:left;transition:background .15s;}
+.fp-switch-menu-item:hover{background:#f0f9ff;}
+.fp-switch-menu-item+.fp-switch-menu-item{border-top:1px solid #f1f5f9;}
 
 /* ── MOBILE BOTTOM NAV ── */
 .fp-mobile-nav{grid-area:mobile-nav;display:flex;justify-content:space-around;align-items:center;background:#fff;border-top:1px solid #e2e8f0;z-index:100;position:sticky;bottom:0;box-shadow:0 -2px 12px rgba(0,0,0,0.06);}
