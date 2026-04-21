@@ -1,3 +1,6 @@
+// Allow self-signed / corporate certs — needed for Neon on some environments
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+
 import http from 'http'
 import app from './app'
 import { env } from './config/env'
