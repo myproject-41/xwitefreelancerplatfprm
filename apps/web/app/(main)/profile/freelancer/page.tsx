@@ -84,6 +84,7 @@ function normalizePostsResponse(data: any): any[] {
 }
 
 function getPostTypeLabel(type: unknown) {
+  if (type === 'SKILL_EXCHANGE') return 'SERVICE'
   return typeof type === 'string' && type.length > 0 ? type.replace(/_/g, ' ') : 'POST'
 }
 
@@ -181,6 +182,7 @@ export default function FreelancerProfile() {
 
   /* ── My Posts open state (independent from task accordion) ── */
   const [postsOpen, setPostsOpen] = useState(true)
+  const [showAllPosts, setShowAllPosts] = useState(false)
 
   /* ── Skills inline edit ── */
   const [skillsEditing, setSkillsEditing] = useState(false)
@@ -1263,7 +1265,7 @@ export default function FreelancerProfile() {
                 <div className="fp-combined-card-hdr">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
                   <h3 className="fp-combined-card-title">My Posts</h3>
-                  <button className="fp-combined-edit-btn" onClick={() => router.push('/post')}>
+                  <button className="fp-combined-edit-btn" type="button" onClick={() => router.push('/post')}>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                     New Post
                   </button>
@@ -1272,12 +1274,12 @@ export default function FreelancerProfile() {
                   {myPosts.length === 0 ? (
                     <p className="fp-combined-empty">
                       No posts yet ·{' '}
-                      <button className="fp-combined-add-link" onClick={() => router.push('/post')}>Create your first post</button>
+                      <button className="fp-combined-add-link" type="button" onClick={() => router.push('/post')}>Create your first post</button>
                     </p>
                   ) : (
                     <>
                       <div className="fp-posts-list">
-                        {myPosts.slice(0, 3).map((p: any) => {
+                        {(showAllPosts ? myPosts : myPosts.slice(0, 3)).map((p: any) => {
                           const POST_COLORS: Record<string, {bg:string;text:string}> = {
                             JOB: {bg:'#dbeafe',text:'#1e40af'}, TASK: {bg:'#dcfce7',text:'#166534'},
                             COLLAB: {bg:'#fef9c3',text:'#854d0e'}, SKILL_EXCHANGE: {bg:'#fae8ff',text:'#7e22ce'},
@@ -1301,8 +1303,8 @@ export default function FreelancerProfile() {
                         })}
                       </div>
                       {myPosts.length > 3 && (
-                        <button className="fp-posts-view-all" onClick={() => router.push('/my-posts')}>
-                          View all {myPosts.length} posts →
+                        <button className="fp-posts-view-all" type="button" onClick={() => setShowAllPosts(v => !v)}>
+                          {showAllPosts ? 'Show only latest 3 posts' : `View all ${myPosts.length} posts`}
                         </button>
                       )}
                     </>

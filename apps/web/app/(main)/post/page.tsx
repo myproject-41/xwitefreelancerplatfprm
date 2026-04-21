@@ -39,7 +39,7 @@ export default function CreatePostPage() {
         skills: isClient ? skills : [],
       })
       toast.success(
-        isFreelancer ? 'Skill offer published!' : isCompany ? 'Company post published!' : 'Task published!'
+        isFreelancer ? 'Post published!' : isCompany ? 'Company post published!' : 'Task published!'
       )
       router.push('/')
     } catch (error: any) {
@@ -63,11 +63,11 @@ export default function CreatePostPage() {
         </button>
         <div>
           <h1 className="text-lg font-extrabold text-gray-800">
-            {isFreelancer ? 'Offer Your Skills' : isCompany ? 'Create Company Post' : 'Create Task Post'}
+            {isFreelancer ? 'Create Post' : isCompany ? 'Create Company Post' : 'Create Task Post'}
           </h1>
           <p className="text-sm text-gray-500">
             {isFreelancer
-              ? 'Share your service offer so it appears on Home.'
+              ? 'Share what you can help with so it appears on Home.'
               : isCompany
                 ? 'Share a company update or opportunity directly on Home.'
               : 'Publish a task directly on Home.'}
@@ -111,7 +111,7 @@ export default function CreatePostPage() {
                 className="mt-1 w-full resize-none rounded-xl border border-gray-200 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder={
                   isFreelancer
-                    ? 'Describe your skills, experience, and the kind of work you can help with.'
+                    ? 'Describe your experience, services, and the kind of work you can help with.'
                     : isCompany
                       ? 'Describe what your company is sharing, offering, or inviting people to join.'
                     : 'Describe the task, deliverables, and what kind of help you need.'
@@ -155,7 +155,7 @@ export default function CreatePostPage() {
             {loading
               ? 'Publishing...'
               : isFreelancer
-                ? 'Publish Skill Offer'
+                ? 'Publish Post'
                 : isCompany
                   ? 'Publish Company Post'
                   : 'Publish Task'}
