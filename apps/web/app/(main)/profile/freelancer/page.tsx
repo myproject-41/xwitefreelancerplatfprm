@@ -69,6 +69,40 @@ function fmtBalance(n: number, cur: string) {
   return new Intl.NumberFormat('en-IN', { style:'currency', currency: cur, minimumFractionDigits: 2 }).format(n)
 }
 
+function normalizePostsResponse(data: any): any[] {
+  const posts = Array.isArray(data)
+    ? data
+    : Array.isArray(data?.data)
+      ? data.data
+      : Array.isArray(data?.data?.posts)
+        ? data.data.posts
+        : Array.isArray(data?.posts)
+          ? data.posts
+          : []
+
+  return posts.filter((post: any) => post && typeof post === 'object')
+}
+
+function getPostTypeLabel(type: unknown) {
+  return typeof type === 'string' && type.length > 0 ? type.replace(/_/g, ' ') : 'POST'
+}
+
+function getPostTitle(title: unknown) {
+  return typeof title === 'string' && title.trim().length > 0 ? title : 'Untitled post'
+}
+
+function getPostDescription(description: unknown, maxLength = 100) {
+  if (typeof description !== 'string') return ''
+  const trimmed = description.trim()
+  if (!trimmed) return ''
+  return trimmed.length > maxLength ? `${trimmed.slice(0, maxLength)}...` : trimmed
+}
+
+function getProposalCount(post: any) {
+  const count = post?._count?.proposals
+  return typeof count === 'number' ? count : null
+}
+
 /* ═══════════════════════════════════════════════
    COMPONENT
 ═══════════════════════════════════════════════ */
@@ -226,8 +260,7 @@ export default function FreelancerProfile() {
     ])
     if (postsRes.status === 'fulfilled') {
       const d = postsRes.value
-      const posts = Array.isArray(d) ? d : Array.isArray(d?.data) ? d.data : (d?.data?.posts ?? d?.posts ?? [])
-      setMyPosts(posts)
+      setMyPosts(normalizePostsResponse(d))
     } else {
       console.error('My Posts fetch failed:', postsRes.reason)
     }
@@ -1250,17 +1283,19 @@ export default function FreelancerProfile() {
                             COLLAB: {bg:'#fef9c3',text:'#854d0e'}, SKILL_EXCHANGE: {bg:'#fae8ff',text:'#7e22ce'},
                           }
                           const col = POST_COLORS[p.type] ?? {bg:'#f1f5f9',text:'#475569'}
+                          const proposalCount = getProposalCount(p)
+                          const description = getPostDescription(p.description)
                           return (
                             <div key={p.id} className="fp-post-card" onClick={() => router.push(`/posts/${p.id}`)}>
                               <div className="fp-post-card-top">
-                                <span className="fp-post-card-type" style={{background:col.bg,color:col.text}}>{p.type?.replace('_',' ')}</span>
+                                <span className="fp-post-card-type" style={{background:col.bg,color:col.text}}>{getPostTypeLabel(p.type)}</span>
                                 <span className="fp-post-card-status" style={{color:p.status==='OPEN'?'#16a34a':'#94a3b8'}}>{p.status}</span>
-                                {p._count?.proposals != null && (
-                                  <span className="fp-post-card-proposals">{p._count.proposals} proposal{p._count.proposals !== 1 ? 's' : ''}</span>
+                                {proposalCount != null && (
+                                  <span className="fp-post-card-proposals">{proposalCount} proposal{proposalCount !== 1 ? 's' : ''}</span>
                                 )}
                               </div>
-                              <p className="fp-post-card-title">{p.title}</p>
-                              {p.description && <p className="fp-post-card-desc">{p.description.slice(0, 100)}{p.description.length > 100 ? '…' : ''}</p>}
+                              <p className="fp-post-card-title">{getPostTitle(p.title)}</p>
+                              {description && <p className="fp-post-card-desc">{description}</p>}
                             </div>
                           )
                         })}
@@ -1359,14 +1394,15 @@ export default function FreelancerProfile() {
                         COLLAB: {bg:'#fef9c3',text:'#854d0e'}, SKILL_EXCHANGE: {bg:'#fae8ff',text:'#7e22ce'},
                       }
                       const col = POST_COLORS[p.type] ?? {bg:'#f1f5f9',text:'#475569'}
+                      const proposalCount = getProposalCount(p)
                       return (
                         <div key={p.id} className="fp-myposts-item" onClick={() => router.push(`/posts/${p.id}`)}>
                           <div className="fp-myposts-item-top">
-                            <span className="fp-myposts-type" style={{background:col.bg,color:col.text}}>{p.type?.replace('_',' ')}</span>
+                            <span className="fp-myposts-type" style={{background:col.bg,color:col.text}}>{getPostTypeLabel(p.type)}</span>
                             <span className="fp-myposts-status" style={{color:p.status==='OPEN'?'#16a34a':'#94a3b8'}}>{p.status}</span>
                           </div>
-                          <p className="fp-myposts-title">{p.title}</p>
-                          {p._count?.proposals != null && <span className="fp-myposts-proposals">{p._count.proposals} proposal{p._count.proposals !== 1 ? 's' : ''}</span>}
+                          <p className="fp-myposts-title">{getPostTitle(p.title)}</p>
+                          {proposalCount != null && <span className="fp-myposts-proposals">{proposalCount} proposal{proposalCount !== 1 ? 's' : ''}</span>}
                         </div>
                       )
                     })
