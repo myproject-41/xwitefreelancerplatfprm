@@ -218,7 +218,7 @@ function ProposalCard({
       {/* View Profile is always visible */}
       {p.freelancerId && (
         <div style={{ marginBottom: 8 }}>
-          <Link href={`/users/${p.freelancerId}`} target="_blank"
+          <Link href={`/profile/${p.freelancerId}`} target="_blank"
             style={{
               display: 'inline-block', padding: '8px 16px',
               background: '#f0f7ff', color: '#005d8f',

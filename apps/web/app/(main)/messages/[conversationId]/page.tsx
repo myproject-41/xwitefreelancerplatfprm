@@ -209,7 +209,7 @@ function ProposalCard({
             {accepting ? 'Accepting…' : 'Accept'}
           </button>
           <Link
-            href={`/users/${payload.freelancerId}`}
+            href={`/profile/${payload.freelancerId}`}
             target="_blank"
             style={{
               flex: 1, minWidth: 100, padding: '9px 16px',
@@ -242,7 +242,7 @@ function ProposalCard({
       {status === 'ACCEPTED' && (
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <Link
-            href={`/users/${payload.freelancerId}`}
+            href={`/profile/${payload.freelancerId}`}
             target="_blank"
             style={{
               flex: 1, padding: '9px 16px',

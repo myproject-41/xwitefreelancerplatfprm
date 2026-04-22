@@ -275,7 +275,7 @@ function PendingInvitations({ pending, onAccept, onIgnore }: { pending: any[]; o
           const { name, title, image } = getUserInfo(req.fromUser)
           return (
             <div key={req.id} className="p-4 hover:bg-[#faf9f6] transition-colors">
-              <button type="button" onClick={() => req.fromUser?.id && router.push(`/users/${req.fromUser.id}`)} className="flex w-full items-start gap-3 mb-3 text-left">
+              <button type="button" onClick={() => req.fromUser?.id && router.push(`/profile/${req.fromUser.id}`)} className="flex w-full items-start gap-3 mb-3 text-left">
                 <Avatar name={name} image={image} size="md" />
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-sm text-[#1b1c1a] truncate">{name}</p>
@@ -454,7 +454,7 @@ function OverviewSection({ pending, suggestions, onAccept, onIgnore, onConnect }
                     <div>
                       <h4
                         className="font-[Manrope] font-bold text-xl text-[#1b1c1a] leading-tight cursor-pointer hover:text-[#005d8f] transition-colors"
-                        onClick={() => u.id && router.push(`/users/${u.id}`)}
+                        onClick={() => u.id && router.push(`/profile/${u.id}`)}
                       >
                         {name}
                       </h4>
@@ -575,7 +575,7 @@ function ConnectionsSection({ pending, connections, onAccept, onIgnore, onRemove
             const timeAgo = days < 1 ? 'Today' : days < 30 ? `${days}d ago` : days < 365 ? `${Math.floor(days / 30)}mo ago` : `${Math.floor(days / 365)}y ago`
             return (
               <div key={c.connectionId} className="bg-white rounded-xl border border-[#e3e2df] shadow-sm p-4 flex items-center gap-4 hover:bg-[#faf9f6] transition-colors">
-                <button type="button" onClick={() => c.user?.id && router.push(`/users/${c.user.id}`)} className="flex flex-1 min-w-0 items-center gap-3 text-left">
+                <button type="button" onClick={() => c.user?.id && router.push(`/profile/${c.user.id}`)} className="flex flex-1 min-w-0 items-center gap-3 text-left">
                   <Avatar name={name} image={image} size="md" />
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-sm text-[#1b1c1a] truncate">{name}</p>
@@ -620,7 +620,7 @@ function FollowSection({ pending, following, followers, onAccept, onIgnore, onUn
               const isUnfollowed = unfollowed.has(f.following.id)
               return (
                 <div key={f.following.id} className="bg-white rounded-xl border border-[#e3e2df] shadow-sm p-4 flex items-center gap-3 hover:bg-[#faf9f6] transition-colors">
-                  <button type="button" onClick={() => f.following?.id && router.push(`/users/${f.following.id}`)} className="flex flex-1 min-w-0 items-center gap-3 text-left">
+                  <button type="button" onClick={() => f.following?.id && router.push(`/profile/${f.following.id}`)} className="flex flex-1 min-w-0 items-center gap-3 text-left">
                     <Avatar name={name} image={image} size="md" />
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-sm text-[#1b1c1a] truncate">{name}</p>
@@ -654,7 +654,7 @@ function FollowSection({ pending, following, followers, onAccept, onIgnore, onUn
               const isConnected = connected.has(f.follower.id)
               return (
                 <div key={f.follower.id} className="bg-white rounded-xl border border-[#e3e2df] shadow-sm p-4 flex items-center gap-3 hover:bg-[#faf9f6] transition-colors">
-                  <button type="button" onClick={() => f.follower?.id && router.push(`/users/${f.follower.id}`)} className="flex flex-1 min-w-0 items-center gap-3 text-left">
+                  <button type="button" onClick={() => f.follower?.id && router.push(`/profile/${f.follower.id}`)} className="flex flex-1 min-w-0 items-center gap-3 text-left">
                     <Avatar name={name} image={image} size="md" />
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-sm text-[#1b1c1a] truncate">{name}</p>

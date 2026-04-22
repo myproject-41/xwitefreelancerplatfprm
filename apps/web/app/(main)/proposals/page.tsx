@@ -191,7 +191,7 @@ function ProposalCard({
       {/* content */}
       <div className="rp-content">
         <div className="rp-name-row">
-          <span className="rp-name" onClick={() => router.push(`/users/${proposal.freelancer.id}`)}>
+          <span className="rp-name" onClick={() => router.push(`/profile/${proposal.freelancer.id}`)}>
             {name}
           </span>
           <span className={`rp-status ${proposal.status}`}>{proposal.status}</span>
@@ -232,7 +232,7 @@ function ProposalCard({
         {/* view profile — always shown */}
         <button
           className="rp-btn rp-btn-ghost"
-          onClick={() => router.push(`/users/${proposal.freelancer.id}`)}
+          onClick={() => router.push(`/profile/${proposal.freelancer.id}`)}
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
           View Profile

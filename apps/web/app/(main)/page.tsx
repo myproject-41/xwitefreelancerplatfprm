@@ -465,7 +465,7 @@ export default function HomePage() {
                     <button
                       key={liker.id}
                       type="button"
-                      onClick={() => liker.id && router.push(`/users/${liker.id}`)}
+                      onClick={() => liker.id && router.push(`/profile/${liker.id}`)}
                       className="flex w-full items-center gap-3 rounded-lg bg-[#f4f3f0] p-3 text-left transition hover:bg-[#ece9e2]"
                     >
                       <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-[#c3e0fe] text-sm font-bold text-[#005d8f]">
@@ -525,7 +525,7 @@ export default function HomePage() {
                       <button
                         key={liker.id}
                         type="button"
-                        onClick={() => { setShowLikersModal(false); liker.id && router.push(`/users/${liker.id}`) }}
+                        onClick={() => { setShowLikersModal(false); liker.id && router.push(`/profile/${liker.id}`) }}
                         className="flex w-full items-center gap-3 rounded-lg bg-[#f4f3f0] p-3 text-left transition hover:bg-[#ece9e2]"
                       >
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#c3e0fe] text-sm font-bold text-[#005d8f]">
@@ -559,7 +559,7 @@ export default function HomePage() {
                     <button
                       key={suggestion.id}
                       type="button"
-                      onClick={() => suggestion.id && router.push(`/users/${suggestion.id}`)}
+                      onClick={() => suggestion.id && router.push(`/profile/${suggestion.id}`)}
                       className="flex w-full items-center gap-3 rounded-lg bg-[#f8fafc] p-3 text-left transition hover:bg-[#edf5fb]"
                     >
                       <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-[#dceefc] text-sm font-bold text-[#005d8f]">
