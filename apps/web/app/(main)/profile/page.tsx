@@ -7,6 +7,8 @@ import apiClient        from '../../../services/apiClient'
 import { authService }  from '../../../services/auth.service'
 import { uploadService } from '../../../services/upload.service'
 import { walletService } from '../../../services/wallet.service'
+import { postService }   from '../../../services/post.service'
+import { escrowService } from '../../../services/escrow.service'
 import { useAuthStore } from '../../../store/authStore'
 
 /* ═══════════════════════════════════════════
@@ -62,7 +64,7 @@ export default function ClientProfile() {
   const [connectedUsers, setConnectedUsers] = useState<ConnectedUser[]>([])
   const [coverSrc,       setCoverSrc]       = useState<string | null>(null)
   const [avatarSrc,      setAvatarSrc]      = useState<string | null>(null)
-  const [currency,       setCurrency]       = useState<'INR' | 'USD'>('USD')
+  const [currency,       setCurrency]       = useState<'INR' | 'USD'>('INR')
   const [pageLoading,    setPageLoading]    = useState(true)
   const [iconsReady,     setIconsReady]     = useState(false)
 
@@ -79,10 +81,22 @@ export default function ClientProfile() {
   const [wallet,        setWallet]        = useState<Wallet | null>(null)
   const [walletLoading, setWalletLoading] = useState(true)  // true = show skeleton until first load
 
-  /* bio */
+  /* bio / profile edit */
   const [showBioModal, setShowBioModal] = useState(false)
   const [bioDraft,     setBioDraft]     = useState('')
+  const [nameDraft,    setNameDraft]    = useState('')
   const [bioSaving,    setBioSaving]    = useState(false)
+
+  /* posts + tasks */
+  const [myPosts,         setMyPosts]         = useState<any[]>([])
+  const [completedTasks,  setCompletedTasks]  = useState<any[]>([])
+  const [inProgressTasks, setInProgressTasks] = useState<any[]>([])
+  const [requests,        setRequests]        = useState<any[]>([])
+  const [postsLoading,    setPostsLoading]    = useState(true)
+  const [tasksLoading,    setTasksLoading]    = useState(true)
+  const [openCompleted,   setOpenCompleted]   = useState(false)
+  const [openInProgress,  setOpenInProgress]  = useState(false)
+  const [openRequests,    setOpenRequests]    = useState(false)
 
   /* panels */
   const [activePanel,    setActivePanel]    = useState<Panel>('none')
@@ -109,6 +123,7 @@ export default function ClientProfile() {
     }
     loadProfile()
     loadWallet()
+    loadMyData()
   }, [])
 
   /* ─── DATA FETCHING ─── */
@@ -126,7 +141,7 @@ export default function ClientProfile() {
       setAvatarSrc(p.profileImage ?? null)
       setCoverSrc(p.coverImage ?? null)
       setConnections(d.connectionsCount ?? 0)
-      setCurrency(detectCurrency(loc))
+      setCurrency('INR')
       try {
         const cRes = await apiClient.get('/api/network/connections')
         const list = Array.isArray(cRes.data) ? cRes.data : (cRes.data?.connections ?? [])
@@ -144,6 +159,30 @@ export default function ClientProfile() {
     } catch {}
     finally { setWalletLoading(false) }
   }, [])
+
+  async function loadMyData() {
+    setPostsLoading(true); setTasksLoading(true)
+    const [postsRes, escrowsRes, proposalsRes] = await Promise.allSettled([
+      postService.getMyPosts(),
+      escrowService.getMyEscrows(),
+      postService.getReceivedProposals(),
+    ])
+    if (postsRes.status === 'fulfilled') {
+      const p = postsRes.value
+      setMyPosts(Array.isArray(p) ? p : (p?.posts ?? []))
+    }
+    if (escrowsRes.status === 'fulfilled') {
+      const list: any[] = Array.isArray(escrowsRes.value) ? escrowsRes.value : (escrowsRes.value?.escrows ?? [])
+      setCompletedTasks(list.filter(e => e.status === 'RELEASED'))
+      setInProgressTasks(list.filter(e => ['FUNDED','SUBMITTED','REVISION_REQUESTED','IN_PROGRESS'].includes(e.status)))
+    }
+    if (proposalsRes.status === 'fulfilled') {
+      const p = proposalsRes.value
+      const list: any[] = Array.isArray(p) ? p : (p?.proposals ?? [])
+      setRequests(list.filter(r => r.status === 'PENDING'))
+    }
+    setPostsLoading(false); setTasksLoading(false)
+  }
 
   /* ─── IMAGE UPLOAD ─── */
   async function uploadImage(
@@ -184,15 +223,19 @@ export default function ClientProfile() {
     uploadImage(editedFile, editorField, setBlob, setLoading)
   }
 
-  /* ─── BIO ─── */
+  /* ─── PROFILE INFO (name + bio) ─── */
   async function saveBio() {
     setBioSaving(true)
     try {
-      await apiClient.put('/api/users/profile/client', { description: bioDraft.trim() })
+      await apiClient.put('/api/users/profile/client', {
+        description: bioDraft.trim(),
+        fullName: nameDraft.trim() || undefined,
+      })
       setBio(bioDraft.trim())
+      if (nameDraft.trim()) setName(nameDraft.trim())
       const res = await authService.getMe(); setUser(res.data)
-      setShowBioModal(false); toast.success('Bio updated')
-    } catch { toast.error('Could not save bio') }
+      setShowBioModal(false); toast.success('Profile updated')
+    } catch { toast.error('Could not save profile') }
     finally { setBioSaving(false) }
   }
 
@@ -302,8 +345,8 @@ export default function ClientProfile() {
       {/* bio modal */}
       {showBioModal && (
         <BioModal
-          draft={bioDraft} saving={bioSaving} iconsReady={iconsReady}
-          onChange={setBioDraft} onSave={saveBio}
+          draft={bioDraft} nameDraft={nameDraft} saving={bioSaving}
+          onChange={setBioDraft} onNameChange={setNameDraft} onSave={saveBio}
           onClose={() => setShowBioModal(false)}
         />
       )}
@@ -333,7 +376,6 @@ export default function ClientProfile() {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0077b5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
-              <span className="cp-msg-dot" />
             </button>
           </div>
         </header>
@@ -447,16 +489,16 @@ export default function ClientProfile() {
                 {avatarUploading && <div className="cp-avatar-loader"><Spin light /></div>}
               </button>
 
-              {/* Edit Profile button — right side, same row as avatar */}
+              {/* Edit icon — right side, same row as avatar */}
               {!pageLoading && (
                 <button
-                  className="cp-btn-edit-profile"
-                  onClick={() => avatarInputRef.current?.click()}
+                  className="cp-btn-edit-icon"
+                  onClick={() => { setNameDraft(name); setBioDraft(bio); setShowBioModal(true) }}
+                  aria-label="Edit profile"
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#0077b5">
                     <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                   </svg>
-                  Edit Profile
                 </button>
               )}
             </div>
@@ -485,12 +527,6 @@ export default function ClientProfile() {
                       </ul>
                     )}
 
-                    <button
-                      className="cp-btn-edit-bio"
-                      onClick={() => { setBioDraft(bio); setShowBioModal(true) }}
-                    >
-                      Edit Bio
-                    </button>
                   </>
                 )
               }
@@ -567,6 +603,53 @@ export default function ClientProfile() {
               </div>
             </InlinePanel>
           )}
+
+          {/* ── MY POSTS ── */}
+          <section className="cp-posts-card">
+            <div className="cp-posts-hdr">
+              <p className="cp-posts-title">My Posts</p>
+              <button className="cp-posts-new" onClick={() => router.push('/post')}>+ New Post</button>
+            </div>
+            {postsLoading
+              ? <div className="skel" style={{height:60,borderRadius:12}} />
+              : myPosts.length === 0
+                ? (
+                  <div className="cp-posts-empty">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="#cbd5e1"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+                    <p>No posts yet. Create your first post!</p>
+                  </div>
+                )
+                : (
+                  <ul className="cp-posts-list">
+                    {myPosts.map((post: any) => (
+                      <li key={post.id} className="cp-post-item" onClick={() => router.push(`/post/${post.id}`)}>
+                        <div className="cp-post-top">
+                          <span className={`cp-post-type ${(post.type ?? '').toLowerCase()}`}>
+                            {post.type === 'SKILL_EXCHANGE' ? 'Service' : (post.type ?? 'Post')}
+                          </span>
+                          <span className="cp-post-date">
+                            {post.createdAt ? new Date(post.createdAt).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'}) : ''}
+                          </span>
+                        </div>
+                        <p className="cp-post-title">{post.title}</p>
+                        {post.description && <p className="cp-post-desc">{post.description}</p>}
+                        <div className="cp-post-meta">
+                          {post.budget != null && (
+                            <span className="cp-post-budget">
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="#0369a1"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+                              {fmt(post.budget, 'INR')}
+                            </span>
+                          )}
+                          {post._count?.proposals != null && (
+                            <span className="cp-post-proposals">{post._count.proposals} proposal{post._count.proposals !== 1 ? 's' : ''}</span>
+                          )}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )
+            }
+          </section>
         </main>
 
         {/* ══════════════════════════
@@ -584,7 +667,6 @@ export default function ClientProfile() {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0077b5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
-              <span className="cp-msg-dot" />
             </button>
           </div>
 
@@ -639,6 +721,103 @@ export default function ClientProfile() {
                 View all
               </button>
             )}
+          </div>
+
+          {/* Task Accordions */}
+          <div className="cp-accord-wrap">
+
+            {/* Completed Tasks */}
+            <div className="cp-accord">
+              <button className="cp-accord-hdr" onClick={() => setOpenCompleted(p => !p)}>
+                <div className="cp-accord-left">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#16a34a"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                  <span>Completed Tasks</span>
+                  <span className="cp-accord-badge">{completedTasks.length}</span>
+                </div>
+                <svg className={`cp-accord-chev${openCompleted?' open':''}`} width="16" height="16" viewBox="0 0 24 24" fill="#94a3b8"><path d="M7 10l5 5 5-5z"/></svg>
+              </button>
+              {openCompleted && (
+                <div className="cp-accord-body">
+                  {tasksLoading
+                    ? <div className="skel" style={{height:40,borderRadius:8}} />
+                    : completedTasks.length === 0
+                      ? <p className="cp-accord-empty">No completed tasks</p>
+                      : completedTasks.map((t: any, i: number) => (
+                        <div key={t.id ?? i} className="cp-accord-item">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="#16a34a"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                          <span>{t.task?.title ?? t.title ?? 'Task'}</span>
+                        </div>
+                      ))
+                  }
+                </div>
+              )}
+            </div>
+
+            {/* In Progress Tasks */}
+            <div className="cp-accord">
+              <button className="cp-accord-hdr" onClick={() => setOpenInProgress(p => !p)}>
+                <div className="cp-accord-left">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#d97706"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+                  <span>In Progress</span>
+                  <span className="cp-accord-badge inprog">{inProgressTasks.length}</span>
+                </div>
+                <svg className={`cp-accord-chev${openInProgress?' open':''}`} width="16" height="16" viewBox="0 0 24 24" fill="#94a3b8"><path d="M7 10l5 5 5-5z"/></svg>
+              </button>
+              {openInProgress && (
+                <div className="cp-accord-body">
+                  {tasksLoading
+                    ? <div className="skel" style={{height:40,borderRadius:8}} />
+                    : inProgressTasks.length === 0
+                      ? <p className="cp-accord-empty">No tasks in progress</p>
+                      : inProgressTasks.map((t: any, i: number) => (
+                        <div key={t.id ?? i} className="cp-accord-item">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="#d97706"><circle cx="12" cy="12" r="10"/></svg>
+                          <span>{t.task?.title ?? t.title ?? 'Task'}</span>
+                          <span className="cp-accord-status">{t.status}</span>
+                        </div>
+                      ))
+                  }
+                </div>
+              )}
+            </div>
+
+            {/* Requests (received proposals) */}
+            <div className="cp-accord">
+              <button className="cp-accord-hdr" onClick={() => setOpenRequests(p => !p)}>
+                <div className="cp-accord-left">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#0077b5"><path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/></svg>
+                  <span>Requests</span>
+                  <span className="cp-accord-badge req">{requests.length}</span>
+                </div>
+                <svg className={`cp-accord-chev${openRequests?' open':''}`} width="16" height="16" viewBox="0 0 24 24" fill="#94a3b8"><path d="M7 10l5 5 5-5z"/></svg>
+              </button>
+              {openRequests && (
+                <div className="cp-accord-body">
+                  {tasksLoading
+                    ? <div className="skel" style={{height:40,borderRadius:8}} />
+                    : requests.length === 0
+                      ? <p className="cp-accord-empty">No pending proposals</p>
+                      : requests.map((r: any, i: number) => (
+                        <div key={r.id ?? i} className="cp-accord-item cp-accord-req" onClick={() => r.postId && router.push(`/post/${r.postId}`)}>
+                          <div className="cp-accord-req-av">
+                            {r.freelancer?.profileImage
+                              ? <img src={r.freelancer.profileImage} alt="" />
+                              : <svg width="14" height="14" viewBox="0 0 24 24" fill="#94a3b8"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+                            }
+                          </div>
+                          <div style={{flex:1,minWidth:0}}>
+                            <p className="cp-accord-req-name">{r.freelancer?.fullName ?? r.freelancer?.email ?? 'Freelancer'}</p>
+                            <p className="cp-accord-req-post">{r.post?.title ?? 'Proposal'}</p>
+                          </div>
+                          {r.proposedRate != null && (
+                            <span className="cp-accord-req-rate">{fmt(r.proposedRate, 'INR')}</span>
+                          )}
+                        </div>
+                      ))
+                  }
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Switch Account */}
@@ -727,27 +906,35 @@ function ProfileSkeleton() {
   )
 }
 
-function BioModal({ draft, saving, iconsReady, onChange, onSave, onClose }: {
-  draft:string; saving:boolean; iconsReady:boolean
-  onChange:(v:string)=>void; onSave:()=>void; onClose:()=>void
+function BioModal({ draft, nameDraft, saving, onChange, onNameChange, onSave, onClose }: {
+  draft:string; nameDraft:string; saving:boolean
+  onChange:(v:string)=>void; onNameChange:(v:string)=>void; onSave:()=>void; onClose:()=>void
 }) {
   return (
     <div className="cp-modal-ov" onClick={e=>{if(e.target===e.currentTarget)onClose()}}
       role="dialog" aria-modal="true">
       <div className="cp-modal">
         <div className="cp-modal-hdr">
-          <h2 className="cp-modal-h">Edit Bio</h2>
+          <h2 className="cp-modal-h">Edit Profile</h2>
           <button className="cp-modal-x" onClick={onClose}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="#94a3b8">
               <path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
             </svg>
           </button>
         </div>
-        <textarea className="cp-modal-ta" rows={5} value={draft} maxLength={500} autoFocus
-          onChange={e=>onChange(e.target.value)} placeholder="Tell people about yourself..." />
-        <p className="cp-modal-count">{draft.length}/500</p>
-        <div className="cp-row">
-          <PBtn loading={saving} onClick={onSave}>Save Bio</PBtn>
+        <div className="cp-field" style={{marginBottom:12}}>
+          <label className="cp-field-lbl">Name</label>
+          <input className="cp-input" type="text" value={nameDraft} maxLength={80}
+            onChange={e=>onNameChange(e.target.value)} placeholder="Your name" />
+        </div>
+        <div className="cp-field">
+          <label className="cp-field-lbl">Bio</label>
+          <textarea className="cp-modal-ta" rows={4} value={draft} maxLength={500}
+            onChange={e=>onChange(e.target.value)} placeholder="Tell people about yourself..." />
+          <p className="cp-modal-count">{draft.length}/500</p>
+        </div>
+        <div className="cp-row" style={{marginTop:4}}>
+          <PBtn loading={saving} onClick={onSave}>Save</PBtn>
           <SBtn onClick={onClose}>Cancel</SBtn>
         </div>
       </div>
@@ -1471,51 +1658,53 @@ const STYLES = `
 .cp-card{background:#fff;border-radius:0 0 24px 24px;overflow:visible;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 6px 20px rgba(0,0,0,0.08);}
 @media(min-width:900px){.cp-card{border-radius:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 8px 32px rgba(0,0,0,0.1);border:1px solid rgba(0,0,0,0.04);}}
 
-/* ── COVER — side margins + rounded corners matching screenshot ── */
+/* ── COVER — matches freelancer exactly ── */
 .cp-cover{
   position:relative;
-  margin:14px 14px 0 14px;
-  border-radius:18px;
+  margin:0;
+  border-radius:20px 20px 0 0;
   overflow:hidden;
-  height:155px;
+  height:120px;
   cursor:pointer;
 }
 .cp-cover-inner{width:100%;height:100%;}
-.cp-cover-img{width:100%;height:100%;object-fit:cover;object-position:center center;display:block;}
+.cp-cover-img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform .35s ease;}
+.cp-cover:hover .cp-cover-img{transform:scale(1.03);}
 .cp-cover-ph{
   width:100%;height:100%;
-  background:linear-gradient(120deg,#b8cfd8 0%,#c8d9e4 30%,#d5e2e8 55%,#dce5db 80%,#e2ddd0 100%);
+  background:linear-gradient(135deg,#0f4c75 0%,#1b6ca8 30%,#0077b5 55%,#2196c4 80%,#4db8d9 100%);
 }
+.cp-cover-ph::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(255,255,255,0.15) 0%,transparent 55%),radial-gradient(ellipse at 80% 30%,rgba(255,255,255,0.08) 0%,transparent 45%);pointer-events:none;}
 .cp-cover::after{
   content:'';position:absolute;inset:0;
-  background:rgba(0,0,0,0.04);pointer-events:none;
+  background:linear-gradient(to bottom,transparent 35%,rgba(0,0,0,0.22) 100%);
+  pointer-events:none;
 }
 .cp-cover-loader{
   position:absolute;inset:0;z-index:6;
   background:rgba(255,255,255,0.72);
   display:flex;align-items:center;justify-content:center;
 }
-@media(min-width:900px){.cp-cover{height:200px;border-radius:18px 18px 0 0;}}
+@media(min-width:900px){.cp-cover{height:150px;border-radius:20px 20px 0 0;}}
 
-/* Edit Cover pill */
+/* Edit Cover pill — bottom-right, same as freelancer */
 .cp-btn-cover{
-  position:absolute;top:12px;right:12px;z-index:10;
-  background:rgba(255,255,255,0.93);
-  color:#0077b5;
-  border:1.5px solid rgba(255,255,255,0.93);
-  padding:7px 16px;border-radius:999px;
-  font-size:13px;font-weight:700;
+  position:absolute;bottom:12px;right:12px;z-index:30;
+  background:rgba(255,255,255,0.92);
+  color:#0077b5;border:none;
+  padding:7px 14px;border-radius:999px;
+  font-size:12px;font-weight:700;
   display:flex;align-items:center;gap:6px;
   cursor:pointer;
-  box-shadow:0 2px 10px rgba(0,0,0,0.12);
+  backdrop-filter:blur(12px);
+  box-shadow:0 2px 12px rgba(0,0,0,0.18);
   font-family:'Manrope',sans-serif;
-  backdrop-filter:blur(10px);
-  transition:transform .15s;
+  transition:all .15s;
 }
+.cp-btn-cover:hover{background:#fff;box-shadow:0 4px 16px rgba(0,0,0,0.22);}
 .cp-btn-cover:active{transform:scale(.95);}
 
 /* ── BELOW COVER ROW — avatar left, Edit Profile right ── */
-/* Avatar is NOT inside cover, it's below with a negative margin to overlap */
 .cp-below-cover{
   display:flex;
   align-items:flex-end;
@@ -1525,8 +1714,13 @@ const STYLES = `
   margin-bottom:10px;
   position:relative;
   z-index:20;
+  pointer-events:none;
 }
 @media(min-width:900px){.cp-below-cover{padding:0 22px;margin-top:-46px;margin-bottom:16px;}}
+
+/* Re-enable pointer events for the interactive children inside below-cover */
+.cp-below-cover .cp-avatar,
+.cp-below-cover .cp-btn-edit-icon{pointer-events:auto;}
 
 /* ── AVATAR — small square, shifted 2px right ── */
 .cp-avatar{
@@ -1665,12 +1859,18 @@ const STYLES = `
 @media(min-width:900px){
   .cp-sidebar-right{
     display:flex;flex-direction:column;gap:14px;
-    padding:24px 14px 40px;background:#EDF1F7;
+    padding:20px 12px 40px;background:#EDF1F7;
     position:sticky;top:0;height:100dvh;
     overflow-y:auto;overflow-x:hidden;
     min-width:0;width:100%;
+    align-items:stretch;
+    scrollbar-width:thin;scrollbar-color:#cbd5e1 transparent;
   }
 }
+.cp-sidebar-right>*{flex-shrink:0;}
+.cp-sidebar-right::-webkit-scrollbar{width:4px;}
+.cp-sidebar-right::-webkit-scrollbar-track{background:transparent;}
+.cp-sidebar-right::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px;}
 .cp-right-hdr{
   display:flex;align-items:center;justify-content:space-between;
   gap:8px;background:#fff;border-radius:14px;padding:10px 12px;
@@ -1678,7 +1878,7 @@ const STYLES = `
   box-shadow:0 1px 4px rgba(0,0,0,0.05);
   min-width:0;overflow:hidden;
 }
-.cp-wallet{background:linear-gradient(145deg,#cce8ff 0%,#d4eeff 45%,#e4f3ff 100%);border-radius:18px;padding:18px;min-width:0;overflow:hidden;border:1px solid rgba(147,197,253,0.6);}
+.cp-wallet{background:linear-gradient(145deg,#cce8ff 0%,#d4eeff 45%,#e4f3ff 100%);border-radius:18px;padding:18px;min-width:0;overflow:hidden;border:1px solid rgba(147,197,253,0.6);flex-shrink:0;}
 .cp-wallet-head{display:flex;justify-content:space-between;align-items:flex-start;}
 .cp-wallet-lbl{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#0369a1;}
 .cp-wallet-icon{background:rgba(3,105,161,0.12);border:none;border-radius:12px;
@@ -1697,7 +1897,7 @@ const STYLES = `
   font-weight:800;font-size:13px;padding:10px;border-radius:12px;cursor:pointer;margin-top:8px;
   font-family:'Manrope',sans-serif;box-shadow:0 2px 10px rgba(0,119,181,0.3);transition:all .15s;}
 .cp-btn-add:hover{box-shadow:0 4px 16px rgba(0,119,181,0.4);}
-.cp-conn-card{background:#fff;border-radius:16px;padding:16px;border:1px solid #e2e8f0;min-width:0;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);}
+.cp-conn-card{background:#fff;border-radius:16px;padding:16px;border:1px solid #e2e8f0;min-width:0;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);flex-shrink:0;}
 .cp-conn-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#94a3b8;margin-bottom:14px;}
 .cp-conn-empty{font-size:13px;color:#94a3b8;}
 .cp-conn-list{list-style:none;display:flex;flex-direction:column;gap:10px;}
@@ -1758,4 +1958,113 @@ const STYLES = `
   background:#f8fafc;transition:border-color .15s;}
 .cp-modal-ta:focus{border-color:#0077b5;background:#fff;}
 .cp-modal-count{text-align:right;font-size:11px;color:#94a3b8;margin-top:4px;margin-bottom:12px;}
+
+/* ── EDIT ICON BUTTON ── */
+.cp-btn-edit-icon{
+  background:none;border:none;padding:4px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:opacity .15s,transform .15s;flex-shrink:0;
+}
+.cp-btn-edit-icon:hover{opacity:.7;transform:scale(1.1);}
+.cp-btn-edit-icon:active{transform:scale(.93);}
+
+/* ── MY POSTS CARD ── */
+.cp-posts-card{
+  background:#fff;border-radius:18px;overflow:hidden;
+  box-shadow:0 1px 3px rgba(0,0,0,0.04),0 6px 20px rgba(0,0,0,0.08);
+  border:1px solid rgba(0,0,0,0.04);
+}
+.cp-posts-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px 12px;border-bottom:1px solid #f1f5f9;
+}
+.cp-posts-title{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;}
+.cp-posts-new{
+  background:linear-gradient(135deg,#0284c7,#0077b5);color:#fff;border:none;
+  border-radius:999px;padding:7px 14px;font-size:12px;font-weight:700;
+  cursor:pointer;font-family:'Manrope',sans-serif;
+  box-shadow:0 2px 8px rgba(0,119,181,0.3);transition:transform .15s;
+}
+.cp-posts-new:active{transform:scale(.95);}
+.cp-posts-empty{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:28px 20px;color:#94a3b8;font-size:13px;font-weight:500;text-align:center;
+}
+.cp-posts-list{
+  list-style:none;
+  display:flex;flex-direction:row;gap:12px;
+  overflow-x:auto;padding:12px 20px 16px;
+  scrollbar-width:none;
+}
+.cp-posts-list::-webkit-scrollbar{display:none;}
+.cp-post-item{
+  flex-shrink:0;width:220px;
+  padding:14px;border-radius:14px;
+  border:1px solid #e2e8f0;background:#f8fafc;
+  cursor:pointer;transition:all .18s;
+  display:flex;flex-direction:column;gap:6px;
+}
+.cp-post-item:hover{background:#f0f9ff;border-color:#bae6fd;box-shadow:0 4px 14px rgba(0,119,181,0.1);transform:translateY(-2px);}
+.cp-post-top{display:flex;align-items:center;gap:8px;}
+.cp-post-type{
+  font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;
+  padding:3px 9px;border-radius:999px;background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;
+}
+.cp-post-type.task{background:#f3e8ff;color:#7c3aed;border-color:#ddd6fe;}
+.cp-post-type.service,.cp-post-type.skill_exchange{background:#dcfce7;color:#15803d;border-color:#bbf7d0;}
+.cp-post-date{font-size:10px;color:#94a3b8;font-weight:500;}
+.cp-post-title{font-size:14px;font-weight:700;color:#0f172a;line-height:1.4;}
+.cp-post-desc{font-size:12px;color:#64748b;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.cp-post-meta{display:flex;align-items:center;gap:10px;margin-top:2px;}
+.cp-post-budget{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:#0369a1;background:#f0f9ff;border:1px solid #bae6fd;padding:3px 9px;border-radius:999px;}
+.cp-post-proposals{font-size:11px;font-weight:600;color:#64748b;}
+
+/* ── TASK ACCORDIONS ── */
+.cp-accord-wrap{display:flex;flex-direction:column;gap:8px;}
+.cp-accord{
+  background:#fff;border-radius:14px;overflow:hidden;
+  border:1px solid #e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,0.04);
+}
+.cp-accord-hdr{
+  width:100%;display:flex;align-items:center;justify-content:space-between;
+  padding:12px 14px;background:none;border:none;cursor:pointer;
+  font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;color:#0f172a;
+  transition:background .15s;
+}
+.cp-accord-hdr:hover{background:#f8fafc;}
+.cp-accord-left{display:flex;align-items:center;gap:7px;flex:1;}
+.cp-accord-badge{
+  font-size:10px;font-weight:800;background:#f0f9ff;color:#0369a1;
+  border:1px solid #bae6fd;border-radius:999px;padding:1px 7px;
+}
+.cp-accord-badge.inprog{background:#fffbeb;color:#d97706;border-color:#fde68a;}
+.cp-accord-badge.req{background:#eff6ff;color:#0077b5;border-color:#bfdbfe;}
+.cp-accord-chev{transition:transform .2s;flex-shrink:0;}
+.cp-accord-chev.open{transform:rotate(180deg);}
+.cp-accord-body{
+  padding:8px 14px 12px;display:flex;flex-direction:column;gap:6px;
+  border-top:1px solid #f1f5f9;
+}
+.cp-accord-empty{font-size:12px;color:#94a3b8;padding:4px 0;}
+.cp-accord-item{
+  display:flex;align-items:center;gap:7px;
+  font-size:12px;font-weight:600;color:#374151;
+  padding:6px 8px;border-radius:8px;background:#f8fafc;
+}
+.cp-accord-item span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;}
+.cp-accord-status{
+  font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
+  color:#d97706;background:#fffbeb;border:1px solid #fde68a;
+  border-radius:999px;padding:2px 6px;flex-shrink:0;
+}
+.cp-accord-req{cursor:pointer;gap:9px;padding:7px 8px;}
+.cp-accord-req:hover{background:#f0f9ff;}
+.cp-accord-req-av{
+  width:30px;height:30px;border-radius:50%;overflow:hidden;background:#e2e5e9;
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+}
+.cp-accord-req-av img{width:100%;height:100%;object-fit:cover;}
+.cp-accord-req-name{font-size:12px;font-weight:700;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cp-accord-req-post{font-size:11px;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cp-accord-req-rate{font-size:11px;font-weight:700;color:#0369a1;flex-shrink:0;}
 `
