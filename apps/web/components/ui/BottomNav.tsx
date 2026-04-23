@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { notificationService } from '../../services/notification.service'
 import { useAuthStore } from '../../store/authStore'
 import { getSocketClient } from '../../utils/socketClient'
@@ -71,7 +72,6 @@ function NavIcon({ name, active = false }: { name: string; active?: boolean }) {
 }
 
 export default function BottomNav() {
-  const router = useRouter()
   const pathname = usePathname()
   const { user } = useAuthStore()
   const [unreadCount, setUnreadCount] = useState(0)
@@ -109,9 +109,9 @@ export default function BottomNav() {
           const isAlerts = item.label === 'Alerts'
 
           return (
-            <button
+            <Link
               key={item.path}
-              onClick={() => router.push(item.path)}
+              href={item.path}
               className={`relative flex flex-1 flex-col items-center justify-center gap-0.5 py-3 transition-colors ${
                 isPost ? '' : isActive ? 'text-[#005d8f]' : 'text-[#707881] hover:text-[#005d8f]'
               }`}
@@ -138,7 +138,7 @@ export default function BottomNav() {
                   ) : null}
                 </>
               )}
-            </button>
+            </Link>
           )
         })}
       </div>

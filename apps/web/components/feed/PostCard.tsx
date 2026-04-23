@@ -189,7 +189,7 @@ export default function PostCard({
         ? 'Connected'
         : 'Request Sent'
       : actionKind === 'collaborate'
-        ? 'Collaboration Sent'
+        ? 'Task In Progress'
         : 'Applied'
   const hasExistingConnection =
     actionKind === 'connect' &&
@@ -288,25 +288,33 @@ export default function PostCard({
   }
 
   const handleProposal = async () => {
+    if (loading) return
     if (coverLetter.length < 50) return toast.error('Cover letter must be at least 50 characters')
     if (requiresRate && !proposedRate.trim()) return toast.error('Rate is required to apply')
+    const previousCoverLetter = coverLetter
+    const previousProposedRate = proposedRate
+
     setLoading(true)
+    setLocalActionCompleted(true)
+    setShowProposal(false)
+    setCoverLetter('')
+    setProposedRate('')
+
     try {
       await postService.sendProposal(post.id, {
-        coverLetter,
-        proposedRate: requiresRate && proposedRate ? Number(proposedRate) : undefined,
+        coverLetter: previousCoverLetter,
+        proposedRate: requiresRate && previousProposedRate ? Number(previousProposedRate) : undefined,
       })
       toast.success(
         actionKind === 'collaborate'
           ? 'Collaboration message sent to the client!'
           : 'Application sent to the client!'
       )
-      setLocalActionCompleted(true)
-      setShowProposal(false)
-      setCoverLetter('')
-      setProposedRate('')
       onActionComplete?.(post.id)
     } catch (error: any) {
+      setLocalActionCompleted(false)
+      setCoverLetter(previousCoverLetter)
+      setProposedRate(previousProposedRate)
       toast.error(error.response?.data?.message || `Failed to ${actionLabel.toLowerCase()}`)
     } finally {
       setLoading(false)
@@ -314,15 +322,18 @@ export default function PostCard({
   }
 
   const handleConnect = async () => {
+    if (loading) return
     if (!targetUserId) return toast.error('Unable to find this user')
     setLoading(true)
+    setLocalActionCompleted(true)
+    setShowProposal(false)
+
     try {
       await networkService.sendRequest(targetUserId)
       toast.success('Connection request sent. The freelancer can accept or ignore it from Network.')
-      setLocalActionCompleted(true)
-      setShowProposal(false)
       onActionComplete?.(post.id)
     } catch (error: any) {
+      setLocalActionCompleted(false)
       toast.error(error.response?.data?.message || 'Failed to send connection request')
     } finally {
       setLoading(false)
@@ -333,11 +344,14 @@ export default function PostCard({
   const isInProgress = postStatus === 'IN_PROGRESS'
   const isCompleted  = postStatus === 'COMPLETED' || postStatus === 'CLOSED'
   const isNotOpen    = postStatus !== 'OPEN'
+  const showViewerTaskStatus = !isOwner && isActionCompleted && actionKind === 'collaborate'
+  const showClosedStatus = !isOwner && isNotOpen && !showViewerTaskStatus && (isCompleted || hasExistingProposal)
+  const showInProgressBadge = isInProgress && (isOwner || isActionCompleted)
 
   return (
     <article className="relative overflow-hidden rounded-xl border border-[rgba(228,228,231,0.1)] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)] transition hover:shadow-[0_8px_24px_rgba(27,28,26,0.08)]">
       {/* Status badge — top-right corner */}
-      {isInProgress && (
+      {showInProgressBadge && (
         <span className="absolute right-3 top-3 z-10 flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-blue-700">
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-blue-500" />
           In Progress
@@ -482,7 +496,7 @@ export default function PostCard({
 
         <div className="mt-6 flex gap-3">
           {userRole ? (
-            isNotOpen && !isOwner ? (
+            showClosedStatus ? (
               <span className={`flex-1 rounded-lg px-4 py-2.5 text-center text-sm font-bold cursor-not-allowed ${
                 isCompleted
                   ? 'bg-green-50 text-green-700 border border-green-200'
@@ -504,7 +518,7 @@ export default function PostCard({
                   }
                   setShowProposal((value) => !value)
                 }}
-                disabled={!isOwner && (loading || isActionCompleted)}
+                disabled={!isOwner && isActionCompleted}
                 className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-bold transition ${
                   isOwner
                     ? 'border border-[#d7dde4] bg-white text-[#005d8f] shadow-none hover:bg-[#f8fafc]'
@@ -517,9 +531,7 @@ export default function PostCard({
                   ? 'View'
                   : isActionCompleted
                   ? completedLabel
-                  : loading && actionKind === 'connect'
-                    ? 'Sending...'
-                    : showProposal
+                  : showProposal
                       ? 'Cancel'
                       : actionLabel}
               </button>
@@ -567,7 +579,7 @@ export default function PostCard({
               disabled={loading}
               className="mt-4 w-full rounded-full bg-[linear-gradient(135deg,#005d8f_0%,#0077b5_100%)] py-3 text-sm font-bold text-white shadow-[0_12px_28px_rgba(0,93,143,0.22)] transition hover:opacity-95 disabled:opacity-60"
             >
-              {loading ? 'Sending...' : actionLabel}
+              {actionLabel}
             </button>
           </div>
         ) : null}

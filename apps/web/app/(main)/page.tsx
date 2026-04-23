@@ -134,8 +134,10 @@ function BoltIcon() {
 export default function HomePage() {
   const router = useRouter()
   const { user, setUser } = useAuthStore()
-  const [posts, setPosts] = useState<FeedPost[]>([])
-  const [loading, setLoading] = useState(true)
+  const cachedPosts = useFeedStore((state) => state.posts)
+  const setCachedPosts = useFeedStore((state) => state.setPosts)
+  const [posts, setPosts] = useState<FeedPost[]>(cachedPosts)
+  const [loading, setLoading] = useState(cachedPosts.length === 0)
   const [error, setError] = useState('')
   const [sentActions, setSentActions] = useState<Record<string, true>>({})
   const [peopleYouMayKnow, setPeopleYouMayKnow] = useState<any[]>([])
@@ -174,7 +176,9 @@ export default function HomePage() {
           search: deferredSearch || undefined,
         })
         if (ignore) return
-        setPosts(res?.data?.posts ?? [])
+        const nextPosts = res?.data?.posts ?? []
+        setPosts(nextPosts)
+        setCachedPosts(nextPosts)
       } catch (err: any) {
         if (ignore) return
         setError(err?.response?.data?.message || 'Failed to load home')
