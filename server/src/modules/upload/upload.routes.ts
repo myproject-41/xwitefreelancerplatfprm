@@ -62,7 +62,7 @@ router.post(
   '/file',
   authenticate,
   uploadFile.single('file'),
-  (req: Request, res: Response) => uploadController.uploadImage(req, res),
+  (req: Request, res: Response) => uploadController.uploadFile(req, res),
 )
 
 export default router

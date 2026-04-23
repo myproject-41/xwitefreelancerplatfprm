@@ -3,6 +3,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import path from 'path'
 import { errorMiddleware } from './middlewares/error.middleware'
+import { authLimiter, generalApiLimiter, uploadLimiter } from './middlewares/rateLimiter'
 import authRoutes from './modules/auth/auth.routes'
 import userRoutes from './modules/user/user.routes'
 import postRoutes from './modules/post/post.routes'
@@ -14,6 +15,9 @@ import uploadRoutes from './modules/upload/upload.routes'
 import escrowRoutes from './modules/escrow/escrow.routes'
 
 const app: Application = express()
+app.set('trust proxy', 1)
+app.disable('x-powered-by')
+
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   'http://localhost:3000',
@@ -36,7 +40,14 @@ app.use(cors({
   credentials: true,
 }))
 
-app.use(express.json({ limit: '10mb' }))
+app.use(express.json({
+  limit: '10mb',
+  verify: (req, _res, buf) => {
+    if (req.originalUrl === '/api/wallet/webhook') {
+      req.rawBody = buf.toString('utf8')
+    }
+  },
+}))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
 // Serve uploads folder as static
@@ -44,17 +55,23 @@ const uploadsPath = path.join(process.cwd(), 'uploads')
 app.use('/uploads', express.static(uploadsPath))
 
 app.get('/health', (req: Request, res: Response) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() })
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptimeSeconds: Math.round(process.uptime()),
+    environment: process.env.NODE_ENV || 'development',
+  })
 })
 
-app.use('/api/auth', authRoutes)
+app.use('/api', generalApiLimiter)
+app.use('/api/auth', authLimiter, authRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/posts', postRoutes)
 app.use('/api/wallet', walletRoutes)
 app.use('/api/network', networkRoutes)
 app.use('/api/notifications', notificationRoutes)
 app.use('/api/chat', chatRoutes)
-app.use('/api/upload', uploadRoutes)
+app.use('/api/upload', uploadLimiter, uploadRoutes)
 app.use('/api/escrow', escrowRoutes)
 
 app.use(errorMiddleware)

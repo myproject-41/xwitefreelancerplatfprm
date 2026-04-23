@@ -1,30 +1,47 @@
 import dotenv from 'dotenv'
 import path from 'path'
+import { z } from 'zod'
 
-// Load .env from root folder (local dev only — Railway injects vars directly)
+// Load .env from root folder during local development.
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config({ path: path.resolve(__dirname, '../../../.env') })
 }
 
-export const env = {
-  NODE_ENV: process.env.NODE_ENV || 'development',
-  PORT: parseInt(process.env.PORT || '4000'),
-  DATABASE_URL: process.env.DATABASE_URL!,
-  JWT_SECRET: process.env.JWT_SECRET!,
-  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
-  REDIS_URL: process.env.REDIS_URL || 'redis://localhost:6379',
-  RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID!,
-  RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET!,
-  RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET!,
-  OPENAI_API_KEY: process.env.OPENAI_API_KEY!,
-  ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || '',
-  NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000',
-}
-
-// Validate critical env vars on startup
-const required = ['DATABASE_URL', 'JWT_SECRET']
-required.forEach((key) => {
-  if (!process.env[key]) {
-    throw new Error(`Missing required environment variable: ${key}`)
+const envSchema = z.object({
+  NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+  PORT: z.coerce.number().int().positive().default(4000),
+  DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
+  DIRECT_DATABASE_URL: z.string().optional(),
+  JWT_SECRET: z.string().min(1, 'JWT_SECRET is required'),
+  JWT_EXPIRES_IN: z.string().default('7d'),
+  REDIS_URL: z.string().default('redis://localhost:6379'),
+  RAZORPAY_KEY_ID: z.string().optional(),
+  RAZORPAY_KEY_SECRET: z.string().optional(),
+  RAZORPAY_WEBHOOK_SECRET: z.string().optional(),
+  OPENAI_API_KEY: z.string().optional(),
+  ANTHROPIC_API_KEY: z.string().default(''),
+  NEXT_PUBLIC_API_URL: z.string().default('http://localhost:4000'),
+  FRONTEND_URL: z.string().optional(),
+  BASE_URL: z.string().optional(),
+  ALLOW_INSECURE_TLS: z.enum(['true', 'false']).optional(),
+}).superRefine((data, ctx) => {
+  if (data.NODE_ENV === 'production' && !data.FRONTEND_URL) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'FRONTEND_URL is required in production',
+      path: ['FRONTEND_URL'],
+    })
   }
 })
+
+const parsed = envSchema.safeParse(process.env)
+
+if (!parsed.success) {
+  const message = parsed.error.issues
+    .map((issue) => `${issue.path.join('.') || 'env'}: ${issue.message}`)
+    .join('; ')
+
+  throw new Error(`Invalid environment configuration: ${message}`)
+}
+
+export const env = parsed.data

@@ -124,7 +124,12 @@ export class NetworkController {
 
   async getFollowers(req: Request, res: Response): Promise<void> {
     try {
-      const data = await followService.getFollowers(req.user!.userId)
+      const targetUserId =
+        typeof req.query.userId === 'string' && req.query.userId.trim()
+          ? req.query.userId
+          : req.user!.userId
+
+      const data = await followService.getFollowers(targetUserId)
       res.json({ success: true, data })
     } catch (e: any) {
       res.status(500).json({ success: false, message: e.message })

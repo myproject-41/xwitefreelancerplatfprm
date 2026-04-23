@@ -3,7 +3,6 @@ import { z } from 'zod'
 import { authService } from './auth.service'
 import { Role } from './roles'
 
-// ── Validation schemas ───────────────────────
 const registerSchema = z.object({
   email: z.string().email('Invalid email'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
@@ -20,24 +19,11 @@ const changePasswordSchema = z.object({
   newPassword: z.string().min(8, 'New password must be at least 8 characters'),
 })
 
-// ── Controller ───────────────────────────────
+const deleteAccountSchema = z.object({
+  password: z.string().min(1, 'Password is required to delete account'),
+})
 
-export class AuthController {async deleteAccount(req: Request, res: Response) {
-  try {
-    const userId = (req as any).user.userId
-    const { password } = req.body
-    if (!password) {
-      return res.status(400).json({
-        success: false,
-        message: 'Password is required to delete account',
-      })
-    }
-    const result = await authService.deleteAccount(userId, password)
-    res.status(200).json({ success: true, message: result.message })
-  } catch (error: any) {
-    res.status(400).json({ success: false, message: error.message })
-  }
-}
+export class AuthController {
   async register(req: Request, res: Response) {
     try {
       const body = registerSchema.parse(req.body)
@@ -64,7 +50,7 @@ export class AuthController {async deleteAccount(req: Request, res: Response) {
           errors: error.errors,
         })
       }
-      // Unexpected server/database errors
+
       res.status(500).json({
         success: false,
         message: error.message || 'Registration failed. Please try again.',
@@ -90,12 +76,17 @@ export class AuthController {async deleteAccount(req: Request, res: Response) {
           errors: error.errors,
         })
       }
-      if (error.message === 'Invalid email or password' || error.message === 'Account is deactivated. Contact support.') {
+
+      if (
+        error.message === 'Invalid email or password' ||
+        error.message === 'Account is deactivated. Contact support.'
+      ) {
         return res.status(401).json({
           success: false,
           message: error.message,
         })
       }
+
       res.status(500).json({
         success: false,
         message: error.message || 'Login failed. Please try again.',
@@ -105,10 +96,9 @@ export class AuthController {async deleteAccount(req: Request, res: Response) {
 
   async getMe(req: Request, res: Response) {
     try {
-      const userId = (req as any).user.userId
+      const userId = req.user!.userId
       const user = await authService.getMe(userId)
 
-      // Issue a fresh token so the client always has the correct role
       const token = authService.generateToken({
         userId: user.id,
         email: user.email,
@@ -130,7 +120,7 @@ export class AuthController {async deleteAccount(req: Request, res: Response) {
 
   async changePassword(req: Request, res: Response) {
     try {
-      const userId = (req as any).user.userId
+      const userId = req.user!.userId
       const body = changePasswordSchema.parse(req.body)
       const result = await authService.changePassword(
         userId,
@@ -143,6 +133,42 @@ export class AuthController {async deleteAccount(req: Request, res: Response) {
         message: result.message,
       })
     } catch (error: any) {
+      if (error.name === 'ZodError') {
+        res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: error.errors,
+        })
+        return
+      }
+
+      res.status(400).json({
+        success: false,
+        message: error.message,
+      })
+    }
+  }
+
+  async deleteAccount(req: Request, res: Response) {
+    try {
+      const userId = req.user!.userId
+      const body = deleteAccountSchema.parse(req.body)
+      const result = await authService.deleteAccount(userId, body.password)
+
+      res.status(200).json({
+        success: true,
+        message: result.message,
+      })
+    } catch (error: any) {
+      if (error.name === 'ZodError') {
+        res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: error.errors,
+        })
+        return
+      }
+
       res.status(400).json({
         success: false,
         message: error.message,

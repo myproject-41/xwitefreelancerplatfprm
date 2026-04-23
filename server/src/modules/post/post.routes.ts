@@ -7,7 +7,7 @@ const router: Router = Router()
 
 router.use(authenticate)
 
-// Feed — all roles
+// Feed - all roles
 router.get('/feed', (req: Request, res: Response) =>
   postController.getFeed(req, res))
 
@@ -35,7 +35,7 @@ router.get('/user/:userId', (req: Request, res: Response) =>
 router.get('/proposals/:proposalId', (req: Request, res: Response) =>
   postController.getProposal(req, res))
 
-// Create post — company and client only
+// Create post - supported for all current product roles
 router.post('/',
   authorize(Role.COMPANY, Role.CLIENT, Role.FREELANCER),
   (req: Request, res: Response) => postController.createPost(req, res))
@@ -66,7 +66,7 @@ router.delete('/:id', (req: Request, res: Response) =>
 router.patch('/:id/close', (req: Request, res: Response) =>
   postController.closePost(req, res))
 
-// Proposals
+// Proposal-style actions for the current feed UX
 router.post('/:id/proposals',
   authorize(Role.FREELANCER, Role.COMPANY, Role.CLIENT),
   (req: Request, res: Response) => postController.sendProposal(req, res))

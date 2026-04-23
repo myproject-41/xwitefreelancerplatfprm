@@ -12,7 +12,7 @@ export class WalletController {
     }
   }
 
-  /* POST /api/wallet/create-order  — returns Razorpay order */
+  /* POST /api/wallet/create-order - returns Razorpay order */
   async createOrder(req: Request, res: Response): Promise<void> {
     try {
       const { amount } = req.body
@@ -28,7 +28,7 @@ export class WalletController {
     }
   }
 
-  /* POST /api/wallet/verify-payment  — verifies signature and credits wallet */
+  /* POST /api/wallet/verify-payment - verifies signature and credits wallet */
   async verifyPayment(req: Request, res: Response): Promise<void> {
     try {
       const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = req.body
@@ -48,16 +48,23 @@ export class WalletController {
     }
   }
 
-  /* POST /api/wallet/webhook  — Razorpay webhook (no auth middleware) */
+  /* POST /api/wallet/webhook - Razorpay webhook (no auth middleware) */
   async webhook(req: Request, res: Response): Promise<void> {
     try {
       const signature = req.headers['x-razorpay-signature'] as string
+      const rawBody = req.rawBody
+
       if (!signature) {
         res.status(400).json({ success: false, message: 'Missing signature' })
         return
       }
-      // rawBody is set by the express.raw() middleware on this route
-      await walletService.handleWebhook((req as any).rawBody, signature)
+
+      if (!rawBody) {
+        res.status(400).json({ success: false, message: 'Missing raw body' })
+        return
+      }
+
+      await walletService.handleWebhook(rawBody, signature)
       res.json({ success: true })
     } catch (error: any) {
       res.status(400).json({ success: false, message: error.message })

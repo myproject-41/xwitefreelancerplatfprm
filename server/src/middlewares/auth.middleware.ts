@@ -10,6 +10,7 @@ declare global {
         email: string
         role: Role
       }
+      rawBody?: string
     }
   }
 }

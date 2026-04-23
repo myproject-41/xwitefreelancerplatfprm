@@ -1,6 +1,8 @@
 import apiClient from './apiClient'
 import Cookies from 'js-cookie'
 
+const TOKEN_KEY = 'xwite_token'
+
 export const authService = {
   async register(data: {
     email: string
@@ -25,9 +27,11 @@ export const authService = {
   },
 
   saveToken(token: string) {
+    if (typeof window === 'undefined') return
+
     // Save in both cookie (for middleware) and localStorage (for API calls)
-    localStorage.setItem('xwite_token', token)
-    Cookies.set('xwite_token', token, {
+    localStorage.setItem(TOKEN_KEY, token)
+    Cookies.set(TOKEN_KEY, token, {
       expires: 7,
       sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',
@@ -35,16 +39,20 @@ export const authService = {
   },
 
   getToken() {
-    return localStorage.getItem('xwite_token') || Cookies.get('xwite_token')
+    if (typeof window === 'undefined') return Cookies.get(TOKEN_KEY)
+    return localStorage.getItem(TOKEN_KEY) || Cookies.get(TOKEN_KEY)
   },
 
   removeToken() {
-    localStorage.removeItem('xwite_token')
-    Cookies.remove('xwite_token')
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(TOKEN_KEY)
+      localStorage.removeItem('xwite-auth')
+    }
+    Cookies.remove(TOKEN_KEY)
   },
 
   isLoggedIn() {
     if (typeof window === 'undefined') return false
-    return !!localStorage.getItem('xwite_token') || !!Cookies.get('xwite_token')
+    return !!localStorage.getItem(TOKEN_KEY) || !!Cookies.get(TOKEN_KEY)
   },
 }

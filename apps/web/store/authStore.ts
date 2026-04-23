@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import Cookies from 'js-cookie'
 
 interface FreelancerProfile {
   fullName?: string
@@ -84,6 +85,10 @@ export const useAuthStore = create<AuthState>()(
       setToken: (token) => set({ token }),
 
       logout: () => {
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('xwite_token')
+        }
+        Cookies.remove('xwite_token')
         set({ user: null, token: null })
       },
 
