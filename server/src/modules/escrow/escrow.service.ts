@@ -2,6 +2,48 @@ import { prisma } from '../../config/db'
 import { notificationService } from '../notification/notification.service'
 
 export class EscrowService {
+  private calculatePlatformFee(amount: number) {
+    return Math.max(0, Math.round(amount * 0.1))
+  }
+
+  private getEscrowBreakdown(escrow: { amount: number; platformFee: number }) {
+    const platformFee = escrow.platformFee > 0 ? escrow.platformFee : this.calculatePlatformFee(escrow.amount)
+
+    return {
+      clientPays: escrow.amount,
+      platformFee,
+      freelancerPayout: Math.max(0, escrow.amount - platformFee),
+    }
+  }
+
+  private async refundClientHeldEscrow(
+    tx: any,
+    escrow: { amount: number; clientId: string; task: { title: string } },
+    escrowId: string,
+    description: string,
+  ) {
+    const clientWallet = await tx.wallet.findUnique({ where: { userId: escrow.clientId } })
+    if (!clientWallet) throw new Error('Client wallet not found')
+
+    await tx.wallet.update({
+      where: { userId: escrow.clientId },
+      data: {
+        balance: { increment: escrow.amount },
+        heldBalance: { decrement: escrow.amount },
+      },
+    })
+
+    await tx.walletTransaction.create({
+      data: {
+        walletId: clientWallet.id,
+        type: 'REFUND',
+        amount: escrow.amount,
+        description,
+        reference: escrowId,
+        balanceAfter: clientWallet.balance + escrow.amount,
+      },
+    })
+  }
 
   /* ── ensure wallet exists for a user ── */
   private async ensureWallet(userId: string) {
@@ -20,6 +62,7 @@ export class EscrowService {
     amount: number,
   ) {
     await Promise.all([this.ensureWallet(clientId), this.ensureWallet(freelancerId)])
+    const platformFee = this.calculatePlatformFee(amount)
 
     return prisma.escrow.create({
       data: {
@@ -27,7 +70,7 @@ export class EscrowService {
         clientId,
         freelancerId,
         amount,
-        platformFee: 0,
+        platformFee,
         status: 'CREATED',
       },
     })
@@ -180,30 +223,29 @@ export class EscrowService {
     if (!escrow) throw new Error('Escrow not found')
     if (escrow.clientId !== clientId) throw new Error('Not authorized')
     if (escrow.status !== 'REVIEW') throw new Error('Escrow must be in REVIEW state to release')
+    const { clientPays, freelancerPayout, platformFee } = this.getEscrowBreakdown(escrow)
 
     await prisma.$transaction(async (tx) => {
       const freelancerWallet = await tx.wallet.findUnique({ where: { userId: escrow.freelancerId } })
       if (!freelancerWallet) throw new Error('Freelancer wallet not found')
 
-      const amount = escrow.amount // 0% platform fee
-
       await tx.wallet.update({
         where: { userId: clientId },
-        data: { heldBalance: { decrement: amount } },
+        data: { heldBalance: { decrement: clientPays } },
       })
 
-      const newFreelancerBalance = freelancerWallet.balance + amount
+      const newFreelancerBalance = freelancerWallet.balance + freelancerPayout
 
       await tx.wallet.update({
         where: { userId: escrow.freelancerId },
-        data: { balance: { increment: amount } },
+        data: { balance: { increment: freelancerPayout } },
       })
 
       await tx.walletTransaction.create({
         data: {
           walletId:     freelancerWallet.id,
           type:         'ESCROW_RELEASE',
-          amount,
+          amount:       freelancerPayout,
           description:  `Payment received for: ${escrow.task.title}`,
           reference:    escrowId,
           balanceAfter: newFreelancerBalance,
@@ -212,7 +254,7 @@ export class EscrowService {
 
       await tx.escrow.update({
         where: { id: escrowId },
-        data: { status: 'RELEASED', releasedAt: new Date() },
+        data: { status: 'RELEASED', releasedAt: new Date(), platformFee },
       })
 
       await tx.task.update({ where: { id: escrow.taskId }, data: { status: 'COMPLETED' } })
@@ -223,7 +265,7 @@ export class EscrowService {
 
       await tx.freelancerProfile.updateMany({
         where: { userId: escrow.freelancerId },
-        data: { totalEarnings: { increment: amount } },
+        data: { totalEarnings: { increment: freelancerPayout } },
       })
     })
 
@@ -233,7 +275,7 @@ export class EscrowService {
         type:     'PAYMENT_RECEIVED',
         entityId: escrowId,
         title:    'Payment received!',
-        message:  `₹${escrow.amount} has been released to your wallet for "${escrow.task.title}".`,
+        message:  `₹${freelancerPayout} has been released to your wallet for "${escrow.task.title}" after a ₹${platformFee} platform fee.`,
         link:     `/wallet`,
       }),
       notificationService.createNotification({
@@ -241,7 +283,7 @@ export class EscrowService {
         type:     'PAYMENT_RELEASED',
         entityId: escrowId,
         title:    'Payment released',
-        message:  `₹${escrow.amount} released to freelancer for "${escrow.task.title}".`,
+        message:  `₹${freelancerPayout} released to freelancer for "${escrow.task.title}". Platform fee: ₹${platformFee}.`,
         link:     `/payment/escrow/${escrowId}`,
       }),
     ])
@@ -294,6 +336,7 @@ export class EscrowService {
     })
     if (!escrow) throw new Error('Escrow not found')
     if (escrow.status !== 'DISPUTED') throw new Error('Escrow is not in DISPUTED state')
+    const { clientPays, freelancerPayout, platformFee } = this.getEscrowBreakdown(escrow)
 
     await prisma.$transaction(async (tx) => {
       if (winner === 'FREELANCER') {
@@ -302,56 +345,36 @@ export class EscrowService {
 
         await tx.wallet.update({
           where: { userId: escrow.clientId },
-          data: { heldBalance: { decrement: escrow.amount } },
+          data: { heldBalance: { decrement: clientPays } },
         })
         await tx.wallet.update({
           where: { userId: escrow.freelancerId },
-          data: { balance: { increment: escrow.amount } },
+          data: { balance: { increment: freelancerPayout } },
         })
         await tx.walletTransaction.create({
           data: {
             walletId:     fw.id,
             type:         'ESCROW_RELEASE',
-            amount:       escrow.amount,
+            amount:       freelancerPayout,
             description:  `Dispute resolved in your favour for: ${escrow.task.title}`,
             reference:    escrowId,
-            balanceAfter: fw.balance + escrow.amount,
+            balanceAfter: fw.balance + freelancerPayout,
           },
         })
         await tx.freelancerProfile.updateMany({
           where: { userId: escrow.freelancerId },
-          data: { totalEarnings: { increment: escrow.amount } },
+          data: { totalEarnings: { increment: freelancerPayout } },
         })
         await tx.escrow.update({
           where: { id: escrowId },
-          data: { status: 'RELEASED', releasedAt: new Date(), resolvedBy: adminId },
+          data: { status: 'RELEASED', releasedAt: new Date(), resolvedBy: adminId, platformFee },
         })
         await tx.task.update({ where: { id: escrow.taskId }, data: { status: 'COMPLETED' } })
         if (escrow.task.postId) {
           await tx.post.update({ where: { id: escrow.task.postId }, data: { status: 'COMPLETED' } })
         }
       } else {
-        // Refund client
-        const cw = await tx.wallet.findUnique({ where: { userId: escrow.clientId } })
-        if (!cw) throw new Error('Client wallet not found')
-
-        await tx.wallet.update({
-          where: { userId: escrow.clientId },
-          data: {
-            balance:     { increment: escrow.amount },
-            heldBalance: { decrement: escrow.amount },
-          },
-        })
-        await tx.walletTransaction.create({
-          data: {
-            walletId:     cw.id,
-            type:         'REFUND',
-            amount:       escrow.amount,
-            description:  `Refund after dispute resolved for: ${escrow.task.title}`,
-            reference:    escrowId,
-            balanceAfter: cw.balance + escrow.amount,
-          },
-        })
+        await this.refundClientHeldEscrow(tx, escrow, escrowId, `Refund after dispute resolved for: ${escrow.task.title}`)
         await tx.escrow.update({
           where: { id: escrowId },
           data: { status: 'REFUNDED', resolvedBy: adminId },

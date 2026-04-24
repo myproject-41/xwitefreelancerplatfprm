@@ -509,6 +509,8 @@ export default function EscrowDetailPage() {
   const clientImg      = getPartyImage(escrow.client)
   const freelancerName = getPartyName(escrow.freelancer)
   const freelancerImg  = getPartyImage(escrow.freelancer)
+  const platformFee    = escrow.platformFee > 0 ? escrow.platformFee : Math.round(escrow.amount * 0.1)
+  const freelancerPayout = Math.max(0, escrow.amount - platformFee)
 
   /* ── activity history ── */
   const history = [
@@ -516,7 +518,7 @@ export default function EscrowDetailPage() {
     ...(escrow.status !== 'CREATED' ? [{ text: `Escrow funded — ${fmt(escrow.amount)} held from client wallet`, time: escrow.updatedAt, type: 'default' }] : []),
     ...(escrow.status === 'REVIEW' || escrow.status === 'RELEASED' ? [{ text: 'Work submitted by freelancer — awaiting client review', time: escrow.updatedAt, type: 'default' }] : []),
     ...(escrow.status === 'REVISION' ? [{ text: `Revision requested by client: "${escrow.revisionNote?.slice(0, 60)}${(escrow.revisionNote?.length ?? 0) > 60 ? '…' : ''}"`, time: escrow.updatedAt, type: 'warn' }] : []),
-    ...(escrow.status === 'RELEASED' ? [{ text: `Payment of ${fmt(escrow.amount)} released to freelancer`, time: escrow.releasedAt, type: 'success' }] : []),
+    ...(escrow.status === 'RELEASED' ? [{ text: `Payment of ${fmt(freelancerPayout)} released to freelancer. Platform fee kept: ${fmt(platformFee)}`, time: escrow.releasedAt, type: 'success' }] : []),
     ...(escrow.status === 'DISPUTED' ? [{ text: `Dispute raised — "${escrow.disputeReason}"`, time: escrow.updatedAt, type: 'danger' }] : []),
     ...(escrow.status === 'REFUNDED' ? [{ text: `${fmt(escrow.amount)} refunded to client wallet`, time: escrow.updatedAt, type: 'warn' }] : []),
   ]
@@ -615,28 +617,27 @@ export default function EscrowDetailPage() {
               </div>
             </div>
 
-            {/* Amount breakdown */}
-            <div className="ep-card">
-              <div className="ep-card-hdr">Payment Details</div>
-              <div className="ep-card-body">
-                <div className="ep-amount-row">
-                  <span className="ep-amount-lbl">Agreed Amount</span>
-                  <span className="ep-amount-val">{fmt(escrow.amount)}</span>
-                </div>
-                <div className="ep-amount-row">
-                  <span className="ep-amount-lbl">Platform Fee</span>
-                  <span className="ep-free-chip">
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-                    FREE
-                  </span>
-                </div>
-                <div className="ep-divider" />
-                <div className="ep-amount-row">
-                  <span className="ep-amount-lbl">Freelancer Receives</span>
-                  <span className="ep-amount-total">{fmt(escrow.amount)}</span>
+            {isFreelancer && (
+              <div className="ep-card">
+                <div className="ep-card-hdr">Payment Details</div>
+                <div className="ep-card-body">
+                  <div className="ep-amount-row">
+                    <span className="ep-amount-lbl">Client Pays</span>
+                    <span className="ep-amount-val">{fmt(escrow.amount)}</span>
+                  </div>
+                  <div className="ep-amount-row">
+                    <span className="ep-amount-lbl">Platform Fee</span>
+                    <span className="ep-amount-val">{fmt(platformFee)}</span>
+                  </div>
+                  <div className="ep-divider" />
+                  <div className="ep-amount-row">
+                    <span className="ep-amount-lbl">Freelancer Receives</span>
+                    <span className="ep-amount-total">{fmt(freelancerPayout)}</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+
 
             {/* Revision request — shown when client has requested changes */}
             {escrow.revisionNote && (
@@ -720,7 +721,7 @@ export default function EscrowDetailPage() {
                 <div className="ep-action-card">
                   <div className={`ep-action-note ${escrow.status === 'RELEASED' ? 'success' : ''}`}>
                     {escrow.status === 'RELEASED'
-                      ? `Payment of ${fmt(escrow.amount)} was successfully released on ${fmtDateTime(escrow.releasedAt)}.`
+                      ? `Payment was successfully released on ${fmtDateTime(escrow.releasedAt)}.`
                       : `This escrow was cancelled and ${fmt(escrow.amount)} was refunded to the client's wallet.`
                     }
                   </div>
@@ -1045,7 +1046,7 @@ export default function EscrowDetailPage() {
           <div className="ep-modal" onClick={e => e.stopPropagation()}>
             <p className="ep-modal-title">Approve Work & Release Payment</p>
             <p className="ep-modal-desc">
-              Once you approve, <strong>{fmt(escrow!.amount)}</strong> will be instantly released to the freelancer's wallet. This action cannot be undone.
+              Once you release the payment, it will instantly appear in the freelancer's wallet. This action cannot be undone.
             </p>
             <label style={{ fontSize: 12, fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 6 }}>
               Review notes (optional)
