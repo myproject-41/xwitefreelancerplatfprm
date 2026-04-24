@@ -61,9 +61,6 @@ export default function ClientProfile() {
   const [bio,            setBio]            = useState('')
   const [skills,         setSkills]         = useState<string[]>([])
   const [connections,    setConnections]    = useState(0)
-  const [totalSpent,     setTotalSpent]     = useState(0)
-  const [weeklySpent,    setWeeklySpent]    = useState(0)
-  const [monthlySpent,   setMonthlySpent]   = useState(0)
   const [connectedUsers, setConnectedUsers] = useState<ConnectedUser[]>([])
   const [coverSrc,       setCoverSrc]       = useState<string | null>(null)
   const [avatarSrc,      setAvatarSrc]      = useState<string | null>(null)
@@ -141,9 +138,6 @@ export default function ClientProfile() {
       setName(p.fullName ?? d.email ?? '')
       setBio(p.description ?? '')
       setSkills(p.skills ?? [])
-      setTotalSpent(p.totalSpent ?? 0)
-      setWeeklySpent(p.weeklySpent ?? 0)
-      setMonthlySpent(p.monthlySpent ?? 0)
       setAvatarSrc(p.profileImage ?? null)
       setCoverSrc(p.coverImage ?? null)
       setConnections(d.connectionsCount ?? 0)
@@ -538,24 +532,6 @@ export default function ClientProfile() {
             </div>
           </section>
 
-          {/* ── PANELS ── */}
-          <div className="cp-conn-card" style={{ marginTop: 14 }}>
-            <p className="cp-conn-title">Spend Overview</p>
-            <div className="cp-spend-grid">
-              <div className="cp-spend-box">
-                <p className="cp-spend-lbl">Total Spent</p>
-                <p className="cp-spend-val">{fmt(totalSpent, currency)}</p>
-              </div>
-              <div className="cp-spend-box">
-                <p className="cp-spend-lbl">Weekly Spend</p>
-                <p className="cp-spend-val">{fmt(weeklySpent, currency)}</p>
-              </div>
-              <div className="cp-spend-box">
-                <p className="cp-spend-lbl">Monthly Spend</p>
-                <p className="cp-spend-val">{fmt(monthlySpent, currency)}</p>
-              </div>
-            </div>
-          </div>
 
           {activePanel === 'settings' && (
             <InlinePanel title="Account Settings" onClose={() => togglePanel('none')}>

@@ -487,6 +487,36 @@ export class EscrowService {
   }
 
   /* ══════════════════════════════════════
+     CLIENT PUBLIC SPEND STATS
+  ══════════════════════════════════════ */
+  async getClientSpend(clientId: string) {
+    const now = new Date()
+    const weekAgo  = new Date(now); weekAgo.setDate(now.getDate() - 7)
+    const monthAgo = new Date(now); monthAgo.setDate(now.getDate() - 30)
+
+    const [totalAgg, weeklyAgg, monthlyAgg] = await Promise.all([
+      prisma.escrow.aggregate({
+        where: { clientId, status: 'RELEASED' },
+        _sum: { amount: true },
+      }),
+      prisma.escrow.aggregate({
+        where: { clientId, status: 'RELEASED', releasedAt: { gte: weekAgo } },
+        _sum: { amount: true },
+      }),
+      prisma.escrow.aggregate({
+        where: { clientId, status: 'RELEASED', releasedAt: { gte: monthAgo } },
+        _sum: { amount: true },
+      }),
+    ])
+
+    return {
+      totalSpent:   totalAgg._sum.amount   ?? 0,
+      weeklySpent:  weeklyAgg._sum.amount  ?? 0,
+      monthlySpent: monthlyAgg._sum.amount ?? 0,
+    }
+  }
+
+  /* ══════════════════════════════════════
      LIST MY ESCROWS
   ══════════════════════════════════════ */
   async getMyEscrows(userId: string) {

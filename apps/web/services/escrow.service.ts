@@ -45,4 +45,9 @@ export const escrowService = {
     const res = await apiClient.get(`/api/escrow/freelancer/${userId}/completed`)
     return res.data
   },
+
+  async getClientSpend(userId: string) {
+    const res = await apiClient.get(`/api/escrow/client/${userId}/spend`)
+    return res.data
+  },
 }

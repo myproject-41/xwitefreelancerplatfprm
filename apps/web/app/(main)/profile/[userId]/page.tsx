@@ -55,11 +55,12 @@ export default function PublicProfilePage() {
   const [loading, setLoading]               = useState(true)
   const [completedTasks, setCompletedTasks] = useState<any[]>([])
   const [posts, setPosts]                   = useState<any[]>([])
-  const [connStatus, setConnStatus]         = useState<any>(null) // null | connection object
+  const [connStatus, setConnStatus]         = useState<any>(null)
   const [connLoading, setConnLoading]       = useState(false)
   const [msgLoading, setMsgLoading]         = useState(false)
   const [postsOpen, setPostsOpen]           = useState(true)
   const [tasksOpen, setTasksOpen]           = useState(true)
+  const [clientSpend, setClientSpend]       = useState<{ totalSpent: number; weeklySpent: number; monthlySpent: number } | null>(null)
 
   const isMe = me?.id === userId
 
@@ -87,7 +88,17 @@ export default function PublicProfilePage() {
 
       if (profileRes.status === 'fulfilled') {
         const d = profileRes.value.data
-        setProfile(d?.data ?? d)
+        const p = d?.data ?? d
+        setProfile(p)
+
+        if (p?.role === 'CLIENT') {
+          escrowService.getClientSpend(userId)
+            .then((res: any) => {
+              const spend = res?.data ?? res
+              if (spend && typeof spend.totalSpent === 'number') setClientSpend(spend)
+            })
+            .catch(() => {})
+        }
       } else {
         toast.error('Profile not found')
         router.replace('/network')
@@ -623,21 +634,21 @@ export default function PublicProfilePage() {
               )}
 
               {/* Spend Overview — visible to all visitors on client profiles */}
-              {profile.role === 'CLIENT' && (
+              {profile.role === 'CLIENT' && clientSpend !== null && (
                 <div className="pub-spend-card">
                   <p className="pub-spend-title">Spend Overview</p>
                   <div className="pub-spend-list">
                     <div className="pub-spend-row">
                       <span className="pub-spend-lbl">Total Spent</span>
-                      <span className="pub-spend-val">{fmtCurrency(profile.totalSpent ?? 0, profile.currency ?? 'INR')}</span>
+                      <span className="pub-spend-val">{fmtCurrency(clientSpend.totalSpent, 'INR')}</span>
                     </div>
                     <div className="pub-spend-row">
                       <span className="pub-spend-lbl">This Week</span>
-                      <span className="pub-spend-val">{fmtCurrency(profile.weeklySpent ?? 0, profile.currency ?? 'INR')}</span>
+                      <span className="pub-spend-val">{fmtCurrency(clientSpend.weeklySpent, 'INR')}</span>
                     </div>
                     <div className="pub-spend-row">
                       <span className="pub-spend-lbl">This Month</span>
-                      <span className="pub-spend-val">{fmtCurrency(profile.monthlySpent ?? 0, profile.currency ?? 'INR')}</span>
+                      <span className="pub-spend-val">{fmtCurrency(clientSpend.monthlySpent, 'INR')}</span>
                     </div>
                   </div>
                 </div>

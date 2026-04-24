@@ -111,6 +111,15 @@ export class EscrowController {
     }
   }
 
+  async getClientSpend(req: Request, res: Response): Promise<void> {
+    try {
+      const data = await escrowService.getClientSpend(req.params.userId)
+      res.json({ success: true, data })
+    } catch (error: any) {
+      res.status(500).json({ success: false, message: error.message })
+    }
+  }
+
   async cancelEscrow(req: Request, res: Response): Promise<void> {
     try {
       const data = await escrowService.cancelEscrow(req.params.id, req.user!.userId)

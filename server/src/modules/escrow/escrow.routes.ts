@@ -7,6 +7,8 @@ const router = Router()
 
 // Public: freelancer completed tasks (for profile pages)
 router.get('/freelancer/:userId/completed', escrowController.getFreelancerCompletedTasks.bind(escrowController))
+// Public: client spend stats (for public profile pages)
+router.get('/client/:userId/spend', escrowController.getClientSpend.bind(escrowController))
 
 router.use(authenticate)
 
