@@ -623,7 +623,7 @@ export default function PublicProfilePage() {
               )}
 
               {/* Spend Overview — visible to all visitors on client profiles */}
-              {profile.totalSpent != null && (
+              {profile.role === 'CLIENT' && (
                 <div className="pub-spend-card">
                   <p className="pub-spend-title">Spend Overview</p>
                   <div className="pub-spend-list">

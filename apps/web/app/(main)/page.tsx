@@ -8,6 +8,7 @@ import MainHeader from '../../components/ui/MainHeader'
 import { networkService } from '../../services/network.service'
 import { postService } from '../../services/post.service'
 import { authService } from '../../services/auth.service'
+import { escrowService } from '../../services/escrow.service'
 import { useAuthStore } from '../../store/authStore'
 import { useFeedStore } from '../../store/feedStore'
 
@@ -142,6 +143,9 @@ export default function HomePage() {
   const [peopleYouMayKnow, setPeopleYouMayKnow] = useState<any[]>([])
   const [postLikers, setPostLikers] = useState<any[]>([])
   const [showLikersModal, setShowLikersModal] = useState(false)
+  const [spendTotal,   setSpendTotal]   = useState(0)
+  const [spendWeekly,  setSpendWeekly]  = useState(0)
+  const [spendMonthly, setSpendMonthly] = useState(0)
   const search = useFeedStore((state) => state.search)
   const deferredSearch = useDeferredValue(search.trim())
 
@@ -232,6 +236,28 @@ export default function HomePage() {
     }
   }, [user])
 
+  useEffect(() => {
+    if (user?.role !== 'CLIENT') return
+    let ignore = false
+
+    escrowService.getMyEscrows().then((res: any) => {
+      if (ignore) return
+      const all: any[] = Array.isArray(res) ? res : (res?.data ?? [])
+      const now = new Date()
+      const weekAgo   = new Date(now); weekAgo.setDate(now.getDate() - 7)
+      const monthAgo  = new Date(now); monthAgo.setDate(now.getDate() - 30)
+
+      const released = all.filter((e) => e.status === 'RELEASED' && e.clientId === user.id)
+      const sum = (arr: any[]) => arr.reduce((s, e) => s + (e.amount ?? 0), 0)
+
+      setSpendTotal(sum(released))
+      setSpendWeekly(sum(released.filter((e) => e.releasedAt && new Date(e.releasedAt) >= weekAgo)))
+      setSpendMonthly(sum(released.filter((e) => e.releasedAt && new Date(e.releasedAt) >= monthAgo)))
+    }).catch(() => {})
+
+    return () => { ignore = true }
+  }, [user?.id, user?.role])
+
   const visiblePosts = useMemo(() => {
     if (!deferredSearch) return posts
 
@@ -314,9 +340,6 @@ export default function HomePage() {
   const totalResponses = visiblePosts.reduce((sum, post) => sum + (post._count?.proposals ?? 0), 0)
   const isFreelancer = user.role === 'FREELANCER'
   const isClient = user.role === 'CLIENT'
-  const spendTotal   = user?.clientProfile?.totalSpent   ?? 0
-  const spendWeekly  = user?.clientProfile?.weeklySpent  ?? 0
-  const spendMonthly = user?.clientProfile?.monthlySpent ?? 0
   const visibleLikers = postLikers.slice(0, 3)
   const visibleSuggestions = peopleYouMayKnow.slice(0, 3)
 
