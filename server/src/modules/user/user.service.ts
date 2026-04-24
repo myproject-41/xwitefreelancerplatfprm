@@ -1,6 +1,47 @@
 import { prisma } from '../../config/db'
 
 export class UserService {
+  private async getClientSpendStats(userId: string) {
+    const now = new Date()
+    const weekAgo = new Date(now)
+    weekAgo.setDate(now.getDate() - 7)
+
+    const monthAgo = new Date(now)
+    monthAgo.setDate(now.getDate() - 30)
+
+    const [total, weekly, monthly] = await Promise.all([
+      prisma.escrow.aggregate({
+        where: {
+          clientId: userId,
+          status: 'RELEASED',
+        },
+        _sum: { amount: true },
+      }),
+      prisma.escrow.aggregate({
+        where: {
+          clientId: userId,
+          status: 'RELEASED',
+          releasedAt: { gte: weekAgo },
+        },
+        _sum: { amount: true },
+      }),
+      prisma.escrow.aggregate({
+        where: {
+          clientId: userId,
+          status: 'RELEASED',
+          releasedAt: { gte: monthAgo },
+        },
+        _sum: { amount: true },
+      }),
+    ])
+
+    return {
+      totalSpent: total._sum.amount ?? 0,
+      weeklySpent: weekly._sum.amount ?? 0,
+      monthlySpent: monthly._sum.amount ?? 0,
+    }
+  }
+
   async getUserById(id: string) {
     const user = await prisma.user.findUnique({
       where: { id },
@@ -16,6 +57,18 @@ export class UserService {
       },
     })
     if (!user) throw new Error('User not found')
+
+    if (user.role === 'CLIENT' && user.clientProfile) {
+      const spendStats = await this.getClientSpendStats(id)
+      return {
+        ...user,
+        clientProfile: {
+          ...user.clientProfile,
+          ...spendStats,
+        },
+      }
+    }
+
     return user
   }
 
@@ -147,6 +200,7 @@ export class UserService {
     }
 
     if (user.role === 'CLIENT' && user.clientProfile) {
+      const spendStats = await this.getClientSpendStats(id)
       return {
         id: user.id,
         role: user.role,
@@ -159,6 +213,7 @@ export class UserService {
         country: user.clientProfile.country,
         city: user.clientProfile.city,
         workPreference: user.clientProfile.workPreference,
+        ...spendStats,
         connectionsCount,
       }
     }

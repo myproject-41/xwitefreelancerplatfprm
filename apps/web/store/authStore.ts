@@ -52,6 +52,9 @@ interface ClientProfile {
   timezone?: string
   taskCategories?: string[]
   workPreference?: string
+  totalSpent?: number
+  weeklySpent?: number
+  monthlySpent?: number
 }
 
 interface User {

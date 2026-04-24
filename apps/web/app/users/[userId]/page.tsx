@@ -39,7 +39,7 @@ interface ClientProfile {
   fullName?: string; coverImage?: string; profileImage?: string
   description?: string; companyName?: string
   country?: string; city?: string; timezone?: string
-  taskCategories?: string[]; workPreference?: string
+  taskCategories?: string[]; workPreference?: string; totalSpent?: number; weeklySpent?: number; monthlySpent?: number
 }
 interface PublicUser {
   id?: string; email?: string; role?: UserRole
@@ -123,7 +123,7 @@ function normalizeUser(raw: any): PublicUser | null {
     fullName: b.fullName, coverImage: b.coverImage, profileImage: b.profileImage,
     description: b.description ?? b.bio, companyName: b.companyName, country: b.country,
     city: b.city, timezone: b.timezone, taskCategories: b.taskCategories ?? b.skills,
-    workPreference: b.workPreference,
+    workPreference: b.workPreference, totalSpent: b.totalSpent, weeklySpent: b.weeklySpent, monthlySpent: b.monthlySpent,
   } : undefined)
   return {
     id: b.id, email: b.email, role,
@@ -147,6 +147,9 @@ const STYLES = `
 /* ── cards ── */
 .pp-card{background:#fff;border-radius:22px;overflow:visible;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 8px 28px rgba(0,0,0,0.09);margin-bottom:16px;border:1px solid rgba(0,0,0,0.04);animation:pp-fadein .3s ease;}
 .pp-section-card{background:#fff;border-radius:18px;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 14px rgba(0,0,0,0.07);overflow:hidden;margin-bottom:16px;border:1px solid rgba(0,0,0,0.04);animation:pp-fadein .3s ease;}
+.pp-client-grid{display:grid;grid-template-columns:1fr;gap:16px;align-items:start;}
+.pp-client-side{display:flex;flex-direction:column;gap:16px;}
+@media(min-width:960px){.pp-client-grid{grid-template-columns:minmax(0,1fr) 300px;}}
 .pp-section-hdr{display:flex;align-items:center;justify-content:space-between;padding:15px 20px 12px;border-bottom:1px solid #f1f5f9;border-left:3px solid #0077b5;}
 .pp-section-title{font-size:14px;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;letter-spacing:-0.01em;}
 .pp-section-body{padding:16px 20px 20px;}
@@ -693,50 +696,73 @@ function ClientView({ profile, posts, connectState, connectionsCount, onConnect 
   connectState: ConnectState; connectionsCount: number; onConnect: () => void
 }) {
   const location = loc(profile.city, profile.country)
+  const totalSpent = fmtRate(profile.totalSpent, 'INR')
+  const weeklySpent = fmtRate(profile.weeklySpent ?? 0, 'INR')
+  const monthlySpent = fmtRate(profile.monthlySpent ?? 0, 'INR')
   return (
     <>
-      <div className="pp-card">
-        <div className="pp-cover">
-          {profile.coverImage ? <img src={profile.coverImage} alt="Cover" /> : <div className="pp-cover-ph" />}
-        </div>
-        <div className="pp-below-cover">
-          <div className="pp-avatar">
-            {profile.profileImage
-              ? <img src={profile.profileImage} alt={profile.fullName} />
-              : <div className="pp-avatar-ph"><svg width="32" height="32" viewBox="0 0 24 24" fill="#94a3b8"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>
-            }
-          </div>
-          <ConnectBtn state={connectState} onClick={onConnect} />
-        </div>
-        <div className="pp-info">
-          <p className="pp-conn-count">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="#0077b5"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-            {connectionsCount.toLocaleString()} connections
-          </p>
-          <div>
-            <h1 className="pp-name">{profile.fullName || 'Client'}</h1>
-            {profile.companyName && <p className="pp-subtitle">{profile.companyName}</p>}
-            {location && <p className="pp-location"><svg width="12" height="12" viewBox="0 0 24 24" fill="#94a3b8"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>{location}</p>}
-          </div>
-          {profile.description && <p className="pp-bio">{profile.description}</p>}
-          {(profile.taskCategories ?? []).length > 0 && (
-            <ul className="pp-tags">{profile.taskCategories!.map(s => <li key={s} className="pp-tag">{s}</li>)}</ul>
-          )}
-        </div>
-      </div>
-
-      {(profile.workPreference || profile.timezone || location) && (
-        <div className="pp-section-card">
-          <div className="pp-section-hdr"><h3 className="pp-section-title">Client Details</h3></div>
-          <div className="pp-section-body">
-            <div className="pp-detail-grid">
-              {profile.workPreference && <div className="pp-detail-box"><p className="pp-detail-box-lbl">Work Preference</p><p className="pp-detail-box-val">{titleCase(profile.workPreference)}</p></div>}
-              {profile.timezone && <div className="pp-detail-box"><p className="pp-detail-box-lbl">Timezone</p><p className="pp-detail-box-val">{profile.timezone}</p></div>}
-              {location && <div className="pp-detail-box"><p className="pp-detail-box-lbl">Location</p><p className="pp-detail-box-val">{location}</p></div>}
+      <div className="pp-client-grid">
+        <div>
+          <div className="pp-card">
+            <div className="pp-cover">
+              {profile.coverImage ? <img src={profile.coverImage} alt="Cover" /> : <div className="pp-cover-ph" />}
+            </div>
+            <div className="pp-below-cover">
+              <div className="pp-avatar">
+                {profile.profileImage
+                  ? <img src={profile.profileImage} alt={profile.fullName} />
+                  : <div className="pp-avatar-ph"><svg width="32" height="32" viewBox="0 0 24 24" fill="#94a3b8"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>
+                }
+              </div>
+              <ConnectBtn state={connectState} onClick={onConnect} />
+            </div>
+            <div className="pp-info">
+              <p className="pp-conn-count">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="#0077b5"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                {connectionsCount.toLocaleString()} connections
+              </p>
+              <div>
+                <h1 className="pp-name">{profile.fullName || 'Client'}</h1>
+                {profile.companyName && <p className="pp-subtitle">{profile.companyName}</p>}
+                {location && <p className="pp-location"><svg width="12" height="12" viewBox="0 0 24 24" fill="#94a3b8"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>{location}</p>}
+              </div>
+              {profile.description && <p className="pp-bio">{profile.description}</p>}
+              {(profile.taskCategories ?? []).length > 0 && (
+                <ul className="pp-tags">{profile.taskCategories!.map(s => <li key={s} className="pp-tag">{s}</li>)}</ul>
+              )}
             </div>
           </div>
         </div>
-      )}
+
+        <div className="pp-client-side">
+          <div className="pp-section-card" style={{ marginBottom: 0 }}>
+            <div className="pp-section-hdr"><h3 className="pp-section-title">Spend Overview</h3></div>
+            <div className="pp-section-body">
+              <div className="pp-detail-grid">
+                <div className="pp-detail-box"><p className="pp-detail-box-lbl">Weekly Spend</p><p className="pp-detail-box-val">{weeklySpent}</p></div>
+                <div className="pp-detail-box"><p className="pp-detail-box-lbl">Monthly Spend</p><p className="pp-detail-box-val">{monthlySpent}</p></div>
+                <div className="pp-detail-box"><p className="pp-detail-box-lbl">Lifetime Spend</p><p className="pp-detail-box-val">{totalSpent ?? fmtRate(0, 'INR')}</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16, marginTop: 16 }}>
+        {(profile.workPreference || profile.timezone || location || totalSpent) && (
+          <div className="pp-section-card" style={{ marginBottom: 0 }}>
+            <div className="pp-section-hdr"><h3 className="pp-section-title">Client Details</h3></div>
+            <div className="pp-section-body">
+              <div className="pp-detail-grid">
+                <div className="pp-detail-box"><p className="pp-detail-box-lbl">Total Spent</p><p className="pp-detail-box-val">{totalSpent ?? fmtRate(0, 'INR')}</p></div>
+                {profile.workPreference && <div className="pp-detail-box"><p className="pp-detail-box-lbl">Work Preference</p><p className="pp-detail-box-val">{titleCase(profile.workPreference)}</p></div>}
+                {profile.timezone && <div className="pp-detail-box"><p className="pp-detail-box-lbl">Timezone</p><p className="pp-detail-box-val">{profile.timezone}</p></div>}
+                {location && <div className="pp-detail-box"><p className="pp-detail-box-lbl">Location</p><p className="pp-detail-box-val">{location}</p></div>}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
       <PostsCarousel posts={posts} />
     </>

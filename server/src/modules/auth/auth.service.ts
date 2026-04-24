@@ -210,6 +210,40 @@ export class AuthService {
     })
 
     if (!user) throw new Error('User not found')
+
+    if (user.role === 'CLIENT' && user.clientProfile) {
+      const now = new Date()
+      const startOfWeek = new Date(now)
+      startOfWeek.setDate(now.getDate() - now.getDay())
+      startOfWeek.setHours(0, 0, 0, 0)
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+
+      const [totalAgg, weeklyAgg, monthlyAgg] = await Promise.all([
+        prisma.escrow.aggregate({
+          where: { clientId: userId, status: 'RELEASED' },
+          _sum: { amount: true },
+        }),
+        prisma.escrow.aggregate({
+          where: { clientId: userId, status: 'RELEASED', releasedAt: { gte: startOfWeek } },
+          _sum: { amount: true },
+        }),
+        prisma.escrow.aggregate({
+          where: { clientId: userId, status: 'RELEASED', releasedAt: { gte: startOfMonth } },
+          _sum: { amount: true },
+        }),
+      ])
+
+      return {
+        ...user,
+        clientProfile: {
+          ...user.clientProfile,
+          totalSpent:   totalAgg._sum.amount   ?? 0,
+          weeklySpent:  weeklyAgg._sum.amount  ?? 0,
+          monthlySpent: monthlyAgg._sum.amount ?? 0,
+        },
+      }
+    }
+
     return user
   }
 

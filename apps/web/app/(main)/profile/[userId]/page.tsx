@@ -621,6 +621,27 @@ export default function PublicProfilePage() {
                   )}
                 </div>
               )}
+
+              {/* Spend Overview — visible to all visitors on client profiles */}
+              {profile.totalSpent != null && (
+                <div className="pub-spend-card">
+                  <p className="pub-spend-title">Spend Overview</p>
+                  <div className="pub-spend-list">
+                    <div className="pub-spend-row">
+                      <span className="pub-spend-lbl">Total Spent</span>
+                      <span className="pub-spend-val">{fmtCurrency(profile.totalSpent ?? 0, profile.currency ?? 'INR')}</span>
+                    </div>
+                    <div className="pub-spend-row">
+                      <span className="pub-spend-lbl">This Week</span>
+                      <span className="pub-spend-val">{fmtCurrency(profile.weeklySpent ?? 0, profile.currency ?? 'INR')}</span>
+                    </div>
+                    <div className="pub-spend-row">
+                      <span className="pub-spend-lbl">This Month</span>
+                      <span className="pub-spend-val">{fmtCurrency(profile.monthlySpent ?? 0, profile.currency ?? 'INR')}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </aside>
@@ -829,6 +850,14 @@ const STYLES = `
 .pub-rate-val{font-size:24px;font-weight:800;color:#0f172a;letter-spacing:-0.02em;line-height:1;margin-top:4px;}
 .pub-rate-val span{font-size:14px;font-weight:500;color:#64748b;}
 .pub-avail-pill{display:inline-flex;align-items:center;gap:5px;background:#dcfce7;color:#15803d;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:700;margin-top:10px;}
+
+/* ── SPEND OVERVIEW CARD ── */
+.pub-spend-card{background:#fff;border-radius:16px;padding:14px;border:1px solid #e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,0.05);}
+.pub-spend-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin-bottom:10px;}
+.pub-spend-list{display:flex;flex-direction:column;gap:6px;}
+.pub-spend-row{display:flex;align-items:center;justify-content:space-between;background:#f8fafc;border-radius:10px;padding:9px 11px;}
+.pub-spend-lbl{font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.04em;}
+.pub-spend-val{font-size:14px;font-weight:800;color:#0f172a;}
 
 /* ── MOBILE BOTTOM NAV ── */
 .pub-mobile-nav{grid-area:mobile-nav;display:flex;justify-content:space-around;align-items:center;background:#fff;border-top:1px solid #e2e8f0;z-index:100;position:sticky;bottom:0;box-shadow:0 -2px 12px rgba(0,0,0,0.06);}

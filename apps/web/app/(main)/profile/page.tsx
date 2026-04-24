@@ -61,6 +61,9 @@ export default function ClientProfile() {
   const [bio,            setBio]            = useState('')
   const [skills,         setSkills]         = useState<string[]>([])
   const [connections,    setConnections]    = useState(0)
+  const [totalSpent,     setTotalSpent]     = useState(0)
+  const [weeklySpent,    setWeeklySpent]    = useState(0)
+  const [monthlySpent,   setMonthlySpent]   = useState(0)
   const [connectedUsers, setConnectedUsers] = useState<ConnectedUser[]>([])
   const [coverSrc,       setCoverSrc]       = useState<string | null>(null)
   const [avatarSrc,      setAvatarSrc]      = useState<string | null>(null)
@@ -138,6 +141,9 @@ export default function ClientProfile() {
       setName(p.fullName ?? d.email ?? '')
       setBio(p.description ?? '')
       setSkills(p.skills ?? [])
+      setTotalSpent(p.totalSpent ?? 0)
+      setWeeklySpent(p.weeklySpent ?? 0)
+      setMonthlySpent(p.monthlySpent ?? 0)
       setAvatarSrc(p.profileImage ?? null)
       setCoverSrc(p.coverImage ?? null)
       setConnections(d.connectionsCount ?? 0)
@@ -169,17 +175,17 @@ export default function ClientProfile() {
     ])
     if (postsRes.status === 'fulfilled') {
       const p = postsRes.value
-      setMyPosts(Array.isArray(p) ? p : (p?.posts ?? []))
+      setMyPosts(Array.isArray(p) ? p : (p?.data ?? p?.posts ?? []))
     }
     if (escrowsRes.status === 'fulfilled') {
-      const list: any[] = Array.isArray(escrowsRes.value) ? escrowsRes.value : (escrowsRes.value?.escrows ?? [])
+      const list: any[] = Array.isArray(escrowsRes.value) ? escrowsRes.value : (escrowsRes.value?.data ?? escrowsRes.value?.escrows ?? [])
       setCompletedTasks(list.filter(e => e.status === 'RELEASED'))
-      setInProgressTasks(list.filter(e => ['FUNDED','SUBMITTED','REVISION_REQUESTED','IN_PROGRESS'].includes(e.status)))
+      setInProgressTasks(list.filter(e => ['FUNDED','IN_PROGRESS','REVIEW','REVISION','DISPUTED'].includes(e.status)))
     }
     if (proposalsRes.status === 'fulfilled') {
       const p = proposalsRes.value
-      const list: any[] = Array.isArray(p) ? p : (p?.proposals ?? [])
-      setRequests(list.filter(r => r.status === 'PENDING'))
+      const list: any[] = Array.isArray(p) ? p : (p?.data ?? p?.proposals ?? [])
+      setRequests(list.filter(r => ['PENDING', 'ACCEPTED'].includes(r.status)))
     }
     setPostsLoading(false); setTasksLoading(false)
   }
@@ -516,7 +522,6 @@ export default function ClientProfile() {
                       </svg>
                       connection. {connections.toLocaleString()}
                     </p>
-
                     <h1 className="cp-name">{name || 'Your Name'}</h1>
 
                     {bio && <p className="cp-bio">{bio}</p>}
@@ -534,6 +539,24 @@ export default function ClientProfile() {
           </section>
 
           {/* ── PANELS ── */}
+          <div className="cp-conn-card" style={{ marginTop: 14 }}>
+            <p className="cp-conn-title">Spend Overview</p>
+            <div className="cp-spend-grid">
+              <div className="cp-spend-box">
+                <p className="cp-spend-lbl">Total Spent</p>
+                <p className="cp-spend-val">{fmt(totalSpent, currency)}</p>
+              </div>
+              <div className="cp-spend-box">
+                <p className="cp-spend-lbl">Weekly Spend</p>
+                <p className="cp-spend-val">{fmt(weeklySpent, currency)}</p>
+              </div>
+              <div className="cp-spend-box">
+                <p className="cp-spend-lbl">Monthly Spend</p>
+                <p className="cp-spend-val">{fmt(monthlySpent, currency)}</p>
+              </div>
+            </div>
+          </div>
+
           {activePanel === 'settings' && (
             <InlinePanel title="Account Settings" onClose={() => togglePanel('none')}>
               <p className="cp-sec-lbl">Change Password</p>
@@ -800,13 +823,13 @@ export default function ClientProfile() {
                       : requests.map((r: any, i: number) => (
                         <div key={r.id ?? i} className="cp-accord-item cp-accord-req" onClick={() => r.postId && router.push(`/post/${r.postId}`)}>
                           <div className="cp-accord-req-av">
-                            {r.freelancer?.profileImage
-                              ? <img src={r.freelancer.profileImage} alt="" />
+                            {(r.freelancer?.freelancerProfile?.profileImage || r.freelancer?.companyProfile?.profileImage || r.freelancer?.clientProfile?.profileImage)
+                              ? <img src={r.freelancer?.freelancerProfile?.profileImage || r.freelancer?.companyProfile?.profileImage || r.freelancer?.clientProfile?.profileImage} alt="" />
                               : <svg width="14" height="14" viewBox="0 0 24 24" fill="#94a3b8"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
                             }
                           </div>
                           <div style={{flex:1,minWidth:0}}>
-                            <p className="cp-accord-req-name">{r.freelancer?.fullName ?? r.freelancer?.email ?? 'Freelancer'}</p>
+                            <p className="cp-accord-req-name">{r.freelancer?.freelancerProfile?.fullName ?? r.freelancer?.companyProfile?.companyName ?? r.freelancer?.clientProfile?.fullName ?? r.freelancer?.email ?? 'Freelancer'}</p>
                             <p className="cp-accord-req-post">{r.post?.title ?? 'Proposal'}</p>
                           </div>
                           {r.proposedRate != null && (
@@ -1900,6 +1923,10 @@ const STYLES = `
 .cp-conn-card{background:#fff;border-radius:16px;padding:16px;border:1px solid #e2e8f0;min-width:0;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);flex-shrink:0;}
 .cp-conn-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#94a3b8;margin-bottom:14px;}
 .cp-conn-empty{font-size:13px;color:#94a3b8;}
+.cp-spend-grid{display:grid;grid-template-columns:1fr;gap:10px;}
+.cp-spend-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;}
+.cp-spend-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#94a3b8;margin-bottom:6px;}
+.cp-spend-val{font-size:17px;font-weight:800;color:#0f172a;line-height:1.2;}
 .cp-conn-list{list-style:none;display:flex;flex-direction:column;gap:10px;}
 .cp-conn-item{display:flex;align-items:center;gap:10px;min-width:0;}
 .cp-conn-av{width:34px;height:34px;border-radius:50%;overflow:hidden;background:#e2e5e9;

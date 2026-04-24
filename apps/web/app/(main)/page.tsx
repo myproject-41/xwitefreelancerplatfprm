@@ -87,15 +87,6 @@ function formatRole(role?: string) {
   return role ? role.toLowerCase().replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()) : 'Member'
 }
 
-function timeAgo(date?: string) {
-  if (!date) return 'Recently'
-  const diff = Date.now() - new Date(date).getTime()
-  const hours = Math.floor(diff / 3600000)
-  if (hours < 1) return 'Just now'
-  if (hours < 24) return `${hours}h ago`
-  return `${Math.floor(hours / 24)}d ago`
-}
-
 function getNetworkUserInfo(user: any) {
   return {
     id: user?.id || '',
@@ -121,6 +112,14 @@ function getNetworkUserInfo(user: any) {
       user?.clientProfile?.country ||
       '',
   }
+}
+
+function fmtSpend(amount: number, currency = 'INR') {
+  return new Intl.NumberFormat(currency === 'INR' ? 'en-IN' : 'en-US', {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: 0,
+  }).format(amount)
 }
 
 function BoltIcon() {
@@ -314,6 +313,10 @@ export default function HomePage() {
   const skills = getSkills(user).slice(0, 6)
   const totalResponses = visiblePosts.reduce((sum, post) => sum + (post._count?.proposals ?? 0), 0)
   const isFreelancer = user.role === 'FREELANCER'
+  const isClient = user.role === 'CLIENT'
+  const spendTotal   = user?.clientProfile?.totalSpent   ?? 0
+  const spendWeekly  = user?.clientProfile?.weeklySpent  ?? 0
+  const spendMonthly = user?.clientProfile?.monthlySpent ?? 0
   const visibleLikers = postLikers.slice(0, 3)
   const visibleSuggestions = peopleYouMayKnow.slice(0, 3)
 
@@ -377,6 +380,26 @@ export default function HomePage() {
                 ) : (
                   <p className="text-sm text-[#404850]">No profile skills added yet.</p>
                 )}
+              </div>
+            </div>
+          ) : null}
+
+          {isClient ? (
+            <div className="rounded-xl border border-zinc-200/10 bg-white p-4 shadow-sm">
+              <h3 className="mb-3 text-sm font-bold">Spend Overview</h3>
+              <div className="space-y-2">
+                <div className="rounded-lg bg-[#f4f7fa] px-3 py-2.5">
+                  <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-[#94a3b8]">Total Spent</p>
+                  <p className="text-[15px] font-bold text-[#0f172a]">{fmtSpend(spendTotal)}</p>
+                </div>
+                <div className="rounded-lg bg-[#f4f7fa] px-3 py-2.5">
+                  <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-[#94a3b8]">This Week</p>
+                  <p className="text-[15px] font-bold text-[#0f172a]">{fmtSpend(spendWeekly)}</p>
+                </div>
+                <div className="rounded-lg bg-[#f4f7fa] px-3 py-2.5">
+                  <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-[#94a3b8]">This Month</p>
+                  <p className="text-[15px] font-bold text-[#0f172a]">{fmtSpend(spendMonthly)}</p>
+                </div>
               </div>
             </div>
           ) : null}
