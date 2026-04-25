@@ -3,7 +3,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import path from 'path'
 import { errorMiddleware } from './middlewares/error.middleware'
-import { authLimiter, generalApiLimiter, uploadLimiter } from './middlewares/rateLimiter'
+import { generalApiLimiter, uploadLimiter } from './middlewares/rateLimiter'
 import authRoutes from './modules/auth/auth.routes'
 import userRoutes from './modules/user/user.routes'
 import postRoutes from './modules/post/post.routes'
@@ -64,7 +64,7 @@ app.get('/health', (req: Request, res: Response) => {
 })
 
 app.use('/api', generalApiLimiter)
-app.use('/api/auth', authLimiter, authRoutes)
+app.use('/api/auth', authRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/posts', postRoutes)
 app.use('/api/wallet', walletRoutes)

@@ -1,12 +1,13 @@
 import { Router, Request, Response } from 'express'
 import { authController } from './auth.controller'
 import { authenticate } from '../../middlewares/auth.middleware'
+import { authLimiter } from '../../middlewares/rateLimiter'
 
 const router: Router = Router()
 
-// Public routes
-router.post('/register', (req: Request, res: Response) => authController.register(req, res))
-router.post('/login', (req: Request, res: Response) => authController.login(req, res))
+// Public routes — strict rate limit only on login/register to prevent brute force
+router.post('/register', authLimiter, (req: Request, res: Response) => authController.register(req, res))
+router.post('/login',    authLimiter, (req: Request, res: Response) => authController.login(req, res))
 
 // Protected routes
 router.get('/me', authenticate, (req: Request, res: Response) => authController.getMe(req, res))
