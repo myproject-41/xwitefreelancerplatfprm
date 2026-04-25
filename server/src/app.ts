@@ -43,8 +43,9 @@ app.use(cors({
 app.use(express.json({
   limit: '10mb',
   verify: (req, _res, buf) => {
-    if (req.originalUrl === '/api/wallet/webhook') {
-      req.rawBody = buf.toString('utf8')
+    const r = req as import('express').Request & { rawBody?: string }
+    if (r.originalUrl === '/api/wallet/webhook') {
+      r.rawBody = buf.toString('utf8')
     }
   },
 }))
