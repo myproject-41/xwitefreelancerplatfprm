@@ -183,7 +183,6 @@ export default function FreelancerProfile() {
 
   /* ── My Posts open state (independent from task accordion) ── */
   const [postsOpen, setPostsOpen] = useState(true)
-  const [showAllPosts, setShowAllPosts] = useState(false)
 
   /* ── Skills inline edit ── */
   const [skillsEditing, setSkillsEditing] = useState(false)
@@ -195,8 +194,11 @@ export default function FreelancerProfile() {
   const coverRef  = useRef<HTMLInputElement>(null)
   const avatarRef = useRef<HTMLInputElement>(null)
   const postsScrollRef = useRef<HTMLDivElement>(null)
+  const postsScrollRefMain = useRef<HTMLDivElement>(null)
   const scrollPosts = (dir: 'left' | 'right') =>
     postsScrollRef.current?.scrollBy({ left: dir === 'right' ? 220 : -220, behavior: 'smooth' })
+  const scrollPostsMain = (dir: 'left' | 'right') =>
+    postsScrollRefMain.current?.scrollBy({ left: dir === 'right' ? 240 : -240, behavior: 'smooth' })
 
   /* ═══════════════════
      DATA FETCHING
@@ -1279,6 +1281,16 @@ export default function FreelancerProfile() {
                 <div className="fp-combined-card-hdr">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
                   <h3 className="fp-combined-card-title">My Posts</h3>
+                  {myPosts.length > 0 && (
+                    <div className="fp-posts-arrows" style={{marginLeft:'auto',marginRight:6}}>
+                      <button className="fp-posts-arrow" onClick={() => scrollPostsMain('left')} aria-label="Scroll left">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                      </button>
+                      <button className="fp-posts-arrow" onClick={() => scrollPostsMain('right')} aria-label="Scroll right">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                      </button>
+                    </div>
+                  )}
                   <button className="fp-combined-edit-btn" type="button" onClick={() => router.push('/post')}>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                     New Post
@@ -1292,8 +1304,8 @@ export default function FreelancerProfile() {
                     </p>
                   ) : (
                     <>
-                      <div className="fp-posts-list">
-                        {(showAllPosts ? myPosts : myPosts.slice(0, 3)).map((p: any) => {
+                      <div className="fp-posts-list" ref={postsScrollRefMain}>
+                        {myPosts.map((p: any) => {
                           const POST_COLORS: Record<string, {bg:string;text:string}> = {
                             JOB: {bg:'#dbeafe',text:'#1e40af'}, TASK: {bg:'#dcfce7',text:'#166534'},
                             COLLAB: {bg:'#fef9c3',text:'#854d0e'}, SKILL_EXCHANGE: {bg:'#fae8ff',text:'#7e22ce'},
@@ -1316,11 +1328,6 @@ export default function FreelancerProfile() {
                           )
                         })}
                       </div>
-                      {myPosts.length > 3 && (
-                        <button className="fp-posts-view-all" type="button" onClick={() => setShowAllPosts(v => !v)}>
-                          {showAllPosts ? 'Show only latest 3 posts' : `View all ${myPosts.length} posts`}
-                        </button>
-                      )}
                     </>
                   )}
                 </div>
