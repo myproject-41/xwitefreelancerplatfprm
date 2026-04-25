@@ -12,6 +12,8 @@ import toast from 'react-hot-toast'
 import apiClient        from '../../../../services/apiClient'
 import { authService }  from '../../../../services/auth.service'
 import { networkService } from '../../../../services/network.service'
+import { escrowService } from '../../../../services/escrow.service'
+import { postService }   from '../../../../services/post.service'
 import { uploadService } from '../../../../services/upload.service'
 import { walletService } from '../../../../services/wallet.service'
 import { useAuthStore }  from '../../../../store/authStore'
@@ -71,14 +73,21 @@ export default function CompanyProfile() {
   const [coverSrc,      setCoverSrc]      = useState<string | null>(null)
   const [logoSrc,       setLogoSrc]       = useState<string | null>(null)
   const [connections,   setConnections]   = useState(0)
-  const [connectedUsers,setConnectedUsers]= useState<ConnectedUser[]>([])
-  const [showConnModal, setShowConnModal] = useState(false)
 
   /* ── Followers ── */
   const [followers,       setFollowers]       = useState<Follower[]>([])
   const [followerCount,   setFollowerCount]   = useState(0)
   const [showFollowers,   setShowFollowers]   = useState(false)
   const [connectingId,    setConnectingId]    = useState<string | null>(null)
+
+  /* ── Posts & tasks ── */
+  const [myPosts,           setMyPosts]           = useState<any[]>([])
+  const [receivedProposals, setReceivedProposals] = useState<any[]>([])
+  const [completedTasks,    setCompletedTasks]    = useState<any[]>([])
+  const [inProgressTasks,   setInProgressTasks]   = useState<any[]>([])
+  const [hiredFreelancers,  setHiredFreelancers]  = useState<any[]>([])
+  const [showHiredModal,    setShowHiredModal]    = useState(false)
+  const [tasksSection,      setTasksSection]      = useState<'none'|'apply'|'completed'|'inprogress'>('none')
 
   /* ── UI state ── */
   const [pageLoading,    setPageLoading]    = useState(true)
@@ -108,8 +117,14 @@ export default function CompanyProfile() {
   const [pwLoading,setPwLoading]= useState(false)
 
   /* ── Refs ── */
-  const coverRef = useRef<HTMLInputElement>(null)
-  const logoRef  = useRef<HTMLInputElement>(null)
+  const coverRef           = useRef<HTMLInputElement>(null)
+  const logoRef            = useRef<HTMLInputElement>(null)
+  const postsScrollRef     = useRef<HTMLDivElement>(null)
+  const postsScrollRefMain = useRef<HTMLDivElement>(null)
+  const scrollPosts = (dir: 'left'|'right') =>
+    postsScrollRef.current?.scrollBy({ left: dir === 'right' ? 220 : -220, behavior: 'smooth' })
+  const scrollPostsMain = (dir: 'left'|'right') =>
+    postsScrollRefMain.current?.scrollBy({ left: dir === 'right' ? 240 : -240, behavior: 'smooth' })
 
   /* ═══════════════════
      DATA FETCHING
@@ -135,28 +150,42 @@ export default function CompanyProfile() {
       setLogoSrc(p.profileImage      ?? null)
       setConnections(d.connectionsCount ?? 0)
       try {
-        const cRes = await apiClient.get('/api/network/connections')
-        const raw: any[] = Array.isArray(cRes.data) ? cRes.data : (cRes.data?.data ?? [])
-        const list = raw.map((item: any) => {
-          const u = item.user ?? item
-          return {
-            id:           u.id,
-            email:        u.email,
-            fullName:     u.freelancerProfile?.fullName ?? u.companyProfile?.companyName ?? u.clientProfile?.fullName ?? u.email ?? 'User',
-            profileImage: u.freelancerProfile?.profileImage ?? u.companyProfile?.profileImage ?? u.clientProfile?.profileImage ?? null,
-          }
-        })
-        setConnections(raw.length)
-        setConnectedUsers(list.slice(0, 6))
-      } catch {}
-      try {
         const fRes = await apiClient.get('/api/company/followers')
         const fList = Array.isArray(fRes.data) ? fRes.data : (fRes.data?.followers ?? [])
         setFollowers(fList)
         setFollowerCount(fRes.data?.total ?? fList.length)
-      } catch {
-        /* followers endpoint may not exist yet — non-critical */
-      }
+      } catch {}
+      try {
+        const [postsRes, proposalsRes, escrowsRes] = await Promise.allSettled([
+          postService.getMyPosts(),
+          postService.getReceivedProposals(),
+          escrowService.getMyEscrows(),
+        ])
+        if (postsRes.status === 'fulfilled') {
+          const d = postsRes.value
+          const arr = Array.isArray(d) ? d : (Array.isArray(d?.data) ? d.data : [])
+          setMyPosts(arr.filter((p: any) => p && typeof p === 'object'))
+        }
+        if (proposalsRes.status === 'fulfilled') {
+          const d = proposalsRes.value
+          setReceivedProposals(Array.isArray(d) ? d : (d?.data ?? []))
+        }
+        if (escrowsRes.status === 'fulfilled') {
+          const all = escrowsRes.value
+          const arr: any[] = Array.isArray(all) ? all : (all?.data ?? [])
+          setCompletedTasks(arr.filter((e: any) => ['COMPLETED','RELEASED'].includes(e.status)))
+          setInProgressTasks(arr.filter((e: any) => !['COMPLETED','RELEASED','CANCELLED'].includes(e.status)))
+          const hired: any[] = []; const seen = new Set<string>()
+          arr.forEach((e: any) => {
+            const f = e.freelancer ?? e.worker
+            if (f?.id && !seen.has(f.id)) {
+              seen.add(f.id)
+              hired.push({ id: f.id, fullName: f.freelancerProfile?.fullName ?? f.email ?? 'Freelancer', profileImage: f.freelancerProfile?.profileImage ?? null, email: f.email })
+            }
+          })
+          setHiredFreelancers(hired)
+        }
+      } catch {}
     } catch { toast.error('Could not load profile') }
     finally { setPageLoading(false) }
   }
@@ -420,9 +449,8 @@ export default function CompanyProfile() {
               )}
             </div>
 
-            {/* Logo row — logo left, Edit Company button right */}
+            {/* Logo row */}
             <div className="cp-logo-row">
-              {/* Company logo — square with rounded corners */}
               <button className="cp-logo"
                 onClick={() => !logoUploading && logoRef.current?.click()}
                 disabled={logoUploading}
@@ -445,14 +473,6 @@ export default function CompanyProfile() {
                 </div>
                 {logoUploading && <div className="cp-logo-loader"><Spin light /></div>}
               </button>
-
-              {!pageLoading && (
-                <button className="cp-btn-edit-company"
-                  onClick={() => setEditSection('basic')}>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                  Edit Company
-                </button>
-              )}
             </div>
 
             {/* Company info */}
@@ -573,9 +593,15 @@ export default function CompanyProfile() {
                     {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </FormRow>
+                <FormRow label="About / Bio">
+                  <textarea className="cp-input cp-textarea"
+                    value={description}
+                    onChange={e => setDescription(e.target.value)}
+                    placeholder="Tell people about your company…" rows={3} />
+                </FormRow>
               </div>
               <SaveRow saving={saving}
-                onSave={() => saveProfile({ companyName, industry, employeeCount, country, city, website, currency })}
+                onSave={() => saveProfile({ companyName, industry, employeeCount, country, city, website, currency, description })}
                 onCancel={() => setEditSection('none')} />
             </EditCard>
           )}
@@ -655,38 +681,51 @@ export default function CompanyProfile() {
             </EditCard>
           )}
 
-          {/* ── READ-ONLY COMPANY DETAILS CARD ── */}
-          {!pageLoading && (companyName || industry || employeeCount || website) && (
-            <section className="cp-section-card">
-              <div className="cp-section-hdr">
-                <h3 className="cp-section-title">Company Details</h3>
-                <button className="cp-edit-icon-btn" onClick={() => setEditSection('basic')}>
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="#0077b5"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+          {/* ── MY POSTS ── */}
+          {!pageLoading && (
+            <div className="cp-posts-card">
+              <div className="cp-posts-card-hdr">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                <h3 className="cp-posts-card-title">My Posts</h3>
+                {myPosts.length > 0 && (
+                  <div className="cp-posts-arrows" style={{marginLeft:'auto',marginRight:6}}>
+                    <button className="cp-posts-arrow" onClick={() => scrollPostsMain('left')} aria-label="scroll left">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                    </button>
+                    <button className="cp-posts-arrow" onClick={() => scrollPostsMain('right')} aria-label="scroll right">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                    </button>
+                  </div>
+                )}
+                <button className="cp-btn-new-post" onClick={() => router.push('/post')}>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                  New Post
                 </button>
               </div>
-              <div className="cp-section-body">
-                <div className="cp-details-grid">
-                  {[
-                    { label:'Industry',       value: industry },
-                    { label:'Company Size',   value: employeeCount ? `${employeeCount} employees` : '' },
-                    { label:'Location',       value: [city, country].filter(Boolean).join(', ') },
-                    { label:'Website',        value: website },
-                    { label:'Currency',       value: currency },
-                  ].filter(r => r.value).map(row => (
-                    <div key={row.label} className="cp-detail-row">
-                      <span className="cp-detail-label">{row.label}</span>
-                      {row.label === 'Website'
-                        ? <a href={row.value.startsWith('http') ? row.value : `https://${row.value}`}
-                            target="_blank" rel="noopener noreferrer" className="cp-detail-link">
-                            {row.value.replace(/^https?:\/\//, '')}
-                          </a>
-                        : <span className="cp-detail-value">{row.value}</span>
+              <div className="cp-posts-scroll" ref={postsScrollRefMain}>
+                {myPosts.length === 0
+                  ? <p className="cp-posts-empty">No posts yet · <button className="cp-link-btn" onClick={() => router.push('/post')}>Create one</button></p>
+                  : myPosts.map((p: any) => {
+                      const COLORS: Record<string,{bg:string;text:string}> = {
+                        JOB:{bg:'#dbeafe',text:'#1e40af'},TASK:{bg:'#dcfce7',text:'#166534'},
+                        COLLAB:{bg:'#fef9c3',text:'#854d0e'},SKILL_EXCHANGE:{bg:'#fae8ff',text:'#7e22ce'},
                       }
-                    </div>
-                  ))}
-                </div>
+                      const col = COLORS[p.type] ?? {bg:'#f1f5f9',text:'#475569'}
+                      const proposals = p._count?.proposals ?? p.proposalCount ?? 0
+                      return (
+                        <div key={p.id} className="cp-post-item" onClick={() => router.push(`/posts/${p.id}`)}>
+                          <div className="cp-post-item-top">
+                            <span className="cp-post-item-type" style={{background:col.bg,color:col.text}}>{(p.type??'POST').replace(/_/g,' ')}</span>
+                            <span className="cp-post-item-status" style={{color:p.status==='OPEN'?'#16a34a':'#94a3b8'}}>{p.status}</span>
+                          </div>
+                          <p className="cp-post-item-title">{p.title || 'Untitled'}</p>
+                          {proposals > 0 && <span className="cp-post-item-apply">{proposals} applied</span>}
+                        </div>
+                      )
+                    })
+                }
               </div>
-            </section>
+            </div>
           )}
 
         </main>
@@ -727,28 +766,28 @@ export default function CompanyProfile() {
             </button>
           </div>
 
-          {/* Connected people */}
+          {/* Followers card */}
           <div className="cp-conn-card">
-            <p className="cp-conn-title">People Connected</p>
-            {connectedUsers.length === 0
-              ? <p className="cp-conn-empty">No connections yet</p>
+            <p className="cp-conn-title">Followers</p>
+            {followers.length === 0
+              ? <p className="cp-conn-empty">{followerCount > 0 ? `${followerCount} followers` : 'No followers yet'}</p>
               : (
-                <button type="button" className="cp-ov-btn" onClick={() => setShowConnModal(true)}>
+                <button type="button" className="cp-ov-btn" onClick={() => setShowFollowers(true)}>
                   <div className="cp-ov-row">
-                    {connectedUsers.slice(0, 5).map((u, i) => (
-                      <div key={u.id} className="cp-ov-av" style={{ marginLeft: i === 0 ? 0 : -10, zIndex: i }}>
-                        {u.profileImage
-                          ? <img src={u.profileImage} alt={u.fullName ?? ''} />
-                          : <span>{(u.fullName ?? u.email ?? 'U').charAt(0).toUpperCase()}</span>
+                    {followers.slice(0, 5).map((f, i) => (
+                      <div key={f.id} className="cp-ov-av" style={{ marginLeft: i === 0 ? 0 : -10, zIndex: i }}>
+                        {f.profileImage
+                          ? <img src={f.profileImage} alt={f.fullName ?? ''} />
+                          : <span>{(f.fullName ?? f.email ?? 'U').charAt(0).toUpperCase()}</span>
                         }
                       </div>
                     ))}
-                    {connections > 5 && (
-                      <div className="cp-ov-more" style={{ marginLeft: -10, zIndex: 5 }}>+{connections - 5}</div>
+                    {followerCount > 5 && (
+                      <div className="cp-ov-more" style={{ marginLeft: -10, zIndex: 5 }}>+{followerCount - 5}</div>
                     )}
                   </div>
                   <div className="cp-ov-info">
-                    <p className="cp-ov-count">{connections} connection{connections !== 1 ? 's' : ''}</p>
+                    <p className="cp-ov-count">{followerCount} follower{followerCount !== 1 ? 's' : ''}</p>
                     <p className="cp-ov-sub">Tap to see all</p>
                   </div>
                 </button>
@@ -756,40 +795,102 @@ export default function CompanyProfile() {
             }
           </div>
 
-          {/* Connections Modal */}
-          {showConnModal && (
-            <div className="cp-modal-overlay" onClick={() => setShowConnModal(false)}>
+          {/* Hired Freelancers */}
+          <div className="cp-sb-card">
+            <div className="cp-sb-card-hdr">
+              <p className="cp-conn-title" style={{margin:0}}>Hired</p>
+              {hiredFreelancers.length > 3 && (
+                <button className="cp-sb-viewall" onClick={() => setShowHiredModal(true)}>View all</button>
+              )}
+            </div>
+            {hiredFreelancers.length === 0
+              ? <p className="cp-conn-empty" style={{marginTop:8}}>No hires yet</p>
+              : hiredFreelancers.slice(0, 3).map(f => (
+                  <button key={f.id} type="button" className="cp-hired-item" onClick={() => router.push(`/profile/${f.id}`)}>
+                    <div className="cp-hired-av">
+                      {f.profileImage ? <img src={f.profileImage} alt={f.fullName} /> : <span>{(f.fullName ?? 'F').charAt(0).toUpperCase()}</span>}
+                    </div>
+                    <p className="cp-hired-name">{f.fullName}</p>
+                  </button>
+                ))
+            }
+          </div>
+
+          {/* Hired modal */}
+          {showHiredModal && (
+            <div className="cp-modal-overlay" onClick={() => setShowHiredModal(false)}>
               <div className="cp-modal-box" onClick={e => e.stopPropagation()}>
                 <div className="cp-modal-hdr">
-                  <p className="cp-modal-title">People Connected</p>
-                  <button className="cp-modal-close" onClick={() => setShowConnModal(false)}>✕</button>
+                  <p className="cp-modal-title">Hired Freelancers ({hiredFreelancers.length})</p>
+                  <button className="cp-modal-close" onClick={() => setShowHiredModal(false)}>✕</button>
                 </div>
                 <div className="cp-modal-list">
-                  {connectedUsers.map(u => (
-                    <button
-                      key={u.id}
-                      type="button"
-                      className="cp-modal-item"
-                      onClick={() => { setShowConnModal(false); router.push(`/profile/${u.id}`) }}
-                    >
+                  {hiredFreelancers.map(f => (
+                    <button key={f.id} type="button" className="cp-modal-item"
+                      onClick={() => { setShowHiredModal(false); router.push(`/profile/${f.id}`) }}>
                       <div className="cp-modal-av">
-                        {u.profileImage
-                          ? <img src={u.profileImage} alt={u.fullName ?? ''} />
-                          : <span>{(u.fullName ?? 'U').charAt(0).toUpperCase()}</span>
-                        }
+                        {f.profileImage ? <img src={f.profileImage} alt={f.fullName} /> : <span>{(f.fullName ?? 'F').charAt(0).toUpperCase()}</span>}
                       </div>
-                      <p className="cp-modal-name">{u.fullName ?? u.email ?? 'User'}</p>
+                      <p className="cp-modal-name">{f.fullName}</p>
                     </button>
                   ))}
                 </div>
-                {connections > connectedUsers.length && (
-                  <button className="cp-modal-viewall" onClick={() => { setShowConnModal(false); router.push('/network') }}>
-                    View all in Network
-                  </button>
-                )}
               </div>
             </div>
           )}
+
+          {/* Tasks accordion */}
+          <div className="cp-sb-card">
+            <p className="cp-conn-title" style={{marginBottom:10}}>Tasks</p>
+            {([
+              { key:'apply'      as const, label:'Apply',       count:receivedProposals.length },
+              { key:'inprogress' as const, label:'In Progress', count:inProgressTasks.length  },
+              { key:'completed'  as const, label:'Completed',   count:completedTasks.length   },
+            ]).map(({ key, label, count }) => {
+              const isOpen = tasksSection === key
+              return (
+                <div key={key} className="cp-task-acc">
+                  <button className={`cp-task-hdr${isOpen?' open':''}`}
+                    onClick={() => setTasksSection(isOpen ? 'none' : key)}>
+                    <span className="cp-task-hdr-label">{label}</span>
+                    {count > 0 && <span className="cp-task-badge">{count}</span>}
+                    <svg className={`cp-task-chevron${isOpen?' open':''}`} width="13" height="13" viewBox="0 0 24 24" fill="#94a3b8"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+                  </button>
+                  {isOpen && (
+                    <div className="cp-task-body">
+                      {key === 'apply' && (receivedProposals.length === 0
+                        ? <p className="cp-task-empty">No applications yet</p>
+                        : receivedProposals.slice(0,6).map((pr: any) => (
+                            <div key={pr.id} className="cp-task-item" onClick={() => router.push(`/posts/${pr.postId ?? pr.post?.id}`)}>
+                              <p className="cp-task-name">{pr.freelancer?.freelancerProfile?.fullName ?? pr.freelancer?.email ?? 'Freelancer'}</p>
+                              <span className="cp-task-sub">{pr.post?.title ?? 'Post'}</span>
+                            </div>
+                          ))
+                      )}
+                      {key === 'inprogress' && (inProgressTasks.length === 0
+                        ? <p className="cp-task-empty">No tasks in progress</p>
+                        : inProgressTasks.slice(0,6).map((e: any) => (
+                            <div key={e.id} className="cp-task-item">
+                              <p className="cp-task-name">{e.task?.title ?? 'Task'}</p>
+                              <span className="cp-task-sub">{e.freelancer?.freelancerProfile?.fullName ?? 'Freelancer'}</span>
+                            </div>
+                          ))
+                      )}
+                      {key === 'completed' && (completedTasks.length === 0
+                        ? <p className="cp-task-empty">No completed tasks</p>
+                        : completedTasks.slice(0,6).map((e: any) => (
+                            <div key={e.id} className="cp-task-item">
+                              <p className="cp-task-name">{e.task?.title ?? 'Task'}</p>
+                              <span className="cp-task-sub" style={{color:'#16a34a'}}>✓ {e.freelancer?.freelancerProfile?.fullName ?? 'Freelancer'}</span>
+                            </div>
+                          ))
+                      )}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
 
           {/* Switch Account */}
           <button className="cp-switch" onClick={() => router.push('/profile/client')}>
@@ -1310,14 +1411,17 @@ const STYLES = `
 @media(min-width:900px){.cp-card{border-radius:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 8px 32px rgba(0,0,0,0.1);border:1px solid rgba(0,0,0,0.04);}}
 
 /* ── COVER ── */
-.cp-cover{position:relative;margin:14px 14px 0;border-radius:18px;overflow:hidden;height:155px;cursor:pointer;}
+.cp-cover{position:relative;margin:0;border-radius:20px 20px 0 0;overflow:hidden;height:120px;cursor:pointer;}
 .cp-cover-inner{width:100%;height:100%;}
-.cp-cover-img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;}
-.cp-cover-ph{width:100%;height:100%;background:linear-gradient(120deg,#b8cfd8 0%,#c8d9e4 30%,#d5e2e8 55%,#dce5db 80%,#e2ddd0 100%);}
-.cp-cover::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,0.04);pointer-events:none;}
+.cp-cover-img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform .35s ease;}
+.cp-cover:hover .cp-cover-img{transform:scale(1.03);}
+.cp-cover-ph{width:100%;height:100%;background:linear-gradient(135deg,#0f4c75 0%,#1b6ca8 30%,#0077b5 55%,#2196c4 80%,#4db8d9 100%);}
+.cp-cover-ph::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(255,255,255,0.15) 0%,transparent 55%),radial-gradient(ellipse at 80% 30%,rgba(255,255,255,0.08) 0%,transparent 45%);pointer-events:none;}
+.cp-cover::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 35%,rgba(0,0,0,0.22) 100%);pointer-events:none;}
 .cp-cover-loader{position:absolute;inset:0;z-index:6;background:rgba(255,255,255,0.72);display:flex;align-items:center;justify-content:center;}
-@media(min-width:900px){.cp-cover{height:200px;border-radius:18px 18px 0 0;}}
-.cp-btn-cover{position:absolute;top:12px;right:12px;z-index:10;background:rgba(255,255,255,0.93);color:#0077b5;border:1.5px solid rgba(255,255,255,0.93);padding:7px 16px;border-radius:999px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px;cursor:pointer;backdrop-filter:blur(10px);box-shadow:0 2px 10px rgba(0,0,0,0.12);font-family:'Inter',sans-serif;transition:transform .15s;}
+@media(min-width:900px){.cp-cover{height:155px;}}
+.cp-btn-cover{position:absolute;bottom:12px;right:12px;z-index:10;background:rgba(255,255,255,0.92);color:#0077b5;border:none;padding:7px 14px;border-radius:999px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;cursor:pointer;backdrop-filter:blur(12px);box-shadow:0 2px 12px rgba(0,0,0,0.18);font-family:'Inter',sans-serif;transition:all .15s;}
+.cp-btn-cover:hover{background:#fff;box-shadow:0 4px 16px rgba(0,0,0,0.22);}
 .cp-btn-cover:active{transform:scale(.95);}
 
 /* ── LOGO ROW ── */
@@ -1606,5 +1710,54 @@ const STYLES = `
   flex-shrink:0;
   font-family:'Inter',sans-serif;
 }
+
+/* ── MY POSTS CARD (main area) ── */
+.cp-posts-card{background:#fff;border-radius:16px;border:1px solid #bae6fd;overflow:hidden;box-shadow:0 1px 4px rgba(0,119,181,0.07);}
+.cp-posts-card-hdr{display:flex;align-items:center;gap:8px;padding:12px 14px;background:linear-gradient(135deg,#f0f9ff,#e8f4fd);border-bottom:1px solid #e0f2fe;}
+.cp-posts-card-title{font-size:13px;font-weight:700;color:#0077b5;font-family:'Inter',sans-serif;}
+.cp-posts-arrows{display:flex;align-items:center;gap:4px;flex-shrink:0;}
+.cp-posts-arrow{width:26px;height:26px;border-radius:50%;border:1.5px solid #bae6fd;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#0077b5;transition:all .15s;flex-shrink:0;}
+.cp-posts-arrow:hover{background:#0077b5;color:#fff;border-color:#0077b5;}
+.cp-btn-new-post{display:flex;align-items:center;gap:5px;background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:999px;padding:5px 12px;font-size:11px;font-weight:700;color:#0077b5;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;flex-shrink:0;}
+.cp-btn-new-post:hover{background:#0077b5;color:#fff;border-color:#0077b5;}
+.cp-posts-scroll{display:flex;flex-direction:row;gap:10px;padding:12px 14px 16px;overflow-x:auto;scrollbar-width:none;}
+.cp-posts-scroll::-webkit-scrollbar{display:none;}
+.cp-posts-empty{font-size:13px;color:#94a3b8;font-family:'Inter',sans-serif;padding:4px 0;}
+.cp-link-btn{background:none;border:none;color:#0077b5;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
+.cp-post-item{flex-shrink:0;width:200px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:11px 13px;cursor:pointer;display:flex;flex-direction:column;gap:5px;transition:all .18s;}
+.cp-post-item:hover{background:#f0f9ff;border-color:#bae6fd;box-shadow:0 3px 10px rgba(0,119,181,0.1);transform:translateY(-1px);}
+.cp-post-item-top{display:flex;align-items:center;gap:6px;}
+.cp-post-item-type{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;border-radius:6px;padding:2px 7px;flex-shrink:0;}
+.cp-post-item-status{font-size:10px;font-weight:700;margin-left:auto;}
+.cp-post-item-title{font-size:12px;font-weight:600;color:#0f172a;line-height:1.4;}
+.cp-post-item-apply{font-size:10px;color:#0077b5;font-weight:700;}
+
+/* ── SIDEBAR CARD (hired / tasks) ── */
+.cp-sb-card{background:#fff;border-radius:16px;padding:14px 14px 12px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.06);min-width:0;overflow:hidden;}
+.cp-sb-card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.cp-sb-viewall{background:none;border:none;font-size:11px;font-weight:700;color:#0077b5;cursor:pointer;font-family:'Inter',sans-serif;}
+.cp-sb-viewall:hover{text-decoration:underline;}
+.cp-hired-item{display:flex;align-items:center;gap:9px;width:100%;background:#f8fafc;border:none;border-radius:10px;padding:8px 10px;margin-bottom:6px;cursor:pointer;font-family:'Inter',sans-serif;transition:background .15s;}
+.cp-hired-item:hover{background:#f0f9ff;}
+.cp-hired-av{width:32px;height:32px;border-radius:50%;overflow:hidden;background:#c3e0fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cp-hired-av img{width:100%;height:100%;object-fit:cover;}
+.cp-hired-av span{font-size:11px;font-weight:700;color:#005d8f;}
+.cp-hired-name{font-size:12px;font-weight:600;color:#0f172a;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* ── TASKS ACCORDION ── */
+.cp-task-acc{border-bottom:1px solid #f1f5f9;}
+.cp-task-acc:last-child{border-bottom:none;}
+.cp-task-hdr{display:flex;align-items:center;gap:7px;width:100%;background:none;border:none;padding:9px 2px;cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;color:#334155;text-align:left;transition:color .15s;}
+.cp-task-hdr:hover,.cp-task-hdr.open{color:#0077b5;}
+.cp-task-hdr-label{flex:1;}
+.cp-task-badge{background:#0077b5;color:#fff;font-size:9px;font-weight:800;border-radius:999px;padding:1px 6px;flex-shrink:0;}
+.cp-task-chevron{transition:transform .2s;flex-shrink:0;}
+.cp-task-chevron.open{transform:rotate(180deg);}
+.cp-task-body{padding:4px 0 8px;display:flex;flex-direction:column;gap:4px;}
+.cp-task-item{background:#f8fafc;border-radius:8px;padding:7px 10px;cursor:pointer;transition:background .15s;}
+.cp-task-item:hover{background:#f0f9ff;}
+.cp-task-name{font-size:11px;font-weight:600;color:#0f172a;line-height:1.4;}
+.cp-task-sub{font-size:10px;color:#94a3b8;font-weight:500;}
+.cp-task-empty{font-size:11px;color:#94a3b8;padding:4px 2px;font-family:'Inter',sans-serif;}
 
 `
