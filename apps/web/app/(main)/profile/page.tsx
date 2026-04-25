@@ -62,6 +62,7 @@ export default function ClientProfile() {
   const [skills,         setSkills]         = useState<string[]>([])
   const [connections,    setConnections]    = useState(0)
   const [connectedUsers, setConnectedUsers] = useState<ConnectedUser[]>([])
+  const [showConnModal,  setShowConnModal]  = useState(false)
   const [coverSrc,       setCoverSrc]       = useState<string | null>(null)
   const [avatarSrc,      setAvatarSrc]      = useState<string | null>(null)
   const [currency,       setCurrency]       = useState<'INR' | 'USD'>('INR')
@@ -113,6 +114,9 @@ export default function ClientProfile() {
 
   const coverInputRef  = useRef<HTMLInputElement>(null)
   const avatarInputRef = useRef<HTMLInputElement>(null)
+  const postsScrollRef = useRef<HTMLUListElement>(null)
+  const scrollPosts = (dir: 'left' | 'right') =>
+    postsScrollRef.current?.scrollBy({ left: dir === 'right' ? 240 : -240, behavior: 'smooth' })
 
   /* ─── Wait for Material Symbols font before showing icons ─── */
   useEffect(() => {
@@ -144,7 +148,17 @@ export default function ClientProfile() {
       setCurrency('INR')
       try {
         const cRes = await apiClient.get('/api/network/connections')
-        const list = Array.isArray(cRes.data) ? cRes.data : (cRes.data?.connections ?? [])
+        const raw: any[] = Array.isArray(cRes.data) ? cRes.data : (cRes.data?.data ?? [])
+        const list = raw.map((item: any) => {
+          const u = item.user ?? item
+          return {
+            id:           u.id,
+            email:        u.email,
+            fullName:     u.freelancerProfile?.fullName ?? u.companyProfile?.companyName ?? u.clientProfile?.fullName ?? u.email ?? 'User',
+            profileImage: u.freelancerProfile?.profileImage ?? u.companyProfile?.profileImage ?? u.clientProfile?.profileImage ?? null,
+          }
+        })
+        setConnections(raw.length)
         setConnectedUsers(list.slice(0, 6))
       } catch {}
     } catch { toast.error('Could not load profile') }
@@ -607,6 +621,16 @@ export default function ClientProfile() {
           <section className="cp-posts-card">
             <div className="cp-posts-hdr">
               <p className="cp-posts-title">My Posts</p>
+              {myPosts.length > 0 && (
+                <div className="cp-posts-arrows">
+                  <button className="cp-posts-arrow" onClick={() => scrollPosts('left')} aria-label="Scroll left">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                  </button>
+                  <button className="cp-posts-arrow" onClick={() => scrollPosts('right')} aria-label="Scroll right">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                  </button>
+                </div>
+              )}
               <button className="cp-posts-new" onClick={() => router.push('/post')}>+ New Post</button>
             </div>
             {postsLoading
@@ -619,7 +643,7 @@ export default function ClientProfile() {
                   </div>
                 )
                 : (
-                  <ul className="cp-posts-list">
+                  <ul className="cp-posts-list" ref={postsScrollRef}>
                     {myPosts.map((post: any) => (
                       <li key={post.id} className="cp-post-item" onClick={() => router.push(`/post/${post.id}`)}>
                         <div className="cp-post-top">
@@ -700,27 +724,63 @@ export default function ClientProfile() {
             {connectedUsers.length === 0
               ? <p className="cp-conn-empty">No connections yet</p>
               : (
-                <ul className="cp-conn-list">
-                  {connectedUsers.map(u => (
-                    <li key={u.id} className="cp-conn-item">
-                      <div className="cp-conn-av">
+                <button type="button" className="cp-ov-btn" onClick={() => setShowConnModal(true)}>
+                  <div className="cp-ov-row">
+                    {connectedUsers.slice(0, 5).map((u, i) => (
+                      <div key={u.id} className="cp-ov-av" style={{ marginLeft: i === 0 ? 0 : -10, zIndex: i }}>
                         {u.profileImage
                           ? <img src={u.profileImage} alt={u.fullName ?? ''} />
-                          : <svg width="18" height="18" viewBox="0 0 24 24" fill="#94a3b8"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+                          : <span>{(u.fullName ?? u.email ?? 'U').charAt(0).toUpperCase()}</span>
                         }
                       </div>
-                      <span className="cp-conn-name">{u.fullName ?? u.email ?? 'User'}</span>
-                    </li>
-                  ))}
-                </ul>
+                    ))}
+                    {connections > 5 && (
+                      <div className="cp-ov-more" style={{ marginLeft: -10, zIndex: 5 }}>+{connections - 5}</div>
+                    )}
+                  </div>
+                  <div className="cp-ov-info">
+                    <p className="cp-ov-count">{connections} connection{connections !== 1 ? 's' : ''}</p>
+                    <p className="cp-ov-sub">Tap to see all</p>
+                  </div>
+                </button>
               )
             }
-            {connections > 3 && (
-              <button className="cp-conn-more" onClick={() => router.push('/network')}>
-                View all
-              </button>
-            )}
           </div>
+
+          {/* Connections Modal */}
+          {showConnModal && (
+            <div className="cp-modal-overlay" onClick={() => setShowConnModal(false)}>
+              <div className="cp-modal-box" onClick={e => e.stopPropagation()}>
+                <div className="cp-modal-hdr">
+                  <p className="cp-modal-title">People Connected</p>
+                  <button className="cp-modal-close" onClick={() => setShowConnModal(false)}>✕</button>
+                </div>
+                <div className="cp-modal-list">
+                  {connectedUsers.map(u => (
+                    <button
+                      key={u.id}
+                      type="button"
+                      className="cp-modal-item"
+                      onClick={() => { setShowConnModal(false); router.push(`/profile/${u.id}`) }}
+                    >
+                      <div className="cp-modal-av">
+                        {u.profileImage
+                          ? <img src={u.profileImage} alt={u.fullName ?? ''} />
+                          : <span>{(u.fullName ?? 'U').charAt(0).toUpperCase()}</span>
+                        }
+                      </div>
+                      <p className="cp-modal-name">{u.fullName ?? u.email ?? 'User'}</p>
+                    </button>
+                  ))}
+                </div>
+                {connections > connectedUsers.length && (
+                  <button className="cp-modal-viewall" onClick={() => { setShowConnModal(false); router.push('/network') }}>
+                    View all in Network
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Task Accordions */}
           <div className="cp-accord-wrap">
@@ -1903,15 +1963,31 @@ const STYLES = `
 .cp-spend-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;}
 .cp-spend-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#94a3b8;margin-bottom:6px;}
 .cp-spend-val{font-size:17px;font-weight:800;color:#0f172a;line-height:1.2;}
-.cp-conn-list{list-style:none;display:flex;flex-direction:column;gap:10px;}
-.cp-conn-item{display:flex;align-items:center;gap:10px;min-width:0;}
-.cp-conn-av{width:34px;height:34px;border-radius:50%;overflow:hidden;background:#e2e5e9;
-  flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-.cp-conn-av img{width:100%;height:100%;object-fit:cover;}
-.cp-conn-name{font-size:13px;font-weight:600;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.cp-conn-more{width:100%;background:none;border:none;cursor:pointer;color:#0077b5;
-  font-size:12px;font-weight:700;padding:8px 0 0;font-family:'Manrope',sans-serif;text-align:left;}
-.cp-conn-more:hover{opacity:.75;}
+.cp-ov-btn{width:100%;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:4px 0;text-align:left;font-family:'Manrope',sans-serif;border-radius:12px;transition:background .15s;}
+.cp-ov-btn:hover{background:#f8fafc;}
+.cp-ov-row{display:flex;align-items:center;flex-shrink:0;}
+.cp-ov-av{position:relative;width:40px;height:40px;border-radius:50%;overflow:hidden;border:2.5px solid #fff;background:#c3e0fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cp-ov-av img{width:100%;height:100%;object-fit:cover;}
+.cp-ov-av span{font-size:13px;font-weight:700;color:#005d8f;}
+.cp-ov-more{position:relative;width:40px;height:40px;border-radius:50%;border:2.5px solid #fff;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#64748b;flex-shrink:0;}
+.cp-ov-info{flex:1;min-width:0;}
+.cp-ov-count{font-size:13px;font-weight:700;color:#0f172a;}
+.cp-ov-sub{font-size:10px;color:#94a3b8;margin-top:1px;}
+.cp-modal-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;padding:16px;}
+.cp-modal-box{background:#fff;border-radius:20px;padding:20px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,0.2);}
+.cp-modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.cp-modal-title{font-size:14px;font-weight:800;color:#0f172a;}
+.cp-modal-close{background:none;border:none;cursor:pointer;font-size:16px;color:#94a3b8;line-height:1;padding:4px;font-family:'Manrope',sans-serif;}
+.cp-modal-close:hover{color:#0f172a;}
+.cp-modal-list{display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto;}
+.cp-modal-item{display:flex;align-items:center;gap:12px;background:#f8fafc;border:none;border-radius:12px;padding:10px 12px;cursor:pointer;width:100%;text-align:left;font-family:'Manrope',sans-serif;transition:background .15s;}
+.cp-modal-item:hover{background:#f0f9ff;}
+.cp-modal-av{width:40px;height:40px;border-radius:50%;overflow:hidden;background:#c3e0fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cp-modal-av img{width:100%;height:100%;object-fit:cover;}
+.cp-modal-av span{font-size:13px;font-weight:700;color:#005d8f;}
+.cp-modal-name{font-size:13px;font-weight:700;color:#0f172a;text-align:left;}
+.cp-modal-viewall{width:100%;background:none;border:none;border-top:1px solid #f1f5f9;padding:12px 0 0;margin-top:10px;cursor:pointer;font-size:12px;font-weight:700;color:#0077b5;font-family:'Manrope',sans-serif;text-align:center;display:block;}
+.cp-modal-viewall:hover{opacity:.75;}
 .cp-switch{background:linear-gradient(135deg,#f8fafc,#f0f9ff);border-radius:16px;padding:12px 14px;border:1px solid #e2e8f0;cursor:pointer;
   display:flex;align-items:center;gap:10px;font-family:'Manrope',sans-serif;
   text-align:left;width:100%;min-width:0;overflow:hidden;
@@ -1982,6 +2058,9 @@ const STYLES = `
   padding:16px 20px 12px;border-bottom:1px solid #f1f5f9;
 }
 .cp-posts-title{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;}
+.cp-posts-arrows{display:flex;align-items:center;gap:4px;margin-left:auto;}
+.cp-posts-arrow{width:28px;height:28px;border-radius:50%;border:1.5px solid #e2e8f0;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#64748b;transition:all .15s;flex-shrink:0;}
+.cp-posts-arrow:hover{background:#f0f9ff;border-color:#bae6fd;color:#0077b5;}
 .cp-posts-new{
   background:linear-gradient(135deg,#0284c7,#0077b5);color:#fff;border:none;
   border-radius:999px;padding:7px 14px;font-size:12px;font-weight:700;

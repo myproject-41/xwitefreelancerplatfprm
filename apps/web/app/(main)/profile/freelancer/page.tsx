@@ -138,6 +138,7 @@ export default function FreelancerProfile() {
   const [qualifications,  setQualifications]  = useState<Qualification[]>([])
   const [connections,     setConnections]     = useState(0)
   const [connectedUsers,  setConnectedUsers]  = useState<ConnectedUser[]>([])
+  const [showConnModal,   setShowConnModal]   = useState(false)
   const [coverSrc,        setCoverSrc]        = useState<string | null>(null)
   const [avatarSrc,       setAvatarSrc]       = useState<string | null>(null)
 
@@ -193,6 +194,9 @@ export default function FreelancerProfile() {
   /* ── Refs ── */
   const coverRef  = useRef<HTMLInputElement>(null)
   const avatarRef = useRef<HTMLInputElement>(null)
+  const postsScrollRef = useRef<HTMLDivElement>(null)
+  const scrollPosts = (dir: 'left' | 'right') =>
+    postsScrollRef.current?.scrollBy({ left: dir === 'right' ? 220 : -220, behavior: 'smooth' })
 
   /* ═══════════════════
      DATA FETCHING
@@ -236,7 +240,17 @@ export default function FreelancerProfile() {
       setConnections(d.connectionsCount ?? 0)
       try {
         const cRes = await apiClient.get('/api/network/connections')
-        const list = Array.isArray(cRes.data) ? cRes.data : (cRes.data?.connections ?? [])
+        const raw: any[] = Array.isArray(cRes.data) ? cRes.data : (cRes.data?.data ?? [])
+        const list = raw.map((item: any) => {
+          const u = item.user ?? item
+          return {
+            id:           u.id,
+            email:        u.email,
+            fullName:     u.freelancerProfile?.fullName ?? u.companyProfile?.companyName ?? u.clientProfile?.fullName ?? u.email ?? 'User',
+            profileImage: u.freelancerProfile?.profileImage ?? u.companyProfile?.profileImage ?? u.clientProfile?.profileImage ?? null,
+          }
+        })
+        setConnections(raw.length)
         setConnectedUsers(list.slice(0, 6))
       } catch {}
       loadPostsAndTasks(d.id)
@@ -1356,38 +1370,86 @@ export default function FreelancerProfile() {
             {connectedUsers.length === 0
               ? <p className="fp-conn-empty">No connections yet</p>
               : (
-                <ul className="fp-conn-list">
-                  {connectedUsers.map(u => (
-                    <li key={u.id} className="fp-conn-item">
-                      <div className="fp-conn-av">
+                <button type="button" className="fp-ov-btn" onClick={() => setShowConnModal(true)}>
+                  <div className="fp-ov-row">
+                    {connectedUsers.slice(0, 5).map((u, i) => (
+                      <div key={u.id} className="fp-ov-av" style={{ marginLeft: i === 0 ? 0 : -10, zIndex: i }}>
                         {u.profileImage
                           ? <img src={u.profileImage} alt={u.fullName ?? ''} />
-                          : <PersonIcon size={16} color="#94a3b8" />
+                          : <span>{(u.fullName ?? u.email ?? 'U').charAt(0).toUpperCase()}</span>
                         }
                       </div>
-                      <span className="fp-conn-name">{u.fullName ?? u.email ?? 'User'}</span>
-                    </li>
-                  ))}
-                </ul>
+                    ))}
+                    {connections > 5 && (
+                      <div className="fp-ov-more" style={{ marginLeft: -10, zIndex: 5 }}>+{connections - 5}</div>
+                    )}
+                  </div>
+                  <div className="fp-ov-info">
+                    <p className="fp-ov-count">{connections} connection{connections !== 1 ? 's' : ''}</p>
+                    <p className="fp-ov-sub">Tap to see all</p>
+                  </div>
+                </button>
               )
             }
-            {connections > 3 && (
-              <button className="fp-conn-more" onClick={() => router.push('/network')}>
-                View all
-              </button>
-            )}
           </div>
+
+          {/* Connections Modal */}
+          {showConnModal && (
+            <div className="fp-modal-overlay" onClick={() => setShowConnModal(false)}>
+              <div className="fp-modal-box" onClick={e => e.stopPropagation()}>
+                <div className="fp-modal-hdr">
+                  <p className="fp-modal-title">People Connected</p>
+                  <button className="fp-modal-close" onClick={() => setShowConnModal(false)}>✕</button>
+                </div>
+                <div className="fp-modal-list">
+                  {connectedUsers.map(u => (
+                    <button
+                      key={u.id}
+                      type="button"
+                      className="fp-modal-item"
+                      onClick={() => { setShowConnModal(false); router.push(`/profile/${u.id}`) }}
+                    >
+                      <div className="fp-modal-av">
+                        {u.profileImage
+                          ? <img src={u.profileImage} alt={u.fullName ?? ''} />
+                          : <span>{(u.fullName ?? 'U').charAt(0).toUpperCase()}</span>
+                        }
+                      </div>
+                      <p className="fp-modal-name">{u.fullName ?? u.email ?? 'User'}</p>
+                    </button>
+                  ))}
+                </div>
+                {connections > connectedUsers.length && (
+                  <button className="fp-modal-viewall" onClick={() => { setShowConnModal(false); router.push('/network') }}>
+                    View all in Network
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* ── My Posts ── */}
           <div className="fp-myposts-card">
-            <button className="fp-myposts-hdr" onClick={() => setPostsOpen(v => !v)}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-              <span>My Posts</span>
-              {myPosts.length > 0 && <span className="fp-myposts-count">{myPosts.length}</span>}
-              <svg className={`fp-sb-acc-chevron${postsOpen ? ' open' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="#94a3b8"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
-            </button>
+            <div className="fp-myposts-hdr-row">
+              <button className="fp-myposts-hdr" onClick={() => setPostsOpen(v => !v)}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                <span>My Posts</span>
+                {myPosts.length > 0 && <span className="fp-myposts-count">{myPosts.length}</span>}
+                <svg className={`fp-sb-acc-chevron${postsOpen ? ' open' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="#94a3b8"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+              </button>
+              {postsOpen && myPosts.length > 0 && (
+                <div className="fp-posts-arrows">
+                  <button className="fp-posts-arrow" onClick={() => scrollPosts('left')} aria-label="Scroll left">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                  </button>
+                  <button className="fp-posts-arrow" onClick={() => scrollPosts('right')} aria-label="Scroll right">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                  </button>
+                </div>
+              )}
+            </div>
             {postsOpen && (
-              <div className="fp-myposts-body">
+              <div className="fp-myposts-body" ref={postsScrollRef}>
                 {myPosts.length === 0
                   ? <p className="fp-sb-empty">No posts yet.<br/><span style={{fontSize:10}}>Create a post to see it here.</span></p>
                   : myPosts.map((p: any) => {
@@ -2129,13 +2191,31 @@ const STYLES = `
 .fp-conn-card{background:#fff;border-radius:16px;padding:14px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.06);min-width:0;}
 .fp-conn-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin-bottom:12px;}
 .fp-conn-empty{font-size:13px;color:#94a3b8;}
-.fp-conn-list{list-style:none;display:flex;flex-direction:column;gap:10px;}
-.fp-conn-item{display:flex;align-items:center;gap:10px;min-width:0;}
-.fp-conn-av{width:32px;height:32px;border-radius:50%;overflow:hidden;background:#e2e5e9;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-.fp-conn-av img{width:100%;height:100%;object-fit:cover;}
-.fp-conn-name{font-size:13px;font-weight:600;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.fp-conn-more{width:100%;background:none;border:none;cursor:pointer;color:#0077b5;font-size:12px;font-weight:700;padding:8px 0 0;font-family:'Inter',sans-serif;text-align:left;}
-.fp-conn-more:hover{opacity:.75;}
+.fp-ov-btn{width:100%;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:4px 0;text-align:left;font-family:'Inter',sans-serif;border-radius:12px;transition:background .15s;}
+.fp-ov-btn:hover{background:#f8fafc;}
+.fp-ov-row{display:flex;align-items:center;flex-shrink:0;}
+.fp-ov-av{position:relative;width:40px;height:40px;border-radius:50%;overflow:hidden;border:2.5px solid #fff;background:#c3e0fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.fp-ov-av img{width:100%;height:100%;object-fit:cover;}
+.fp-ov-av span{font-size:13px;font-weight:700;color:#005d8f;}
+.fp-ov-more{position:relative;width:40px;height:40px;border-radius:50%;border:2.5px solid #fff;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#64748b;flex-shrink:0;}
+.fp-ov-info{flex:1;min-width:0;}
+.fp-ov-count{font-size:13px;font-weight:700;color:#0f172a;}
+.fp-ov-sub{font-size:10px;color:#94a3b8;margin-top:1px;}
+.fp-modal-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;padding:16px;}
+.fp-modal-box{background:#fff;border-radius:20px;padding:20px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,0.2);}
+.fp-modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.fp-modal-title{font-size:14px;font-weight:800;color:#0f172a;}
+.fp-modal-close{background:none;border:none;cursor:pointer;font-size:16px;color:#94a3b8;line-height:1;padding:4px;font-family:'Inter',sans-serif;}
+.fp-modal-close:hover{color:#0f172a;}
+.fp-modal-list{display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto;}
+.fp-modal-item{display:flex;align-items:center;gap:12px;background:#f8fafc;border:none;border-radius:12px;padding:10px 12px;cursor:pointer;width:100%;text-align:left;font-family:'Inter',sans-serif;transition:background .15s;}
+.fp-modal-item:hover{background:#f0f9ff;}
+.fp-modal-av{width:40px;height:40px;border-radius:50%;overflow:hidden;background:#c3e0fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.fp-modal-av img{width:100%;height:100%;object-fit:cover;}
+.fp-modal-av span{font-size:13px;font-weight:700;color:#005d8f;}
+.fp-modal-name{font-size:13px;font-weight:700;color:#0f172a;text-align:left;}
+.fp-modal-viewall{width:100%;background:none;border:none;border-top:1px solid #f1f5f9;padding:12px 0 0;margin-top:10px;cursor:pointer;font-size:12px;font-weight:700;color:#0077b5;font-family:'Inter',sans-serif;text-align:center;display:block;}
+.fp-modal-viewall:hover{opacity:.75;}
 .fp-switch{background:linear-gradient(135deg,#f8fafc,#f0f9ff);border-radius:16px;padding:12px 14px;border:1px solid #e2e8f0;cursor:pointer;display:flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;text-align:left;width:100%;min-width:0;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:box-shadow .15s;}
 .fp-switch:hover{box-shadow:0 3px 14px rgba(0,0,0,0.1);}
 .fp-switch-title{font-size:13px;font-weight:700;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -2222,17 +2302,22 @@ const STYLES = `
 
 /* ── My Posts card ── */
 .fp-myposts-card{background:#fff;border-radius:14px;border:1px solid #bae6fd;overflow:hidden;box-shadow:0 1px 4px rgba(0,119,181,0.07);}
-.fp-myposts-hdr{width:100%;display:flex;align-items:center;gap:8px;padding:11px 13px;background:linear-gradient(135deg,#f0f9ff,#e8f4fd);border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;color:#0077b5;text-align:left;transition:background .15s;}
-.fp-myposts-hdr:hover{background:linear-gradient(135deg,#e0f2fe,#dbeffe);}
+.fp-myposts-hdr-row{display:flex;align-items:center;background:linear-gradient(135deg,#f0f9ff,#e8f4fd);border-bottom:1px solid #e0f2fe;}
+.fp-myposts-hdr{flex:1;display:flex;align-items:center;gap:8px;padding:11px 13px;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;color:#0077b5;text-align:left;transition:background .15s;}
+.fp-myposts-hdr:hover{background:rgba(0,0,0,0.03);}
 .fp-myposts-hdr>span:first-of-type{flex:1;}
 .fp-myposts-count{font-size:10px;font-weight:800;background:#0077b5;color:#fff;border-radius:999px;padding:1px 8px;flex-shrink:0;}
-.fp-myposts-body{display:flex;flex-direction:column;gap:6px;padding:8px 10px 12px;max-height:320px;overflow-y:auto;scrollbar-width:thin;}
-.fp-myposts-item{background:#f8fafc;border-radius:10px;padding:9px 11px;cursor:pointer;border:1px solid #f1f5f9;transition:all .15s;}
-.fp-myposts-item:hover{background:#f0f9ff;border-color:#bae6fd;transform:translateY(-1px);}
-.fp-myposts-item-top{display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+.fp-posts-arrows{display:flex;align-items:center;gap:3px;padding:0 10px;flex-shrink:0;}
+.fp-posts-arrow{width:26px;height:26px;border-radius:50%;border:1.5px solid #bae6fd;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#0077b5;transition:all .15s;flex-shrink:0;}
+.fp-posts-arrow:hover{background:#0077b5;color:#fff;border-color:#0077b5;}
+.fp-myposts-body{display:flex;flex-direction:row;gap:8px;padding:10px 12px 14px;overflow-x:auto;scrollbar-width:none;}
+.fp-myposts-body::-webkit-scrollbar{display:none;}
+.fp-myposts-item{flex-shrink:0;width:190px;background:#f8fafc;border-radius:10px;padding:10px 12px;cursor:pointer;border:1px solid #f1f5f9;transition:all .15s;display:flex;flex-direction:column;gap:5px;}
+.fp-myposts-item:hover{background:#f0f9ff;border-color:#bae6fd;transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,119,181,0.1);}
+.fp-myposts-item-top{display:flex;align-items:center;gap:6px;margin-bottom:2px;}
 .fp-myposts-type{font-size:9px;font-weight:800;border-radius:6px;padding:2px 7px;text-transform:uppercase;letter-spacing:.04em;}
 .fp-myposts-status{font-size:10px;font-weight:700;margin-left:auto;}
-.fp-myposts-title{font-size:12px;font-weight:600;color:#1e293b;line-height:1.4;margin:0 0 4px;}
+.fp-myposts-title{font-size:12px;font-weight:600;color:#1e293b;line-height:1.4;margin:0 0 2px;}
 .fp-myposts-proposals{font-size:10px;color:#64748b;font-weight:600;}
 
 /* My Posts items */

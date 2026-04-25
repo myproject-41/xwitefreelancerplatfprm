@@ -507,45 +507,47 @@ export default function HomePage() {
             <div className="flex items-center justify-between gap-3">
               <h3 className="text-sm font-bold">People Who Liked Your Posts</h3>
             </div>
-            <div className="mt-3 space-y-3">
-              {visibleLikers.length ? (
-                visibleLikers.map((u: any) => {
-                  const liker = getNetworkUserInfo(u)
-                  return (
-                    <button
-                      key={liker.id}
-                      type="button"
-                      onClick={() => liker.id && router.push(`/profile/${liker.id}`)}
-                      className="flex w-full items-center gap-3 rounded-lg bg-[#f4f3f0] p-3 text-left transition hover:bg-[#ece9e2]"
+            {postLikers.length === 0 ? (
+              <p className="mt-3 text-sm text-[#404850]">No likes on your posts yet.</p>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowLikersModal(true)}
+                className="mt-4 flex w-full items-center gap-3 rounded-xl bg-[#f4f3f0] p-3 text-left transition hover:bg-[#ece9e2]"
+              >
+                <div className="flex items-center">
+                  {postLikers.slice(0, 4).map((u: any, i: number) => {
+                    const liker = getNetworkUserInfo(u)
+                    return (
+                      <div
+                        key={liker.id}
+                        style={{ marginLeft: i === 0 ? 0 : -10, zIndex: i, position: 'relative' }}
+                        className="h-10 w-10 shrink-0 overflow-hidden rounded-full border-2 border-white bg-[#c3e0fe] flex items-center justify-center text-xs font-bold text-[#005d8f]"
+                      >
+                        {liker.image
+                          ? <img src={liker.image} alt={liker.name} className="h-full w-full object-cover" />
+                          : liker.name?.charAt(0)?.toUpperCase() ?? '?'
+                        }
+                      </div>
+                    )
+                  })}
+                  {postLikers.length > 4 && (
+                    <div
+                      style={{ marginLeft: -10, zIndex: 4, position: 'relative' }}
+                      className="h-10 w-10 shrink-0 overflow-hidden rounded-full border-2 border-white bg-[#e2e8f0] flex items-center justify-center text-[10px] font-bold text-[#64748b]"
                     >
-                      <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-[#c3e0fe] text-sm font-bold text-[#005d8f]">
-                        {liker.image ? (
-                          <img src={liker.image} alt={liker.name} className="h-full w-full object-cover" />
-                        ) : (
-                          getInitials(liker.name)
-                        )}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-xs font-bold leading-5 text-[#1b1c1a]">{liker.name}</p>
-                        <p className="truncate text-[10px] text-[#404850]">{liker.title}</p>
-                      </div>
-                    </button>
-                  )
-                })
-              ) : (
-                <p className="text-sm text-[#404850]">No likes on your posts yet.</p>
-              )}
-            </div>
-            {postLikers.length > 3 ? (
-              <div className="mt-4 border-t border-[#ece9e2] pt-3">
-                <button
-                  onClick={() => setShowLikersModal(true)}
-                  className="text-[11px] font-bold text-[#005d8f] hover:underline"
-                >
-                  View all
-                </button>
-              </div>
-            ) : null}
+                      +{postLikers.length - 4}
+                    </div>
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-bold text-[#1b1c1a]">
+                    {postLikers.length} {postLikers.length === 1 ? 'person' : 'people'}
+                  </p>
+                  <p className="text-[10px] text-[#404850]">liked your posts · tap to see all</p>
+                </div>
+              </button>
+            )}
           </div>
 
           {showLikersModal ? (

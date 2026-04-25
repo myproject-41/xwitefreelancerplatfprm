@@ -72,6 +72,7 @@ export default function CompanyProfile() {
   const [logoSrc,       setLogoSrc]       = useState<string | null>(null)
   const [connections,   setConnections]   = useState(0)
   const [connectedUsers,setConnectedUsers]= useState<ConnectedUser[]>([])
+  const [showConnModal, setShowConnModal] = useState(false)
 
   /* ── Followers ── */
   const [followers,       setFollowers]       = useState<Follower[]>([])
@@ -135,7 +136,17 @@ export default function CompanyProfile() {
       setConnections(d.connectionsCount ?? 0)
       try {
         const cRes = await apiClient.get('/api/network/connections')
-        const list = Array.isArray(cRes.data) ? cRes.data : (cRes.data?.connections ?? [])
+        const raw: any[] = Array.isArray(cRes.data) ? cRes.data : (cRes.data?.data ?? [])
+        const list = raw.map((item: any) => {
+          const u = item.user ?? item
+          return {
+            id:           u.id,
+            email:        u.email,
+            fullName:     u.freelancerProfile?.fullName ?? u.companyProfile?.companyName ?? u.clientProfile?.fullName ?? u.email ?? 'User',
+            profileImage: u.freelancerProfile?.profileImage ?? u.companyProfile?.profileImage ?? u.clientProfile?.profileImage ?? null,
+          }
+        })
+        setConnections(raw.length)
         setConnectedUsers(list.slice(0, 6))
       } catch {}
       try {
@@ -722,27 +733,63 @@ export default function CompanyProfile() {
             {connectedUsers.length === 0
               ? <p className="cp-conn-empty">No connections yet</p>
               : (
-                <ul className="cp-conn-list">
-                  {connectedUsers.map(u => (
-                    <li key={u.id} className="cp-conn-item">
-                      <div className="cp-conn-av">
+                <button type="button" className="cp-ov-btn" onClick={() => setShowConnModal(true)}>
+                  <div className="cp-ov-row">
+                    {connectedUsers.slice(0, 5).map((u, i) => (
+                      <div key={u.id} className="cp-ov-av" style={{ marginLeft: i === 0 ? 0 : -10, zIndex: i }}>
                         {u.profileImage
                           ? <img src={u.profileImage} alt={u.fullName ?? ''} />
-                          : <svg width="16" height="16" viewBox="0 0 24 24" fill="#94a3b8"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                          : <span>{(u.fullName ?? u.email ?? 'U').charAt(0).toUpperCase()}</span>
                         }
                       </div>
-                      <span className="cp-conn-name">{u.fullName ?? u.email ?? 'User'}</span>
-                    </li>
-                  ))}
-                </ul>
+                    ))}
+                    {connections > 5 && (
+                      <div className="cp-ov-more" style={{ marginLeft: -10, zIndex: 5 }}>+{connections - 5}</div>
+                    )}
+                  </div>
+                  <div className="cp-ov-info">
+                    <p className="cp-ov-count">{connections} connection{connections !== 1 ? 's' : ''}</p>
+                    <p className="cp-ov-sub">Tap to see all</p>
+                  </div>
+                </button>
               )
             }
-            {connections > 3 && (
-              <button className="cp-conn-more" onClick={() => router.push('/network')}>
-                View all
-              </button>
-            )}
           </div>
+
+          {/* Connections Modal */}
+          {showConnModal && (
+            <div className="cp-modal-overlay" onClick={() => setShowConnModal(false)}>
+              <div className="cp-modal-box" onClick={e => e.stopPropagation()}>
+                <div className="cp-modal-hdr">
+                  <p className="cp-modal-title">People Connected</p>
+                  <button className="cp-modal-close" onClick={() => setShowConnModal(false)}>✕</button>
+                </div>
+                <div className="cp-modal-list">
+                  {connectedUsers.map(u => (
+                    <button
+                      key={u.id}
+                      type="button"
+                      className="cp-modal-item"
+                      onClick={() => { setShowConnModal(false); router.push(`/profile/${u.id}`) }}
+                    >
+                      <div className="cp-modal-av">
+                        {u.profileImage
+                          ? <img src={u.profileImage} alt={u.fullName ?? ''} />
+                          : <span>{(u.fullName ?? 'U').charAt(0).toUpperCase()}</span>
+                        }
+                      </div>
+                      <p className="cp-modal-name">{u.fullName ?? u.email ?? 'User'}</p>
+                    </button>
+                  ))}
+                </div>
+                {connections > connectedUsers.length && (
+                  <button className="cp-modal-viewall" onClick={() => { setShowConnModal(false); router.push('/network') }}>
+                    View all in Network
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Switch Account */}
           <button className="cp-switch" onClick={() => router.push('/profile/client')}>
@@ -1381,13 +1428,31 @@ const STYLES = `
 .cp-conn-card{background:#fff;border-radius:16px;padding:16px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.06);min-width:0;overflow:hidden;}
 .cp-conn-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin-bottom:12px;font-family:'Inter',sans-serif;}
 .cp-conn-empty{font-size:13px;color:#94a3b8;font-family:'Inter',sans-serif;}
-.cp-conn-list{list-style:none;display:flex;flex-direction:column;gap:10px;}
-.cp-conn-item{display:flex;align-items:center;gap:10px;min-width:0;}
-.cp-conn-av{width:32px;height:32px;border-radius:50%;overflow:hidden;background:#e2e5e9;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-.cp-conn-av img{width:100%;height:100%;object-fit:cover;}
-.cp-conn-name{font-size:13px;font-weight:500;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Inter',sans-serif;}
-.cp-conn-more{width:100%;background:none;border:none;cursor:pointer;color:#0077b5;font-size:12px;font-weight:600;padding:8px 0 0;font-family:'Inter',sans-serif;text-align:left;}
-.cp-conn-more:hover{opacity:.75;}
+.cp-ov-btn{width:100%;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:4px 0;text-align:left;font-family:'Inter',sans-serif;border-radius:12px;transition:background .15s;}
+.cp-ov-btn:hover{background:#f8fafc;}
+.cp-ov-row{display:flex;align-items:center;flex-shrink:0;}
+.cp-ov-av{position:relative;width:40px;height:40px;border-radius:50%;overflow:hidden;border:2.5px solid #fff;background:#c3e0fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cp-ov-av img{width:100%;height:100%;object-fit:cover;}
+.cp-ov-av span{font-size:13px;font-weight:700;color:#005d8f;}
+.cp-ov-more{position:relative;width:40px;height:40px;border-radius:50%;border:2.5px solid #fff;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#64748b;flex-shrink:0;}
+.cp-ov-info{flex:1;min-width:0;}
+.cp-ov-count{font-size:13px;font-weight:700;color:#0f172a;}
+.cp-ov-sub{font-size:10px;color:#94a3b8;margin-top:1px;}
+.cp-modal-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;padding:16px;}
+.cp-modal-box{background:#fff;border-radius:20px;padding:20px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,0.2);}
+.cp-modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.cp-modal-title{font-size:14px;font-weight:800;color:#0f172a;}
+.cp-modal-close{background:none;border:none;cursor:pointer;font-size:16px;color:#94a3b8;line-height:1;padding:4px;font-family:'Inter',sans-serif;}
+.cp-modal-close:hover{color:#0f172a;}
+.cp-modal-list{display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto;}
+.cp-modal-item{display:flex;align-items:center;gap:12px;background:#f8fafc;border:none;border-radius:12px;padding:10px 12px;cursor:pointer;width:100%;text-align:left;font-family:'Inter',sans-serif;transition:background .15s;}
+.cp-modal-item:hover{background:#f0f9ff;}
+.cp-modal-av{width:40px;height:40px;border-radius:50%;overflow:hidden;background:#c3e0fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cp-modal-av img{width:100%;height:100%;object-fit:cover;}
+.cp-modal-av span{font-size:13px;font-weight:700;color:#005d8f;}
+.cp-modal-name{font-size:13px;font-weight:700;color:#0f172a;text-align:left;}
+.cp-modal-viewall{width:100%;background:none;border:none;border-top:1px solid #f1f5f9;padding:12px 0 0;margin-top:10px;cursor:pointer;font-size:12px;font-weight:700;color:#0077b5;font-family:'Inter',sans-serif;text-align:center;display:block;}
+.cp-modal-viewall:hover{opacity:.75;}
 .cp-switch{background:linear-gradient(135deg,#f8fafc,#f0f9ff);border-radius:16px;padding:12px 14px;border:1px solid #e2e8f0;cursor:pointer;display:flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;text-align:left;width:100%;min-width:0;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:box-shadow .15s;}
 .cp-switch:hover{box-shadow:0 3px 14px rgba(0,0,0,0.1);}
 .cp-switch-title{font-size:13px;font-weight:700;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Inter',sans-serif;}
