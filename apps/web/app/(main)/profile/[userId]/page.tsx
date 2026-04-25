@@ -95,7 +95,13 @@ export default function PublicProfilePage() {
           escrowService.getClientSpend(userId)
             .then((res: any) => {
               const spend = res?.data ?? res
-              if (spend && typeof spend.totalSpent === 'number') setClientSpend(spend)
+              if (spend != null) {
+                setClientSpend({
+                  totalSpent:   Number(spend.totalSpent   ?? 0),
+                  weeklySpent:  Number(spend.weeklySpent  ?? 0),
+                  monthlySpent: Number(spend.monthlySpent ?? 0),
+                })
+              }
             })
             .catch(() => {})
         }
