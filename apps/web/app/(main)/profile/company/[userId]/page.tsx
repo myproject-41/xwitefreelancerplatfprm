@@ -44,10 +44,10 @@ export default function CompanyPublicProfilePage() {
   const [loading, setLoading]             = useState(true)
   const [isFollowing, setIsFollowing]     = useState(false)
   const [followLoading, setFollowLoading] = useState(false)
-  const [followHover, setFollowHover]     = useState(false)
   const [followerCount, setFollowerCount] = useState(0)
   const [postsOpen, setPostsOpen]         = useState(true)
   const [msgLoading, setMsgLoading]       = useState(false)
+  const [convId, setConvId]               = useState<string | null>(null)
 
   const isMe = me?.id === userId
 
@@ -59,6 +59,22 @@ export default function CompanyPublicProfilePage() {
     }
     loadAll()
   }, [userId, isMe])
+
+  // After auth hydrates: fetch is-following + pre-fetch conversation for instant messaging
+  useEffect(() => {
+    if (!me || !userId || isMe) return
+    apiClient.get(`/api/users/${userId}/is-following`)
+      .then(res => {
+        if (res.data?.isFollowing !== undefined) setIsFollowing(res.data.isFollowing)
+      })
+      .catch(() => {})
+    chatService.getOrCreateConversation(userId)
+      .then(res => {
+        const conv = res?.data ?? res
+        if (conv?.id) setConvId(conv.id)
+      })
+      .catch(() => {})
+  }, [me?.id, userId])
 
   async function loadAll() {
     setLoading(true)
@@ -142,6 +158,7 @@ export default function CompanyPublicProfilePage() {
 
   async function handleMessage() {
     if (!me) { toast.error('Please sign in to message'); return }
+    if (convId) { router.push(`/messages/${convId}`); return }
     setMsgLoading(true)
     try {
       const res = await chatService.getOrCreateConversation(userId)
@@ -225,18 +242,16 @@ export default function CompanyPublicProfilePage() {
                   <div className="cp-pub-action-row">
                     <button
                       type="button"
-                      className={`cp-pub-btn-follow${isFollowing ? (followHover ? ' unfollow' : ' following') : ''}`}
+                      className={`cp-pub-btn-follow${isFollowing ? ' following' : ''}`}
                       onClick={handleFollow}
-                      onMouseEnter={() => isFollowing && setFollowHover(true)}
-                      onMouseLeave={() => setFollowHover(false)}
                       disabled={followLoading}
                     >
                       <MaterialIcon
-                        name={isFollowing ? (followHover ? 'person_remove' : 'check') : 'add'}
+                        name={isFollowing ? 'check' : 'add'}
                         size={16}
-                        color={isFollowing ? (followHover ? '#dc2626' : '#0077b5') : '#fff'}
+                        color={isFollowing ? '#0077b5' : '#fff'}
                       />
-                      {followLoading ? '…' : isFollowing ? (followHover ? 'Unfollow' : 'Following') : 'Follow'}
+                      {followLoading ? '…' : isFollowing ? 'Following' : 'Follow'}
                     </button>
                     <button
                       type="button"
@@ -377,18 +392,16 @@ export default function CompanyPublicProfilePage() {
                 <p className="cp-pub-right-followers">{followerCount} followers</p>
                 <button
                   type="button"
-                  className={`cp-pub-btn-follow-full${isFollowing ? (followHover ? ' unfollow' : ' following') : ''}`}
+                  className={`cp-pub-btn-follow-full${isFollowing ? ' following' : ''}`}
                   onClick={handleFollow}
-                  onMouseEnter={() => isFollowing && setFollowHover(true)}
-                  onMouseLeave={() => setFollowHover(false)}
                   disabled={followLoading}
                 >
                   <MaterialIcon
-                    name={isFollowing ? (followHover ? 'person_remove' : 'check') : 'add'}
+                    name={isFollowing ? 'check' : 'add'}
                     size={15}
-                    color={isFollowing ? (followHover ? '#dc2626' : '#0077b5') : '#fff'}
+                    color={isFollowing ? '#0077b5' : '#fff'}
                   />
-                  {followLoading ? '…' : isFollowing ? (followHover ? 'Unfollow' : 'Following') : 'Follow'}
+                  {followLoading ? '…' : isFollowing ? 'Following' : 'Follow'}
                 </button>
                 <button
                   type="button"
@@ -495,7 +508,7 @@ const STYLES = `
 .cp-pub-btn-follow:hover{box-shadow:0 5px 18px rgba(0,119,181,0.4);}
 .cp-pub-btn-follow:active{transform:scale(.96);}
 .cp-pub-btn-follow.following{background:#fff;color:#0077b5;border:1.5px solid #bae6fd;box-shadow:0 2px 8px rgba(0,119,181,0.12);}
-.cp-pub-btn-follow.unfollow{background:#fff;color:#dc2626;border:1.5px solid #fecaca;box-shadow:0 2px 8px rgba(220,38,38,0.12);}
+.cp-pub-btn-follow.following:hover{background:#fff;}
 .cp-pub-btn-follow:disabled{opacity:.75;cursor:not-allowed;}
 .cp-pub-btn-message{display:flex;align-items:center;gap:6px;background:#fff;color:#0077b5;border:1.5px solid #bae6fd;border-radius:999px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 2px 8px rgba(0,119,181,0.12);transition:all .15s;}
 .cp-pub-btn-message:hover{background:#f0f9ff;}
@@ -547,7 +560,7 @@ const STYLES = `
 .cp-pub-btn-follow-full{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;background:linear-gradient(135deg,#0284c7,#0077b5);color:#fff;border:none;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 3px 10px rgba(0,119,181,0.28);transition:all .15s;}
 .cp-pub-btn-follow-full:hover{transform:translateY(-1px);}
 .cp-pub-btn-follow-full.following{background:#fff;color:#0077b5;border:1.5px solid #bae6fd;box-shadow:0 2px 8px rgba(0,119,181,0.12);}
-.cp-pub-btn-follow-full.unfollow{background:#fff;color:#dc2626;border:1.5px solid #fecaca;box-shadow:0 2px 8px rgba(220,38,38,0.12);}
+.cp-pub-btn-follow-full.following:hover{background:#fff;}
 .cp-pub-btn-follow-full:disabled{opacity:.7;cursor:not-allowed;}
 .cp-pub-btn-msg-full{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;background:#fff;color:#0077b5;border:1.5px solid #bae6fd;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 2px 8px rgba(0,119,181,0.12);transition:all .15s;margin-top:2px;}
 .cp-pub-btn-msg-full:hover{background:#f0f9ff;transform:translateY(-1px);}

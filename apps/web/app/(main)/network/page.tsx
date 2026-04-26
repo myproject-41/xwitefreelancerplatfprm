@@ -367,7 +367,7 @@ function OverviewSection({ pending, suggestions, onAccept, onIgnore, onConnect }
                 'from-[#ffdcc0] to-[#a85f00]',
               ]
               return (
-                <div key={co.id} className="bg-white rounded-xl border border-[#e3e2df] shadow-sm overflow-hidden group hover:shadow-md transition-shadow">
+                <div key={co.id} className="bg-white rounded-xl border border-[#e3e2df] shadow-sm overflow-hidden group hover:shadow-md transition-shadow cursor-pointer" onClick={() => router.push(getProfilePath(co))}>
                   {/* Banner */}
                   <div className={`h-16 bg-gradient-to-br ${gradients[i % gradients.length]} relative`}>
                     <div className="absolute -bottom-6 left-6 w-14 h-14 bg-white rounded-lg shadow-sm border border-[#e3e2df] flex items-center justify-center overflow-hidden">
@@ -385,7 +385,7 @@ function OverviewSection({ pending, suggestions, onAccept, onIgnore, onConnect }
                       {co.companyProfile?.description || `${name} is a company on Xwite. Connect and collaborate.`}
                     </p>
                     <button
-                      onClick={() => handleFollow(co.id)}
+                      onClick={(e) => { e.stopPropagation(); handleFollow(co.id) }}
                       className={`w-full flex items-center justify-center gap-2 py-2 rounded-full border-2 font-bold text-sm transition active:scale-95 ${isFollowed ? 'border-[#e3e2df] bg-[#e3e2df] text-[#404850]' : 'border-[#005d8f] text-[#005d8f] hover:bg-[#005d8f]/5'}`}
                     >
                       {isFollowed ? '✓ Following' : <><Icons.Plus /> Follow</>}

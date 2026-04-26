@@ -78,6 +78,16 @@ export default function PublicProfilePage() {
     loadAll()
   }, [userId, isMe])
 
+  // Fetch is-following once auth store hydrates (me goes null → user)
+  useEffect(() => {
+    if (!me || !userId || isMe) return
+    apiClient.get(`/api/users/${userId}/is-following`)
+      .then(res => {
+        if (res.data?.isFollowing !== undefined) setIsFollowing(res.data.isFollowing)
+      })
+      .catch(() => {})
+  }, [me?.id, userId])
+
   async function loadAll() {
     setLoading(true)
     try {

@@ -85,30 +85,38 @@ export class ChatService {
       throw new Error('Cannot create a conversation with yourself')
     }
 
-    // Only allow chat between connected users or accepted-proposal pairs
-    const [connection, acceptedProposal] = await Promise.all([
-      prisma.connection.findFirst({
-        where: {
-          status: 'ACCEPTED',
-          OR: [
-            { fromUserId: userId, toUserId: otherUserId },
-            { fromUserId: otherUserId, toUserId: userId },
-          ],
-        },
-      }),
-      prisma.proposal.findFirst({
-        where: {
-          status: 'ACCEPTED',
-          OR: [
-            { freelancerId: userId, post: { clientId: otherUserId } },
-            { freelancerId: otherUserId, post: { clientId: userId } },
-          ],
-        },
-      }),
-    ])
+    // Companies can be messaged by anyone — check role first
+    const otherUser = await prisma.user.findUnique({
+      where: { id: otherUserId },
+      select: { role: true },
+    })
 
-    if (!connection && !acceptedProposal) {
-      throw new Error('You can only chat with people you are connected with or have an accepted proposal with')
+    if (otherUser?.role !== 'COMPANY') {
+      // Only allow chat between connected users or accepted-proposal pairs
+      const [connection, acceptedProposal] = await Promise.all([
+        prisma.connection.findFirst({
+          where: {
+            status: 'ACCEPTED',
+            OR: [
+              { fromUserId: userId, toUserId: otherUserId },
+              { fromUserId: otherUserId, toUserId: userId },
+            ],
+          },
+        }),
+        prisma.proposal.findFirst({
+          where: {
+            status: 'ACCEPTED',
+            OR: [
+              { freelancerId: userId, post: { clientId: otherUserId } },
+              { freelancerId: otherUserId, post: { clientId: userId } },
+            ],
+          },
+        }),
+      ])
+
+      if (!connection && !acceptedProposal) {
+        throw new Error('You can only chat with people you are connected with or have an accepted proposal with')
+      }
     }
 
     return getOrCreateConversation(userId, otherUserId)
