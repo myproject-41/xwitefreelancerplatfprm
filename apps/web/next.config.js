@@ -2,8 +2,10 @@
 const nextConfig = {
   reactStrictMode: true,
   async rewrites() {
-    const backend = process.env.BACKEND_URL
-    if (!backend) return []
+    // Only proxy in production — dev hits localhost:4000 directly via axios baseURL
+    if (process.env.NODE_ENV === 'development') return []
+    const backend =
+      process.env.BACKEND_URL || 'https://server-production-fb0e.up.railway.app'
     return [
       { source: '/api/:path*', destination: `${backend}/api/:path*` },
       { source: '/uploads/:path*', destination: `${backend}/uploads/:path*` },

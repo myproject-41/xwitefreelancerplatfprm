@@ -12,8 +12,16 @@ function clearAuthState() {
   Cookies.remove(TOKEN_KEY)
 }
 
+// Production: empty baseURL so Next.js rewrites proxy all /api/* calls to Railway server-side
+// (eliminates browser CORS regardless of what env vars Vercel dashboard has set)
+// Development: use configured URL or fall back to localhost:4000
+const baseURL =
+  process.env.NODE_ENV === 'production'
+    ? ''
+    : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
+
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000',
+  baseURL,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true,
 })
