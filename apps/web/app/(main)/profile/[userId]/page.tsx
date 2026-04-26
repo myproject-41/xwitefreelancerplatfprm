@@ -58,6 +58,8 @@ export default function PublicProfilePage() {
   const [connStatus, setConnStatus]         = useState<any>(null)
   const [connLoading, setConnLoading]       = useState(false)
   const [msgLoading, setMsgLoading]         = useState(false)
+  const [isFollowing, setIsFollowing]       = useState(false)
+  const [followLoading, setFollowLoading]   = useState(false)
   const [postsOpen, setPostsOpen]           = useState(true)
   const [tasksOpen, setTasksOpen]           = useState(true)
   const [clientSpend, setClientSpend]       = useState<{ totalSpent: number; weeklySpent: number; monthlySpent: number } | null>(null)
@@ -89,6 +91,12 @@ export default function PublicProfilePage() {
       if (profileRes.status === 'fulfilled') {
         const d = profileRes.value.data
         const p = d?.data ?? d
+
+        if (p?.role === 'COMPANY') {
+          router.replace(`/profile/company/${userId}`)
+          return
+        }
+
         setProfile(p)
 
         if (p?.role === 'CLIENT') {
@@ -169,6 +177,35 @@ export default function PublicProfilePage() {
       toast.error('Could not open conversation')
     } finally {
       setMsgLoading(false)
+    }
+  }
+
+  async function handleFollow() {
+    if (!me) { toast.error('Please sign in to follow'); return }
+    if (followLoading) return
+    setFollowLoading(true)
+    const wasFollowing = isFollowing
+    setIsFollowing(!wasFollowing)
+    try {
+      if (wasFollowing) {
+        await apiClient.delete(`/api/users/${userId}/follow`)
+        toast.success('Unfollowed')
+      } else {
+        await apiClient.post(`/api/users/${userId}/follow`)
+        toast.success('Following!')
+      }
+    } catch (e: any) {
+      const msg: string = e?.response?.data?.message ?? ''
+      if (!wasFollowing && msg.toLowerCase().includes('already following')) {
+        setIsFollowing(true)
+      } else if (wasFollowing && (e?.response?.status === 404 || msg.toLowerCase().includes('not found'))) {
+        setIsFollowing(false)
+      } else {
+        setIsFollowing(wasFollowing)
+        toast.error(msg || 'Could not update follow')
+      }
+    } finally {
+      setFollowLoading(false)
     }
   }
 
@@ -264,6 +301,17 @@ export default function PublicProfilePage() {
                     }
                   </div>
                   <div className="pub-action-row">
+                    {profile?.role === 'COMPANY' && (
+                      <button
+                        type="button"
+                        className={`pub-btn-follow${isFollowing ? ' following' : ''}`}
+                        onClick={handleFollow}
+                        disabled={followLoading}
+                      >
+                        <MaterialIcon name={isFollowing ? 'check' : 'add'} size={16} color={isFollowing ? '#0077b5' : '#fff'} />
+                        {followLoading ? '…' : isFollowing ? 'Following' : 'Follow'}
+                      </button>
+                    )}
                     {isConnected ? (
                       <button
                         className="pub-btn-message"
@@ -584,6 +632,18 @@ export default function PublicProfilePage() {
                 </div>
                 <p className="pub-right-name">{profile.fullName ?? 'User'}</p>
                 {profile.title && <p className="pub-right-title">{profile.title}</p>}
+                {profile?.role === 'COMPANY' && (
+                  <button
+                    type="button"
+                    className={`pub-btn-connect-full${isFollowing ? ' following-full' : ''}`}
+                    style={isFollowing ? {background:'#fff',color:'#0077b5',border:'1.5px solid #bae6fd'} : {}}
+                    onClick={handleFollow}
+                    disabled={followLoading}
+                  >
+                    <MaterialIcon name={isFollowing ? 'check' : 'add'} size={15} color={isFollowing ? '#0077b5' : '#fff'} />
+                    {followLoading ? '…' : isFollowing ? 'Following' : 'Follow'}
+                  </button>
+                )}
                 {isConnected ? (
                   <button className="pub-btn-message-full" onClick={handleMessage} disabled={msgLoading}>
                     <MaterialIcon name="chat" size={15} color="#fff" />
@@ -755,6 +815,12 @@ const STYLES = `
 .pub-btn-message:hover{background:#f0f9ff;box-shadow:0 4px 14px rgba(0,119,181,0.2);}
 .pub-btn-message:active{transform:scale(.96);}
 .pub-btn-message:disabled{opacity:.75;cursor:not-allowed;}
+.pub-btn-follow{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#0284c7,#0077b5);color:#fff;border:none;border-radius:999px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 3px 12px rgba(0,119,181,0.3);transition:transform .15s,box-shadow .15s;}
+.pub-btn-follow:hover{box-shadow:0 5px 18px rgba(0,119,181,0.4);}
+.pub-btn-follow:active{transform:scale(.96);}
+.pub-btn-follow.following{background:#fff;color:#0077b5;border:1.5px solid #bae6fd;box-shadow:0 2px 8px rgba(0,119,181,0.12);}
+.pub-btn-follow.following:hover{background:#f0f9ff;}
+.pub-btn-follow:disabled{opacity:.75;cursor:not-allowed;}
 
 /* ── PROFILE INFO ── */
 .pub-profile-info{padding:2px 18px 18px 20px;display:flex;flex-direction:column;gap:6px;}

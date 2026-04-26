@@ -5,6 +5,10 @@ import { Role } from '../auth/roles'
 
 const router: Router = Router()
 
+// Public — no auth required to view a user's posts
+router.get('/user/:userId', (req: Request, res: Response) =>
+  postController.getUserPosts(req, res))
+
 router.use(authenticate)
 
 // Feed - all roles
@@ -26,10 +30,6 @@ router.get('/received-proposals', (req: Request, res: Response) =>
 // My post likers (people who liked my posts)
 router.get('/my-likers', (req: Request, res: Response) =>
   postController.getMyPostLikers(req, res))
-
-// Public posts by a specific user
-router.get('/user/:userId', (req: Request, res: Response) =>
-  postController.getUserPosts(req, res))
 
 // Get a single proposal by ID (for chat proposal cards)
 router.get('/proposals/:proposalId', (req: Request, res: Response) =>

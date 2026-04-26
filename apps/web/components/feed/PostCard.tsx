@@ -365,7 +365,15 @@ export default function PostCard({
       )}
       <div className="p-5">
         <div className="mb-4 flex items-start justify-between gap-4">
-          <div className="flex min-w-0 items-start gap-3">
+          <button
+            type="button"
+            className="flex min-w-0 items-start gap-3 rounded-lg p-0 text-left transition-opacity hover:opacity-80"
+            onClick={() => {
+              if (!targetUserId) return
+              if (author.role === 'COMPANY') router.push(`/profile/company/${targetUserId}`)
+              else router.push(`/profile/${targetUserId}`)
+            }}
+          >
             <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[#edf5fb] text-sm font-bold text-[#005d8f]">
               {author.image ? (
                 <img src={author.image} alt={author.name} className="h-full w-full object-cover" />
@@ -385,7 +393,7 @@ export default function PostCard({
                 <p className="mt-1 truncate text-[10px] text-[#707881]">{formatTimestamp(post.createdAt)}</p>
               ) : null}
             </div>
-          </div>
+          </button>
 
           <button
             type="button"

@@ -26,8 +26,10 @@ export default function CreatePostPage() {
     if (title.trim().length < 5) return toast.error('Title must be at least 5 characters')
     if (description.length < 20) return toast.error('Description must be at least 20 characters')
 
+    if ((isCompany || isClient) && !budget) return toast.error('Budget is required')
     const budgetNum = budget ? Number(budget) : undefined
     if (budgetNum !== undefined && isNaN(budgetNum)) return toast.error('Budget must be a valid number')
+    if (budgetNum !== undefined && budgetNum <= 0) return toast.error('Budget must be greater than 0')
 
     setLoading(true)
     try {
@@ -35,7 +37,7 @@ export default function CreatePostPage() {
         type: isFreelancer ? 'SKILL_EXCHANGE' : isCompany ? 'COLLAB' : 'TASK',
         title: title.trim(),
         description,
-        budget: isClient && budgetNum ? budgetNum : undefined,
+        budget: (isCompany || isClient) && budgetNum ? budgetNum : undefined,
         skills: isClient ? skills : [],
       })
       toast.success(
@@ -123,29 +125,35 @@ export default function CreatePostPage() {
             </div>
           </div>
 
-          {isClient ? (
-            <>
-              <div className="rounded-2xl border border-gray-200 bg-white p-5">
-                <label className="text-sm font-bold text-gray-700">Budget (optional)</label>
-                <input
-                  type="number"
-                  value={budget}
-                  onChange={(e) => setBudget(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-gray-200 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="e.g. 5000"
-                />
-              </div>
+          {(isCompany || isClient) && (
+            <div className="rounded-2xl border border-gray-200 bg-white p-5">
+              <label className="text-sm font-bold text-gray-700">
+                Budget <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                value={budget}
+                onChange={(e) => setBudget(e.target.value)}
+                min={1}
+                className="mt-1 w-full rounded-xl border border-gray-200 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="e.g. 5000"
+              />
+              {budget !== '' && Number(budget) <= 0 && (
+                <p className="mt-0.5 text-xs text-red-400">Budget must be greater than 0</p>
+              )}
+            </div>
+          )}
 
-              <div className="rounded-2xl border border-gray-200 bg-white p-5">
-                <label className="mb-2 block text-sm font-bold text-gray-700">Skills Required</label>
-                <SkillsInput
-                  value={skills}
-                  onChange={setSkills}
-                  placeholder="Add skills required for this task..."
-                />
-              </div>
-            </>
-          ) : null}
+          {isClient && (
+            <div className="rounded-2xl border border-gray-200 bg-white p-5">
+              <label className="mb-2 block text-sm font-bold text-gray-700">Skills Required</label>
+              <SkillsInput
+                value={skills}
+                onChange={setSkills}
+                placeholder="Add skills required for this task..."
+              />
+            </div>
+          )}
 
           <button
             type="submit"
