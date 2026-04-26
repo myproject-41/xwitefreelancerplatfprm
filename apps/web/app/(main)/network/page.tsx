@@ -34,6 +34,10 @@ function getUserInfo(u: any) {
   return { name, title, image, country }
 }
 
+function getProfilePath(u: any) {
+  return u?.role === 'COMPANY' ? `/profile/company/${u.id}` : `/profile/${u.id}`
+}
+
 function getInitials(name: string) {
   return name.split(' ').filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase() || '').join('') || 'X'
 }
@@ -275,7 +279,7 @@ function PendingInvitations({ pending, onAccept, onIgnore }: { pending: any[]; o
           const { name, title, image } = getUserInfo(req.fromUser)
           return (
             <div key={req.id} className="p-4 hover:bg-[#faf9f6] transition-colors">
-              <button type="button" onClick={() => req.fromUser?.id && router.push(`/profile/${req.fromUser.id}`)} className="flex w-full items-start gap-3 mb-3 text-left">
+              <button type="button" onClick={() => req.fromUser?.id && router.push(getProfilePath(req.fromUser))} className="flex w-full items-start gap-3 mb-3 text-left">
                 <Avatar name={name} image={image} size="md" />
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-sm text-[#1b1c1a] truncate">{name}</p>
@@ -433,37 +437,41 @@ function OverviewSection({ pending, suggestions, onAccept, onIgnore, onConnect }
                     </button>
                   </div>
 
-                  {/* Avatar — square */}
-                  <div className="shrink-0">
+                  {/* Avatar — clickable */}
+                  <button
+                    type="button"
+                    className="shrink-0"
+                    onClick={() => u.id && router.push(getProfilePath(u))}
+                  >
                     {image ? (
                       <img
                         src={image}
                         alt={name}
-                        className="w-24 h-24 rounded-xl object-cover border-4 border-white shadow-sm"
+                        className="w-24 h-24 rounded-xl object-cover border-4 border-white shadow-sm hover:opacity-90 transition-opacity"
                       />
                     ) : (
-                      <div className="w-24 h-24 rounded-xl border-4 border-white shadow-sm bg-gradient-to-br from-[#c3e0fe] to-[#93ccff] flex items-center justify-center text-2xl font-black text-[#005d8f]">
+                      <div className="w-24 h-24 rounded-xl border-4 border-white shadow-sm bg-gradient-to-br from-[#c3e0fe] to-[#93ccff] flex items-center justify-center text-2xl font-black text-[#005d8f] hover:opacity-90 transition-opacity">
                         {getInitials(name)}
                       </div>
                     )}
-                  </div>
+                  </button>
 
-                  {/* Content — space-y-2 matching HTML */}
-                  <div className="flex-1 space-y-2">
-                    {/* Name + title */}
-                    <div>
-                      <h4
-                        className="font-[Manrope] font-bold text-xl text-[#1b1c1a] leading-tight cursor-pointer hover:text-[#005d8f] transition-colors"
-                        onClick={() => u.id && router.push(`/profile/${u.id}`)}
-                      >
+                  {/* Content */}
+                  <div className="flex-1 min-w-0 space-y-2">
+                    {/* Name + title — clickable */}
+                    <button
+                      type="button"
+                      className="text-left w-full"
+                      onClick={() => u.id && router.push(getProfilePath(u))}
+                    >
+                      <h4 className="font-[Manrope] font-bold text-xl text-[#1b1c1a] leading-tight hover:text-[#005d8f] transition-colors">
                         {name}
                       </h4>
                       <p className="text-sm font-medium text-[#005d8f]">{title}</p>
-                    </div>
+                    </button>
 
-                    {/* Role / location row — styled like "shared connections" row in HTML */}
+                    {/* Role / location row */}
                     <div className="flex items-center gap-2 text-xs text-[#404850]">
-                      {/* Tiny role badge stack */}
                       <div className="flex items-center gap-1.5">
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#c3e0fe]/50 text-[#005d8f] font-semibold text-[10px] uppercase tracking-wide">
                           {roleLabel}
@@ -575,7 +583,7 @@ function ConnectionsSection({ pending, connections, onAccept, onIgnore, onRemove
             const timeAgo = days < 1 ? 'Today' : days < 30 ? `${days}d ago` : days < 365 ? `${Math.floor(days / 30)}mo ago` : `${Math.floor(days / 365)}y ago`
             return (
               <div key={c.connectionId} className="bg-white rounded-xl border border-[#e3e2df] shadow-sm p-4 flex items-center gap-4 hover:bg-[#faf9f6] transition-colors">
-                <button type="button" onClick={() => c.user?.id && router.push(`/profile/${c.user.id}`)} className="flex flex-1 min-w-0 items-center gap-3 text-left">
+                <button type="button" onClick={() => c.user?.id && router.push(getProfilePath(c.user))} className="flex flex-1 min-w-0 items-center gap-3 text-left">
                   <Avatar name={name} image={image} size="md" />
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-sm text-[#1b1c1a] truncate">{name}</p>
@@ -620,7 +628,7 @@ function FollowSection({ pending, following, followers, onAccept, onIgnore, onUn
               const isUnfollowed = unfollowed.has(f.following.id)
               return (
                 <div key={f.following.id} className="bg-white rounded-xl border border-[#e3e2df] shadow-sm p-4 flex items-center gap-3 hover:bg-[#faf9f6] transition-colors">
-                  <button type="button" onClick={() => f.following?.id && router.push(`/profile/${f.following.id}`)} className="flex flex-1 min-w-0 items-center gap-3 text-left">
+                  <button type="button" onClick={() => f.following?.id && router.push(getProfilePath(f.following))} className="flex flex-1 min-w-0 items-center gap-3 text-left">
                     <Avatar name={name} image={image} size="md" />
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-sm text-[#1b1c1a] truncate">{name}</p>
@@ -654,7 +662,7 @@ function FollowSection({ pending, following, followers, onAccept, onIgnore, onUn
               const isConnected = connected.has(f.follower.id)
               return (
                 <div key={f.follower.id} className="bg-white rounded-xl border border-[#e3e2df] shadow-sm p-4 flex items-center gap-3 hover:bg-[#faf9f6] transition-colors">
-                  <button type="button" onClick={() => f.follower?.id && router.push(`/profile/${f.follower.id}`)} className="flex flex-1 min-w-0 items-center gap-3 text-left">
+                  <button type="button" onClick={() => f.follower?.id && router.push(getProfilePath(f.follower))} className="flex flex-1 min-w-0 items-center gap-3 text-left">
                     <Avatar name={name} image={image} size="md" />
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-sm text-[#1b1c1a] truncate">{name}</p>
