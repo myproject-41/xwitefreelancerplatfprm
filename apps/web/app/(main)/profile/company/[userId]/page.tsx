@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 import apiClient from '../../../../../services/apiClient'
 import { chatService } from '../../../../../services/chat.service'
 import { useAuthStore } from '../../../../../store/authStore'
+import { authService } from '../../../../../services/auth.service'
 
 const NAV_ITEMS = [
   { label: 'Home',    icon: 'home',          href: '/'        },
@@ -60,14 +61,9 @@ export default function CompanyPublicProfilePage() {
     loadAll()
   }, [userId, isMe])
 
-  // After auth hydrates: fetch is-following + pre-fetch conversation for instant messaging
+  // Pre-fetch conversation so Message button navigates instantly
   useEffect(() => {
     if (!me || !userId || isMe) return
-    apiClient.get(`/api/users/${userId}/is-following`)
-      .then(res => {
-        if (res.data?.isFollowing !== undefined) setIsFollowing(res.data.isFollowing)
-      })
-      .catch(() => {})
     chatService.getOrCreateConversation(userId)
       .then(res => {
         const conv = res?.data ?? res
@@ -84,7 +80,7 @@ export default function CompanyPublicProfilePage() {
         apiClient.get(`/api/posts/user/${userId}`),
         apiClient.get(`/api/users/${userId}/followers`),
       ]
-      if (me) requests.push(apiClient.get(`/api/users/${userId}/is-following`))
+      if (authService.isLoggedIn()) requests.push(apiClient.get(`/api/users/${userId}/is-following`))
 
       const [profileRes, postsRes, followersRes, isFollowingRes] = await Promise.allSettled(requests)
 
@@ -123,8 +119,7 @@ export default function CompanyPublicProfilePage() {
   }
 
   async function handleFollow() {
-    const currentUser = useAuthStore.getState().user
-    if (!currentUser) { toast.error('Please sign in to follow'); return }
+    if (!authService.isLoggedIn()) { toast.error('Please sign in to follow'); return }
     if (followLoading) return
     setFollowLoading(true)
     const wasFollowing = isFollowing
@@ -158,8 +153,7 @@ export default function CompanyPublicProfilePage() {
   }
 
   async function handleMessage() {
-    const currentUser = useAuthStore.getState().user
-    if (!currentUser) { toast.error('Please sign in to message'); return }
+    if (!authService.isLoggedIn()) { toast.error('Please sign in to message'); return }
     if (convId) { router.push(`/messages/${convId}`); return }
     setMsgLoading(true)
     try {
