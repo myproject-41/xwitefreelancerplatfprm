@@ -304,9 +304,11 @@ function PendingInvitations({ pending, onAccept, onIgnore }: { pending: any[]; o
 }
 
 // ── SECTION: Overview ─────────────────────────────────────────────────────────
-function OverviewSection({ pending, suggestions, onAccept, onIgnore, onConnect }: any) {
+function OverviewSection({ pending, suggestions, following: initialFollowing = [], onAccept, onIgnore, onConnect }: any) {
   const [dismissed, setDismissed] = useState<Set<string>>(new Set())
-  const [followed, setFollowed] = useState<Set<string>>(new Set())
+  const [followed, setFollowed] = useState<Set<string>>(() =>
+    new Set((initialFollowing as any[]).map((f: any) => f.following?.id ?? f.followingId).filter(Boolean))
+  )
   const [connected, setConnected] = useState<Set<string>>(new Set())
   const [showAllCompanies, setShowAllCompanies] = useState(false)
   const [showAllPeople, setShowAllPeople] = useState(false)
@@ -320,6 +322,7 @@ function OverviewSection({ pending, suggestions, onAccept, onIgnore, onConnect }
 
   async function handleFollow(userId: string) {
     const isFollowed = followed.has(userId)
+    // Optimistic update — instant visual response
     setFollowed((prev) => { const n = new Set(prev); isFollowed ? n.delete(userId) : n.add(userId); return n })
     try {
       if (isFollowed) {
@@ -327,8 +330,13 @@ function OverviewSection({ pending, suggestions, onAccept, onIgnore, onConnect }
       } else {
         await networkService.follow(userId)
       }
-    } catch {
-      // Revert on failure
+    } catch (e: any) {
+      const msg: string = e?.response?.data?.message ?? ''
+      if (!isFollowed && msg.toLowerCase().includes('already following')) {
+        // Server already has this follow — keep the optimistic state
+        return
+      }
+      // Revert on other failures
       setFollowed((prev) => { const n = new Set(prev); isFollowed ? n.add(userId) : n.delete(userId); return n })
     }
   }
@@ -1055,7 +1063,7 @@ function NetworkPageInner() {
               </div>
             ) : (
               <>
-                {activeSection === 'overview' && <OverviewSection {...commonProps} suggestions={suggestions} onConnect={handleConnect} />}
+                {activeSection === 'overview' && <OverviewSection {...commonProps} suggestions={suggestions} following={following} onConnect={handleConnect} />}
                 {activeSection === 'connections' && <ConnectionsSection {...commonProps} connections={connections} onRemove={handleRemove} />}
                 {activeSection === 'following' && <FollowSection {...commonProps} following={following} followers={followers} onUnfollow={handleUnfollow} onConnect={handleConnect} />}
               </>

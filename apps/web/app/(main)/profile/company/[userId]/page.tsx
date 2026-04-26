@@ -123,7 +123,8 @@ export default function CompanyPublicProfilePage() {
   }
 
   async function handleFollow() {
-    if (!me) { toast.error('Please sign in to follow'); return }
+    const currentUser = useAuthStore.getState().user
+    if (!currentUser) { toast.error('Please sign in to follow'); return }
     if (followLoading) return
     setFollowLoading(true)
     const wasFollowing = isFollowing
@@ -157,7 +158,8 @@ export default function CompanyPublicProfilePage() {
   }
 
   async function handleMessage() {
-    if (!me) { toast.error('Please sign in to message'); return }
+    const currentUser = useAuthStore.getState().user
+    if (!currentUser) { toast.error('Please sign in to message'); return }
     if (convId) { router.push(`/messages/${convId}`); return }
     setMsgLoading(true)
     try {
