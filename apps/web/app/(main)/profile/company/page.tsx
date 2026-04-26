@@ -150,8 +150,8 @@ export default function CompanyProfile() {
       setLogoSrc(p.profileImage      ?? null)
       setConnections(d.connectionsCount ?? 0)
       try {
-        const fRes = await apiClient.get('/api/company/followers')
-        const fList = Array.isArray(fRes.data) ? fRes.data : (fRes.data?.followers ?? [])
+        const fRes = await apiClient.get(`/api/users/${d.id}/followers`)
+        const fList = Array.isArray(fRes.data?.data) ? fRes.data.data : (Array.isArray(fRes.data) ? fRes.data : [])
         setFollowers(fList)
         setFollowerCount(fRes.data?.total ?? fList.length)
       } catch {}
@@ -441,9 +441,9 @@ export default function CompanyProfile() {
               }
               {coverUploading && <div className="cp-cover-loader"><Spin /></div>}
               {!pageLoading && (
-                <button className="cp-btn-cover"
+                <button className="cp-btn-cover" type="button"
                   onClick={e => { e.stopPropagation(); coverRef.current?.click() }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="#0077b5"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="#0077b5"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                   Edit Cover
                 </button>
               )}
@@ -816,29 +816,6 @@ export default function CompanyProfile() {
             }
           </div>
 
-          {/* Hired modal */}
-          {showHiredModal && (
-            <div className="cp-modal-overlay" onClick={() => setShowHiredModal(false)}>
-              <div className="cp-modal-box" onClick={e => e.stopPropagation()}>
-                <div className="cp-modal-hdr">
-                  <p className="cp-modal-title">Hired Freelancers ({hiredFreelancers.length})</p>
-                  <button className="cp-modal-close" onClick={() => setShowHiredModal(false)}>✕</button>
-                </div>
-                <div className="cp-modal-list">
-                  {hiredFreelancers.map(f => (
-                    <button key={f.id} type="button" className="cp-modal-item"
-                      onClick={() => { setShowHiredModal(false); router.push(`/profile/${f.id}`) }}>
-                      <div className="cp-modal-av">
-                        {f.profileImage ? <img src={f.profileImage} alt={f.fullName} /> : <span>{(f.fullName ?? 'F').charAt(0).toUpperCase()}</span>}
-                      </div>
-                      <p className="cp-modal-name">{f.fullName}</p>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Tasks accordion */}
           <div className="cp-sb-card">
             <p className="cp-conn-title" style={{marginBottom:10}}>Tasks</p>
@@ -902,6 +879,29 @@ export default function CompanyProfile() {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="#94a3b8"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6-6-6z"/></svg>
           </button>
         </aside>
+
+        {/* ══ HIRED MODAL ══ */}
+        {showHiredModal && (
+          <div className="cp-modal-overlay" onClick={() => setShowHiredModal(false)}>
+            <div className="cp-modal-box" onClick={e => e.stopPropagation()}>
+              <div className="cp-modal-hdr">
+                <p className="cp-modal-title">Hired Freelancers ({hiredFreelancers.length})</p>
+                <button className="cp-modal-close" onClick={() => setShowHiredModal(false)}>✕</button>
+              </div>
+              <div className="cp-modal-list">
+                {hiredFreelancers.map(f => (
+                  <button key={f.id} type="button" className="cp-modal-item"
+                    onClick={() => { setShowHiredModal(false); router.push(`/profile/${f.id}`) }}>
+                    <div className="cp-modal-av">
+                      {f.profileImage ? <img src={f.profileImage} alt={f.fullName} /> : <span>{(f.fullName ?? 'F').charAt(0).toUpperCase()}</span>}
+                    </div>
+                    <p className="cp-modal-name">{f.fullName}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ══ FOLLOWERS MODAL ══ */}
         {showFollowers && (
@@ -1420,8 +1420,8 @@ const STYLES = `
 .cp-cover::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 35%,rgba(0,0,0,0.22) 100%);pointer-events:none;}
 .cp-cover-loader{position:absolute;inset:0;z-index:6;background:rgba(255,255,255,0.72);display:flex;align-items:center;justify-content:center;}
 @media(min-width:900px){.cp-cover{height:155px;}}
-.cp-btn-cover{position:absolute;bottom:12px;right:12px;z-index:10;background:rgba(255,255,255,0.92);color:#0077b5;border:none;padding:7px 14px;border-radius:999px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;cursor:pointer;backdrop-filter:blur(12px);box-shadow:0 2px 12px rgba(0,0,0,0.18);font-family:'Inter',sans-serif;transition:all .15s;}
-.cp-btn-cover:hover{background:#fff;box-shadow:0 4px 16px rgba(0,0,0,0.22);}
+.cp-btn-cover{position:absolute;bottom:10px;right:10px;z-index:10;background:rgba(255,255,255,0.95);color:#0077b5;border:none;padding:5px 11px;border-radius:999px;font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:5px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.18);font-family:'Inter',sans-serif;transition:all .15s;white-space:nowrap;line-height:1.4;max-height:28px;}
+.cp-btn-cover:hover{background:#fff;box-shadow:0 3px 12px rgba(0,0,0,0.22);}
 .cp-btn-cover:active{transform:scale(.95);}
 
 /* ── LOGO ROW ── */
@@ -1517,8 +1517,8 @@ const STYLES = `
 /* ── RIGHT SIDEBAR ── */
 .cp-sidebar-right{display:none;grid-area:right-sidebar;}
 @media(min-width:900px){.cp-sidebar-right{display:flex;flex-direction:column;gap:14px;padding:24px 14px 40px;background:#f1f5f9;position:sticky;top:0;height:100dvh;overflow-y:auto;overflow-x:hidden;min-width:0;width:100%;}}
-.cp-right-hdr{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border-radius:14px;padding:10px 12px;border:0.5px solid #e8edf2;box-shadow:0 1px 4px rgba(0,0,0,0.05);min-width:0;overflow:hidden;}
-.cp-wallet{background:linear-gradient(145deg,#cce8ff 0%,#d4eeff 45%,#e4f3ff 100%);border:1px solid #93c5fd;border-radius:16px;padding:16px;min-width:0;overflow:hidden;}
+.cp-right-hdr{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border-radius:14px;padding:10px 12px;border:0.5px solid #e8edf2;box-shadow:0 1px 4px rgba(0,0,0,0.05);min-width:0;}
+.cp-wallet{flex-shrink:0;background:linear-gradient(145deg,#cce8ff 0%,#d4eeff 45%,#e4f3ff 100%);border:1px solid #93c5fd;border-radius:16px;padding:16px;min-width:0;}
 .cp-wallet-head{display:flex;justify-content:space-between;align-items:flex-start;}
 .cp-wallet-lbl{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#0369a1;font-family:'Inter',sans-serif;}
 .cp-wallet-icon{background:rgba(0,93,143,0.1);border:none;border-radius:10px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;}
@@ -1529,7 +1529,7 @@ const STYLES = `
 .cp-btn-withdraw:active{transform:scale(.97);}
 .cp-btn-add{width:100%;background:linear-gradient(135deg,#0077b5,#005d8f);color:#fff;border:none;font-weight:700;font-size:13px;padding:8px;border-radius:12px;cursor:pointer;margin-top:8px;font-family:'Inter',sans-serif;box-shadow:0 2px 8px rgba(0,119,181,0.22);transition:box-shadow .15s;}
 .cp-btn-add:hover{box-shadow:0 4px 14px rgba(0,119,181,0.34);}
-.cp-conn-card{background:#fff;border-radius:16px;padding:16px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.06);min-width:0;overflow:hidden;}
+.cp-conn-card{flex-shrink:0;background:#fff;border-radius:16px;padding:16px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.06);min-width:0;}
 .cp-conn-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin-bottom:12px;font-family:'Inter',sans-serif;}
 .cp-conn-empty{font-size:13px;color:#94a3b8;font-family:'Inter',sans-serif;}
 .cp-ov-btn{width:100%;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:4px 0;text-align:left;font-family:'Inter',sans-serif;border-radius:12px;transition:background .15s;}
@@ -1557,7 +1557,7 @@ const STYLES = `
 .cp-modal-name{font-size:13px;font-weight:700;color:#0f172a;text-align:left;}
 .cp-modal-viewall{width:100%;background:none;border:none;border-top:1px solid #f1f5f9;padding:12px 0 0;margin-top:10px;cursor:pointer;font-size:12px;font-weight:700;color:#0077b5;font-family:'Inter',sans-serif;text-align:center;display:block;}
 .cp-modal-viewall:hover{opacity:.75;}
-.cp-switch{background:linear-gradient(135deg,#f8fafc,#f0f9ff);border-radius:16px;padding:12px 14px;border:1px solid #e2e8f0;cursor:pointer;display:flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;text-align:left;width:100%;min-width:0;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:box-shadow .15s;}
+.cp-switch{flex-shrink:0;background:linear-gradient(135deg,#f8fafc,#f0f9ff);border-radius:16px;padding:12px 14px;border:1px solid #e2e8f0;cursor:pointer;display:flex;align-items:center;gap:10px;font-family:'Inter',sans-serif;text-align:left;width:100%;min-width:0;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:box-shadow .15s;}
 .cp-switch:hover{box-shadow:0 3px 14px rgba(0,0,0,0.1);}
 .cp-switch-title{font-size:13px;font-weight:700;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Inter',sans-serif;}
 .cp-switch-sub{font-size:12px;color:#94a3b8;margin-top:2px;font-family:'Inter',sans-serif;}
@@ -1733,7 +1733,7 @@ const STYLES = `
 .cp-post-item-apply{font-size:10px;color:#0077b5;font-weight:700;}
 
 /* ── SIDEBAR CARD (hired / tasks) ── */
-.cp-sb-card{background:#fff;border-radius:16px;padding:14px 14px 12px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.06);min-width:0;overflow:hidden;}
+.cp-sb-card{flex-shrink:0;background:#fff;border-radius:16px;padding:14px 14px 12px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.06);min-width:0;}
 .cp-sb-card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
 .cp-sb-viewall{background:none;border:none;font-size:11px;font-weight:700;color:#0077b5;cursor:pointer;font-family:'Inter',sans-serif;}
 .cp-sb-viewall:hover{text-decoration:underline;}

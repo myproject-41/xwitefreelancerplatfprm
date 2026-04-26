@@ -44,6 +44,7 @@ export default function CompanyPublicProfilePage() {
   const [loading, setLoading]             = useState(true)
   const [isFollowing, setIsFollowing]     = useState(false)
   const [followLoading, setFollowLoading] = useState(false)
+  const [followHover, setFollowHover]     = useState(false)
   const [followerCount, setFollowerCount] = useState(0)
   const [postsOpen, setPostsOpen]         = useState(true)
   const [msgLoading, setMsgLoading]       = useState(false)
@@ -224,12 +225,18 @@ export default function CompanyPublicProfilePage() {
                   <div className="cp-pub-action-row">
                     <button
                       type="button"
-                      className={`cp-pub-btn-follow${isFollowing ? ' following' : ''}`}
+                      className={`cp-pub-btn-follow${isFollowing ? (followHover ? ' unfollow' : ' following') : ''}`}
                       onClick={handleFollow}
+                      onMouseEnter={() => isFollowing && setFollowHover(true)}
+                      onMouseLeave={() => setFollowHover(false)}
                       disabled={followLoading}
                     >
-                      <MaterialIcon name={isFollowing ? 'check' : 'add'} size={16} color={isFollowing ? '#0077b5' : '#fff'} />
-                      {followLoading ? '…' : isFollowing ? 'Following' : 'Follow'}
+                      <MaterialIcon
+                        name={isFollowing ? (followHover ? 'person_remove' : 'check') : 'add'}
+                        size={16}
+                        color={isFollowing ? (followHover ? '#dc2626' : '#0077b5') : '#fff'}
+                      />
+                      {followLoading ? '…' : isFollowing ? (followHover ? 'Unfollow' : 'Following') : 'Follow'}
                     </button>
                     <button
                       type="button"
@@ -370,12 +377,18 @@ export default function CompanyPublicProfilePage() {
                 <p className="cp-pub-right-followers">{followerCount} followers</p>
                 <button
                   type="button"
-                  className={`cp-pub-btn-follow-full${isFollowing ? ' following' : ''}`}
+                  className={`cp-pub-btn-follow-full${isFollowing ? (followHover ? ' unfollow' : ' following') : ''}`}
                   onClick={handleFollow}
+                  onMouseEnter={() => isFollowing && setFollowHover(true)}
+                  onMouseLeave={() => setFollowHover(false)}
                   disabled={followLoading}
                 >
-                  <MaterialIcon name={isFollowing ? 'check' : 'add'} size={15} color={isFollowing ? '#0077b5' : '#fff'} />
-                  {followLoading ? '…' : isFollowing ? 'Following' : 'Follow'}
+                  <MaterialIcon
+                    name={isFollowing ? (followHover ? 'person_remove' : 'check') : 'add'}
+                    size={15}
+                    color={isFollowing ? (followHover ? '#dc2626' : '#0077b5') : '#fff'}
+                  />
+                  {followLoading ? '…' : isFollowing ? (followHover ? 'Unfollow' : 'Following') : 'Follow'}
                 </button>
                 <button
                   type="button"
@@ -478,13 +491,13 @@ const STYLES = `
 @media(min-width:900px){.cp-pub-logo{width:96px;height:96px;}}
 .cp-pub-action-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 
-.cp-pub-btn-follow{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#0284c7,#0077b5);color:#fff;border:none;border-radius:999px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 3px 12px rgba(0,119,181,0.3);transition:transform .15s,box-shadow .15s;}
+.cp-pub-btn-follow{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#0284c7,#0077b5);color:#fff;border:none;border-radius:999px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 3px 12px rgba(0,119,181,0.3);transition:all .15s;}
 .cp-pub-btn-follow:hover{box-shadow:0 5px 18px rgba(0,119,181,0.4);}
 .cp-pub-btn-follow:active{transform:scale(.96);}
 .cp-pub-btn-follow.following{background:#fff;color:#0077b5;border:1.5px solid #bae6fd;box-shadow:0 2px 8px rgba(0,119,181,0.12);}
-.cp-pub-btn-follow.following:hover{background:#f0f9ff;}
+.cp-pub-btn-follow.unfollow{background:#fff;color:#dc2626;border:1.5px solid #fecaca;box-shadow:0 2px 8px rgba(220,38,38,0.12);}
 .cp-pub-btn-follow:disabled{opacity:.75;cursor:not-allowed;}
-.cp-pub-btn-message{display:flex;align-items:center;gap:6px;background:#fff;color:#0077b5;border:1.5px solid #bae6fd;border-radius:999px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 2px 8px rgba(0,119,181,0.12);transition:transform .15s,background .15s;}
+.cp-pub-btn-message{display:flex;align-items:center;gap:6px;background:#fff;color:#0077b5;border:1.5px solid #bae6fd;border-radius:999px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 2px 8px rgba(0,119,181,0.12);transition:all .15s;}
 .cp-pub-btn-message:hover{background:#f0f9ff;}
 .cp-pub-btn-message:active{transform:scale(.96);}
 .cp-pub-btn-message:disabled{opacity:.75;cursor:not-allowed;}
@@ -531,12 +544,13 @@ const STYLES = `
 .cp-pub-right-name{font-size:14px;font-weight:700;color:#0f172a;}
 .cp-pub-right-industry{font-size:12px;color:#64748b;}
 .cp-pub-right-followers{font-size:12px;font-weight:700;color:#0077b5;}
-.cp-pub-btn-follow-full{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;background:linear-gradient(135deg,#0284c7,#0077b5);color:#fff;border:none;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 3px 10px rgba(0,119,181,0.28);transition:transform .15s;}
+.cp-pub-btn-follow-full{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;background:linear-gradient(135deg,#0284c7,#0077b5);color:#fff;border:none;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 3px 10px rgba(0,119,181,0.28);transition:all .15s;}
 .cp-pub-btn-follow-full:hover{transform:translateY(-1px);}
 .cp-pub-btn-follow-full.following{background:#fff;color:#0077b5;border:1.5px solid #bae6fd;box-shadow:0 2px 8px rgba(0,119,181,0.12);}
+.cp-pub-btn-follow-full.unfollow{background:#fff;color:#dc2626;border:1.5px solid #fecaca;box-shadow:0 2px 8px rgba(220,38,38,0.12);}
 .cp-pub-btn-follow-full:disabled{opacity:.7;cursor:not-allowed;}
-.cp-pub-btn-msg-full{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;background:linear-gradient(135deg,#0284c7,#0077b5);color:#fff;border:none;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 3px 10px rgba(0,119,181,0.28);transition:transform .15s;margin-top:2px;}
-.cp-pub-btn-msg-full:hover{transform:translateY(-1px);}
+.cp-pub-btn-msg-full{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;background:#fff;color:#0077b5;border:1.5px solid #bae6fd;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 2px 8px rgba(0,119,181,0.12);transition:all .15s;margin-top:2px;}
+.cp-pub-btn-msg-full:hover{background:#f0f9ff;transform:translateY(-1px);}
 .cp-pub-btn-msg-full:disabled{opacity:.7;cursor:not-allowed;}
 .cp-pub-details-card{background:#fff;border-radius:16px;padding:14px;border:1px solid #e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,0.05);}
 .cp-pub-details-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin-bottom:10px;}
