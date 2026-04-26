@@ -54,6 +54,7 @@ export class WalletService {
   ) {
     // Verify HMAC signature
     const body      = `${razorpayOrderId}|${razorpayPaymentId}`
+    if (!env.RAZORPAY_KEY_SECRET) throw new Error('RAZORPAY_KEY_SECRET is not configured')
     const expected  = crypto
       .createHmac('sha256', env.RAZORPAY_KEY_SECRET)
       .update(body)
@@ -103,6 +104,7 @@ export class WalletService {
 
   /* ── Webhook handler (for robust server-side confirmation) ── */
   async handleWebhook(rawBody: string, signature: string) {
+    if (!env.RAZORPAY_WEBHOOK_SECRET) throw new Error('RAZORPAY_WEBHOOK_SECRET is not configured')
     const expected = crypto
       .createHmac('sha256', env.RAZORPAY_WEBHOOK_SECRET)
       .update(rawBody)
