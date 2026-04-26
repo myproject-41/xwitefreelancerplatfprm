@@ -209,7 +209,7 @@ export default function FreelancerOnboarding() {
               <ImageUpload
                 value={profileImageUrl}
                 onChange={(url) => setProfileImageUrl(url)}
-                shape="circle"
+                shape="square"
                 size="lg"
                 placeholder="👤"
               />
