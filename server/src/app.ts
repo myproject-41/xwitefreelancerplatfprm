@@ -20,6 +20,7 @@ app.disable('x-powered-by')
 
 const allowedOrigins = [
   process.env.FRONTEND_URL,
+  process.env.FRONTEND_URL_2,
   'http://localhost:3000',
   'http://127.0.0.1:3000',
   'https://project-5jorl.vercel.app',
@@ -34,10 +35,13 @@ app.use(cors({
   origin: (origin, callback) => {
     if (!origin) { callback(null, true); return }
     if (allowedOrigins.includes(origin as string)) { callback(null, true); return }
-    if (/^https:\/\/project-5jorl[a-z0-9-]*\.vercel\.app$/.test(origin)) { callback(null, true); return }
+    // Allow any Vercel deployment (*.vercel.app) — JWT auth secures the data
+    if (/^https:\/\/[a-z0-9][a-z0-9-]*\.vercel\.app$/.test(origin)) { callback(null, true); return }
     callback(new Error('Not allowed by CORS'))
   },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }))
 
 app.use(express.json({
