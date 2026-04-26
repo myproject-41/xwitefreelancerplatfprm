@@ -22,16 +22,9 @@ const envSchema = z.object({
   ANTHROPIC_API_KEY: z.string().default(''),
   NEXT_PUBLIC_API_URL: z.string().default('http://localhost:4000'),
   FRONTEND_URL: z.string().optional(),
+  FRONTEND_URL_2: z.string().optional(),
   BASE_URL: z.string().optional(),
   ALLOW_INSECURE_TLS: z.enum(['true', 'false']).optional(),
-}).superRefine((data, ctx) => {
-  if (data.NODE_ENV === 'production' && !data.FRONTEND_URL) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'FRONTEND_URL is required in production',
-      path: ['FRONTEND_URL'],
-    })
-  }
 })
 
 const parsed = envSchema.safeParse(process.env)
