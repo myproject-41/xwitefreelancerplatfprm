@@ -122,6 +122,18 @@ export class NetworkController {
     }
   }
 
+  async isFollowing(req: Request, res: Response): Promise<void> {
+    try {
+      const isFollowing = await followService.isFollowing(
+        req.user!.userId,
+        req.params.userId
+      )
+      res.json({ success: true, isFollowing })
+    } catch (e: any) {
+      res.status(500).json({ success: false, message: e.message })
+    }
+  }
+
   async getFollowers(req: Request, res: Response): Promise<void> {
     try {
       const targetUserId =

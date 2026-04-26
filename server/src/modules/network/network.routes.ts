@@ -49,6 +49,10 @@ router.delete('/unfollow/:userId', (req: Request, res: Response) =>
 router.get('/following', (req: Request, res: Response) =>
   networkController.getFollowing(req, res))
 
+// Direct follow status
+router.get('/is-following/:userId', (req: Request, res: Response) =>
+  networkController.isFollowing(req, res))
+
 // Followers list
 router.get('/followers', (req: Request, res: Response) =>
   networkController.getFollowers(req, res))

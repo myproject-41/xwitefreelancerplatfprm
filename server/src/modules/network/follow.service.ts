@@ -8,7 +8,7 @@ export class FollowService {
     const existing = await prisma.follow.findUnique({
       where: { followerId_followingId: { followerId, followingId } },
     })
-    if (existing) throw new Error('Already following')
+    if (existing) return existing
 
     const follow = await prisma.follow.create({
       data: { followerId, followingId },
@@ -44,8 +44,8 @@ export class FollowService {
   }
 
   async unfollow(followerId: string, followingId: string) {
-    return prisma.follow.delete({
-      where: { followerId_followingId: { followerId, followingId } },
+    return prisma.follow.deleteMany({
+      where: { followerId, followingId },
     })
   }
 

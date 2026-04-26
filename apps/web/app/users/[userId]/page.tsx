@@ -860,7 +860,7 @@ export default function PublicProfilePage() {
     try {
       const [connRes, followRes] = await Promise.allSettled([
         apiClient.get(`/api/network/status/${id}`),
-        networkService.getFollowing(),
+        networkService.isFollowing(id),
       ])
       if (connRes.status === 'fulfilled') {
         const c = connRes.value?.data
@@ -869,9 +869,8 @@ export default function PublicProfilePage() {
         else setConnectState('idle')
       }
       if (followRes.status === 'fulfilled') {
-        const list = followRes.value?.data ?? followRes.value ?? []
-        const isFollowing = Array.isArray(list) && list.some((f: any) => f.followingId === id || f.following?.id === id)
-        if (isFollowing) setFollowState('following')
+        const data = followRes.value?.data ?? followRes.value
+        setFollowState(data?.isFollowing ? 'following' : 'idle')
       }
     } catch { /* unauthenticated — skip */ }
   }

@@ -314,6 +314,14 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
   const [showAllPeople, setShowAllPeople] = useState(false)
   const router = useRouter()
 
+  useEffect(() => {
+    setFollowed(new Set(
+      (initialFollowing as any[])
+        .map((f: any) => f.following?.id ?? f.followingId)
+        .filter(Boolean)
+    ))
+  }, [initialFollowing])
+
   // Split real suggestions into companies vs people
   const allCompanySuggestions = suggestions.filter((s: any) => s.role === 'COMPANY')
   const allPeopleSuggestions = suggestions.filter((s: any) => s.role !== 'COMPANY' && !dismissed.has(s.id))

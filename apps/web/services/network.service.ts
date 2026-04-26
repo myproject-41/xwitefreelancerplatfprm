@@ -53,6 +53,11 @@ export const networkService = {
     return res.data
   },
 
+  async isFollowing(userId: string) {
+    const res = await apiClient.get(`/api/network/is-following/${userId}`)
+    return res.data
+  },
+
   async getFollowers() {
     const res = await apiClient.get('/api/network/followers')
     return res.data

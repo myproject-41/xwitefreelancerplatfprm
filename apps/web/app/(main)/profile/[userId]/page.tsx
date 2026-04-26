@@ -81,9 +81,10 @@ export default function PublicProfilePage() {
   // Fetch is-following once auth store hydrates (me goes null → user)
   useEffect(() => {
     if (!me || !userId || isMe) return
-    apiClient.get(`/api/users/${userId}/is-following`)
+    networkService.isFollowing(userId)
       .then(res => {
-        if (res.data?.isFollowing !== undefined) setIsFollowing(res.data.isFollowing)
+        const data = res?.data ?? res
+        if (data?.isFollowing !== undefined) setIsFollowing(data.isFollowing)
       })
       .catch(() => {})
   }, [me?.id, userId])
@@ -198,10 +199,10 @@ export default function PublicProfilePage() {
     setIsFollowing(!wasFollowing)
     try {
       if (wasFollowing) {
-        await apiClient.delete(`/api/users/${userId}/follow`)
+        await networkService.unfollow(userId)
         toast.success('Unfollowed')
       } else {
-        await apiClient.post(`/api/users/${userId}/follow`)
+        await networkService.follow(userId)
         toast.success('Following!')
       }
     } catch (e: any) {

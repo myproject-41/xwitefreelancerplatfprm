@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation'
 import toast from 'react-hot-toast'
 import apiClient from '../../../../../services/apiClient'
 import { chatService } from '../../../../../services/chat.service'
+import { networkService } from '../../../../../services/network.service'
 import { useAuthStore } from '../../../../../store/authStore'
 import { authService } from '../../../../../services/auth.service'
 
@@ -80,7 +81,7 @@ export default function CompanyPublicProfilePage() {
         apiClient.get(`/api/posts/user/${userId}`),
         apiClient.get(`/api/users/${userId}/followers`),
       ]
-      if (authService.isLoggedIn()) requests.push(apiClient.get(`/api/users/${userId}/is-following`))
+      if (authService.isLoggedIn()) requests.push(networkService.isFollowing(userId))
 
       const [profileRes, postsRes, followersRes, isFollowingRes] = await Promise.allSettled(requests)
 
@@ -109,7 +110,8 @@ export default function CompanyPublicProfilePage() {
       }
 
       if (isFollowingRes?.status === 'fulfilled') {
-        setIsFollowing(isFollowingRes.value.data?.isFollowing ?? false)
+        const data = isFollowingRes.value?.data ?? isFollowingRes.value
+        setIsFollowing(data?.isFollowing ?? false)
       }
     } catch {
       toast.error('Could not load profile')
@@ -127,10 +129,10 @@ export default function CompanyPublicProfilePage() {
     setFollowerCount(c => wasFollowing ? Math.max(0, c - 1) : c + 1)
     try {
       if (wasFollowing) {
-        await apiClient.delete(`/api/users/${userId}/follow`)
+        await networkService.unfollow(userId)
         toast.success('Unfollowed')
       } else {
-        await apiClient.post(`/api/users/${userId}/follow`)
+        await networkService.follow(userId)
         toast.success('Now following!')
       }
     } catch (e: any) {
