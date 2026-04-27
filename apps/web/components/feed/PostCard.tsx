@@ -292,6 +292,8 @@ export default function PostCard({
     if (loading) return
     if (coverLetter.length < 50) return toast.error('Cover letter must be at least 50 characters')
     if (requiresRate && !proposedRate.trim()) return toast.error('Rate is required to apply')
+    const days = Number(estimatedDays)
+    if (!estimatedDays || isNaN(days) || days < 1 || days > 365) return toast.error('Please enter a delivery timeline (1–365 days)')
     const previousCoverLetter = coverLetter
     const previousProposedRate = proposedRate
 
@@ -306,7 +308,7 @@ export default function PostCard({
       await postService.sendProposal(post.id, {
         coverLetter:   previousCoverLetter,
         proposedRate:  requiresRate && previousProposedRate ? Number(previousProposedRate) : undefined,
-        estimatedDays: estimatedDays ? Number(estimatedDays) : undefined,
+        estimatedDays: Number(estimatedDays),
       })
       toast.success(
         actionKind === 'collaborate'
@@ -588,7 +590,7 @@ export default function PostCard({
 
             <div className="mt-4">
               <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#707881]">
-                Estimated Delivery <span className="normal-case text-[#9ca3af] font-normal">(optional)</span>
+                Delivery Timeline <span className="text-red-500">*</span>
               </label>
               <div className="relative mt-2">
                 <input
@@ -602,6 +604,7 @@ export default function PostCard({
                 />
                 <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-[#707881]">days</span>
               </div>
+              <p className="mt-1 text-[10px] text-[#9ca3af]">Countdown starts when client funds the escrow</p>
             </div>
 
             <button

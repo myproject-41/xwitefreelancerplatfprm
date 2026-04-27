@@ -341,13 +341,14 @@ model Post {
 }
 
 model Task {
-  id           String     @id @default(cuid())
-  title        String
-  description  String
-  budget       Float
-  deadline     DateTime?
-  status       TaskStatus @default(OPEN)
-  skills       String[]
+  id            String     @id @default(cuid())
+  title         String
+  description   String
+  budget        Float
+  deadline      DateTime?
+  estimatedDays Int?
+  status        TaskStatus @default(OPEN)
+  skills        String[]
 
   submissionNote  String?
   submissionFiles String[]

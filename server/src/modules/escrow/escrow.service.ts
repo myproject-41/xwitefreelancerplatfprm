@@ -113,7 +113,17 @@ export class EscrowService {
       })
 
       await tx.escrow.update({ where: { id: escrowId }, data: { status: 'FUNDED' } })
-      await tx.task.update({ where: { id: escrow.taskId }, data: { status: 'IN_PROGRESS' } })
+
+      // Start the freelancer's timeline from the moment funds are locked in escrow
+      const taskExt = escrow.task as typeof escrow.task & { estimatedDays?: number | null }
+      const taskUpdate: Record<string, unknown> = { status: 'IN_PROGRESS' }
+      if (!escrow.task.deadline && taskExt.estimatedDays) {
+        const deadline = new Date()
+        deadline.setDate(deadline.getDate() + taskExt.estimatedDays)
+        taskUpdate.deadline = deadline
+      }
+      await tx.task.update({ where: { id: escrow.taskId }, data: taskUpdate })
+
       if (escrow.task.postId) {
         await tx.post.update({ where: { id: escrow.task.postId }, data: { status: 'IN_PROGRESS' } })
       }

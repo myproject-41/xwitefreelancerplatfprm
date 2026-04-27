@@ -8,7 +8,7 @@ interface CreateProposalInput {
   freelancerId: string
   coverLetter: string
   proposedRate?: number
-  estimatedDays?: number
+  estimatedDays: number
 }
 
 export class ProposalService {
@@ -211,29 +211,24 @@ export class ProposalService {
     // Create Task linked to the post
     const amount = proposal.proposedRate ?? proposal.post.budget ?? 0
 
-    // estimatedDays is a new column — cast until the TS language server picks up the regenerated Prisma client
-    const estimatedDays = (proposal as unknown as { estimatedDays?: number | null }).estimatedDays
-
-    // Deadline: prefer post deadline; fall back to freelancer's proposed timeline
-    let taskDeadline: Date | undefined = proposal.post.deadline ?? undefined
-    if (!taskDeadline && estimatedDays) {
-      const d = new Date()
-      d.setDate(d.getDate() + estimatedDays)
-      taskDeadline = d
-    }
+    // estimatedDays — cast until TS server picks up regenerated Prisma client for both Proposal & Task
+    const estimatedDays = (proposal as unknown as { estimatedDays?: number | null }).estimatedDays ?? 0
 
     const task = await prisma.task.create({
       data: {
-        title:        proposal.post.title,
-        description:  proposal.post.description,
-        budget:       amount,
-        deadline:     taskDeadline,
-        skills:       proposal.post.skills,
+        title:         proposal.post.title,
+        description:   proposal.post.description,
+        budget:        amount,
+        // deadline is NOT set here — it will be computed from fundEscrow time (now + estimatedDays)
+        // If the post had a hard absolute deadline, store that instead
+        deadline:      proposal.post.deadline ?? undefined,
+        estimatedDays: estimatedDays || undefined,
+        skills:        proposal.post.skills,
         clientId,
-        freelancerId: proposal.freelancerId,
-        postId:       proposal.postId,
-        status:       'OPEN',
-      },
+        freelancerId:  proposal.freelancerId,
+        postId:        proposal.postId,
+        status:        'OPEN',
+      } as any,
     })
 
     // Create Escrow for the task (unfunded — client must fund from wallet)
