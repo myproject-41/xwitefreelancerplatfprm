@@ -46,6 +46,7 @@ export const postService = {
   async sendProposal(postId: string, data: {
     coverLetter: string
     proposedRate?: number
+    estimatedDays?: number
   }) {
     const res = await apiClient.post(`/api/posts/${postId}/proposals`, data)
     return res.data
