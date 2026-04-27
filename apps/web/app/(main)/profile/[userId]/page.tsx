@@ -58,6 +58,7 @@ export default function PublicProfilePage() {
   const [connStatus, setConnStatus]         = useState<any>(null)
   const [connLoading, setConnLoading]       = useState(false)
   const [msgLoading, setMsgLoading]         = useState(false)
+  const [convId, setConvId]                 = useState<string | null>(null)
   const [isFollowing, setIsFollowing]       = useState(false)
   const [followLoading, setFollowLoading]   = useState(false)
   const [postsOpen, setPostsOpen]           = useState(true)
@@ -85,6 +86,17 @@ export default function PublicProfilePage() {
       .then(res => {
         const data = res?.data ?? res
         if (data?.isFollowing !== undefined) setIsFollowing(data.isFollowing)
+      })
+      .catch(() => {})
+  }, [me?.id, userId])
+
+  // Pre-fetch conversation so Message navigates instantly
+  useEffect(() => {
+    if (!me || !userId || isMe) return
+    chatService.getOrCreateConversation(userId)
+      .then(res => {
+        const conv = res?.data ?? res
+        if (conv?.id) setConvId(conv.id)
       })
       .catch(() => {})
   }, [me?.id, userId])
@@ -154,23 +166,17 @@ export default function PublicProfilePage() {
 
   async function handleConnect() {
     if (!me) { router.push('/login'); return }
+    if (connStatus?.status === 'ACCEPTED') { handleMessage(); return }
+    if (connStatus?.status === 'PENDING') { toast('Connection request already sent'); return }
+    // Optimistic — show Requested immediately
+    const prevStatus = connStatus
+    setConnStatus({ status: 'PENDING' })
     setConnLoading(true)
     try {
-      if (connStatus?.status === 'ACCEPTED') {
-        // Already connected — go to messages
-        handleMessage()
-        return
-      }
-      if (connStatus?.status === 'PENDING') {
-        toast('Connection request already sent')
-        setConnLoading(false)
-        return
-      }
       await networkService.sendRequest(userId)
       toast.success('Connection request sent!')
-      const res = await apiClient.get(`/api/network/status/${userId}`)
-      setConnStatus(res.data?.data ?? null)
     } catch (e: any) {
+      setConnStatus(prevStatus)
       toast.error(e?.response?.data?.message ?? 'Failed to send request')
     } finally {
       setConnLoading(false)
@@ -179,11 +185,12 @@ export default function PublicProfilePage() {
 
   async function handleMessage() {
     if (!me) { router.push('/login'); return }
+    if (convId) { router.push(`/messages/${convId}`); return }
     setMsgLoading(true)
     try {
       const res = await chatService.getOrCreateConversation(userId)
       const conv = res?.data ?? res
-      if (conv?.id) router.push(`/messages/${conv.id}`)
+      if (conv?.id) { setConvId(conv.id); router.push(`/messages/${conv.id}`) }
     } catch {
       toast.error('Could not open conversation')
     } finally {

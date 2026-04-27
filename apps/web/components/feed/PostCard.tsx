@@ -294,11 +294,12 @@ export default function PostCard({
     const previousCoverLetter = coverLetter
     const previousProposedRate = proposedRate
 
-    setLoading(true)
+    // Optimistic — close form and mark done instantly
     setLocalActionCompleted(true)
     setShowProposal(false)
     setCoverLetter('')
     setProposedRate('')
+    setLoading(true)
 
     try {
       await postService.sendProposal(post.id, {
@@ -324,9 +325,10 @@ export default function PostCard({
   const handleConnect = async () => {
     if (loading) return
     if (!targetUserId) return toast.error('Unable to find this user')
-    setLoading(true)
+    // Optimistic — mark done instantly before API
     setLocalActionCompleted(true)
     setShowProposal(false)
+    setLoading(true)
 
     try {
       await networkService.sendRequest(targetUserId)

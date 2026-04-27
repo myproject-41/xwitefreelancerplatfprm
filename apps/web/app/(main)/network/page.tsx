@@ -505,10 +505,13 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                     <div className="pt-2">
                       <button
                         onClick={async () => {
+                          if (isConnected) return
+                          setConnected((prev) => new Set(prev).add(u.id))
                           try {
                             await onConnect(u.id)
-                            setConnected((prev) => new Set(prev).add(u.id))
-                          } catch {}
+                          } catch {
+                            setConnected((prev) => { const s = new Set(prev); s.delete(u.id); return s })
+                          }
                         }}
                         disabled={isConnected}
                         className={`flex items-center gap-2 px-6 py-2 rounded-full font-bold text-sm transition-all active:scale-95 ${
@@ -652,7 +655,7 @@ function FollowSection({ pending, following, followers, onAccept, onIgnore, onUn
                     </div>
                   </button>
                   <button
-                    onClick={async () => { try { if (isUnfollowed) return; await onUnfollow(f.following.id); setUnfollowed((prev) => new Set(prev).add(f.following.id)); toast.success(`Unfollowed ${name}`) } catch {} }}
+                    onClick={async () => { if (isUnfollowed) return; setUnfollowed((prev) => new Set(prev).add(f.following.id)); try { await onUnfollow(f.following.id); toast.success(`Unfollowed ${name}`) } catch { setUnfollowed((prev) => { const s = new Set(prev); s.delete(f.following.id); return s }) } }}
                     className="px-3 py-1.5 rounded-full border border-[#bfc7d1] text-[#404850] text-xs font-bold hover:bg-[#efeeeb] transition shrink-0"
                   >
                     {isUnfollowed ? 'Follow' : 'Following'}
@@ -686,7 +689,7 @@ function FollowSection({ pending, following, followers, onAccept, onIgnore, onUn
                     </div>
                   </button>
                   <button
-                    onClick={async () => { try { await onConnect(f.follower.id); setConnected((prev) => new Set(prev).add(f.follower.id)) } catch {} }}
+                    onClick={async () => { if (isConnected) return; setConnected((prev) => new Set(prev).add(f.follower.id)); try { await onConnect(f.follower.id) } catch { setConnected((prev) => { const s = new Set(prev); s.delete(f.follower.id); return s }) } }}
                     disabled={isConnected}
                     className={`px-3 py-1.5 rounded-full border text-xs font-bold transition shrink-0 ${isConnected ? 'border-[#bfc7d1] text-[#707881]' : 'border-[#005d8f] text-[#005d8f] hover:bg-[#005d8f]/5'}`}
                   >
@@ -899,20 +902,20 @@ function NetworkPageInner() {
   }
 
   const handleAccept = async (connectionId: string) => {
+    setPending((prev) => prev.filter((p) => p.id !== connectionId))
     try {
       await networkService.acceptRequest(connectionId)
-      setPending((prev) => prev.filter((p) => p.id !== connectionId))
       toast.success('Connection accepted!')
       void loadAll()
-    } catch (e: any) { toast.error(e.response?.data?.message || 'Failed') }
+    } catch (e: any) { toast.error(e.response?.data?.message || 'Failed'); void loadAll() }
   }
 
   const handleIgnore = async (connectionId: string) => {
+    setPending((prev) => prev.filter((p) => p.id !== connectionId))
     try {
       await networkService.rejectRequest(connectionId)
-      setPending((prev) => prev.filter((p) => p.id !== connectionId))
       toast.success('Invitation ignored')
-    } catch (e: any) { toast.error(e.response?.data?.message || 'Failed') }
+    } catch (e: any) { toast.error(e.response?.data?.message || 'Failed'); void loadAll() }
   }
 
   const handleConnect = async (userId: string) => {
