@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import SkillsInput from '../../../../components/profile/SkillsInput'
@@ -9,7 +9,7 @@ import QualificationInput from '../../../../components/profile/QualificationInpu
 import HourlyRateInput from '../../../../components/profile/HourlyRateInput'
 import apiClient from '../../../../services/apiClient'
 import { authService } from '../../../../services/auth.service'
-import ImageUpload from '../../../../components/ui/ImageUpload'
+import { uploadService } from '../../../../services/upload.service'
 import { useAuthStore } from '../../../../store/authStore'
 
 const TIMEZONES = [
@@ -43,6 +43,66 @@ export default function FreelancerOnboarding() {
   }, [user])
   const [loading, setLoading] = useState(false)
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null)
+  const profileInputRef = useRef<HTMLInputElement>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [profileUploading, setProfileUploading] = useState(false)
+  const [profileHover, setProfileHover] = useState(false)
+
+  const BRAND = '#005d8f'
+  const GREEN = '#16a34a'
+
+  const optimizeSquareImage = async (file: File) => {
+    const sourceUrl = URL.createObjectURL(file)
+    try {
+      const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const img = new Image()
+        img.onload = () => resolve(img)
+        img.onerror = () => reject(new Error('Could not read image'))
+        img.src = sourceUrl
+      })
+      const cropSize = Math.min(image.naturalWidth, image.naturalHeight)
+      const cropX = (image.naturalWidth - cropSize) / 2
+      const cropY = (image.naturalHeight - cropSize) / 2
+      const outputSize = 512
+      const canvas = document.createElement('canvas')
+      canvas.width = outputSize
+      canvas.height = outputSize
+      const ctx = canvas.getContext('2d')
+      if (!ctx) throw new Error('Canvas not supported')
+      ctx.imageSmoothingEnabled = true
+      ctx.imageSmoothingQuality = 'high'
+      ctx.drawImage(image, cropX, cropY, cropSize, cropSize, 0, 0, outputSize, outputSize)
+      const blob = await new Promise<Blob>((res, rej) => {
+        canvas.toBlob(b => { if (!b) rej(new Error('Failed')); else res(b) }, 'image/webp', 0.92)
+      })
+      return {
+        file: new File([blob], `${file.name.replace(/\.[^.]+$/, '') || 'profile'}.webp`, { type: 'image/webp' }),
+        previewUrl: URL.createObjectURL(blob),
+      }
+    } finally { URL.revokeObjectURL(sourceUrl) }
+  }
+
+  useEffect(() => {
+    return () => { if (imagePreview?.startsWith('blob:')) URL.revokeObjectURL(imagePreview) }
+  }, [imagePreview])
+
+  const handleProfileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (imagePreview?.startsWith('blob:')) URL.revokeObjectURL(imagePreview)
+    setProfileUploading(true)
+    try {
+      const { file: optimizedFile, previewUrl } = await optimizeSquareImage(file)
+      setImagePreview(previewUrl)
+      const url = await uploadService.uploadImage(optimizedFile)
+      setProfileImageUrl(url)
+      setImagePreview(url)
+      toast.success('Profile image uploaded!')
+    } catch (error: any) {
+      setProfileImageUrl(null)
+      toast.error(error.response?.data?.message || 'Profile upload failed')
+    } finally { setProfileUploading(false); e.target.value = '' }
+  }
 
   const [fullName, setFullName] = useState('')
   const [title, setTitle] = useState('')
@@ -205,15 +265,72 @@ export default function FreelancerOnboarding() {
           <div className="space-y-5">
             <h2 className="text-xl font-extrabold text-gray-800">Freelancer Onboarding</h2>
 
-            <div className="flex justify-center">
-              <ImageUpload
-                value={profileImageUrl}
-                onChange={(url) => setProfileImageUrl(url)}
-                shape="square"
-                size="lg"
-                placeholder="👤"
-              />
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+              <div style={{ position: 'relative', width: 96, height: 96 }}>
+                <div
+                  onClick={() => profileInputRef.current?.click()}
+                  onMouseEnter={() => setProfileHover(true)}
+                  onMouseLeave={() => setProfileHover(false)}
+                  style={{
+                    width: 96, height: 96,
+                    borderRadius: 14,
+                    overflow: 'hidden',
+                    background: imagePreview ? 'transparent' : '#e2e5e9',
+                    cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    position: 'relative',
+                    border: profileHover && !imagePreview ? `2px dashed ${BRAND}` : '1.5px solid #e5e7eb',
+                    transition: 'border 0.2s',
+                  }}
+                >
+                  {imagePreview ? (
+                    <img src={imagePreview} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  ) : (
+                    <span className="material-symbols-outlined" style={{ fontSize: 40, color: profileHover ? BRAND : '#adb5bd', transition: 'color 0.2s' }}>person</span>
+                  )}
+                  {imagePreview && profileHover && (
+                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.42)', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 14 }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 26, color: 'white' }}>edit</span>
+                    </div>
+                  )}
+                  {profileUploading && (
+                    <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.85)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
+                      <div style={{ width: 22, height: 22, borderRadius: '50%', border: `3px solid ${BRAND}`, borderTopColor: 'transparent', animation: 'spin 0.7s linear infinite' }} />
+                      <span style={{ fontSize: 10, fontWeight: 700, color: BRAND }}>Uploading…</span>
+                    </div>
+                  )}
+                </div>
+                {profileImageUrl && !profileUploading && (
+                  <div style={{
+                    position: 'absolute', top: -6, right: -6,
+                    width: 20, height: 20, borderRadius: '50%',
+                    background: GREEN, border: '2px solid white',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 2px 6px rgba(22,163,74,0.5)',
+                  }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: 11, color: 'white', fontVariationSettings: "'FILL' 1" }}>check</span>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => profileInputRef.current?.click()}
+                  style={{
+                    position: 'absolute', bottom: -4, right: -8,
+                    width: 26, height: 26, borderRadius: '50%',
+                    background: BRAND, color: 'white',
+                    border: '2px solid white', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 2px 8px rgba(0,93,143,0.45)',
+                    zIndex: 5,
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 13 }}>photo_camera</span>
+                </button>
+              </div>
+              <span style={{ fontSize: 12, color: '#9ca3af', fontWeight: 500 }}>Upload profile photo</span>
             </div>
+            <input ref={profileInputRef} type="file" accept="image/jpeg,image/jpg,image/png,image/webp" onChange={handleProfileChange} style={{ display: 'none' }} />
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
 
             <div className="grid gap-5 sm:grid-cols-2">
               <div>
