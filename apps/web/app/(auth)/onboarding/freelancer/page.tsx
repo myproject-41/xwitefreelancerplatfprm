@@ -300,17 +300,6 @@ export default function FreelancerOnboarding() {
                     </div>
                   )}
                 </div>
-                {profileImageUrl && !profileUploading && (
-                  <div style={{
-                    position: 'absolute', top: -6, right: -6,
-                    width: 20, height: 20, borderRadius: '50%',
-                    background: GREEN, border: '2px solid white',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    boxShadow: '0 2px 6px rgba(22,163,74,0.5)',
-                  }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 11, color: 'white', fontVariationSettings: "'FILL' 1" }}>check</span>
-                  </div>
-                )}
                 <button
                   type="button"
                   onClick={() => profileInputRef.current?.click()}

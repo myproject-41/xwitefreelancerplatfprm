@@ -1279,8 +1279,7 @@ export default function FreelancerProfile() {
               {/* ── MY POSTS SECTION ── */}
               <div className="fp-section-card">
                 <div className="fp-combined-card-hdr">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-                  <h3 className="fp-combined-card-title">My Posts</h3>
+                  <h3 className="fp-combined-card-title" style={{color:'#111827'}}>My Posts</h3>
                   {myPosts.length > 0 && (
                     <div className="fp-posts-arrows" style={{marginLeft:'auto',marginRight:6}}>
                       <button className="fp-posts-arrow" onClick={() => scrollPostsMain('left')} aria-label="Scroll left">
@@ -1439,8 +1438,7 @@ export default function FreelancerProfile() {
           <div className="fp-myposts-card">
             <div className="fp-myposts-hdr-row">
               <button className="fp-myposts-hdr" onClick={() => setPostsOpen(v => !v)}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-                <span>My Posts</span>
+                <span style={{color:'#111827'}}>My Posts</span>
                 {myPosts.length > 0 && <span className="fp-myposts-count">{myPosts.length}</span>}
                 <svg className={`fp-sb-acc-chevron${postsOpen ? ' open' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="#94a3b8"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
               </button>
@@ -1492,8 +1490,7 @@ export default function FreelancerProfile() {
               return (
                 <div className="fp-sb-accordion">
                   <button className="fp-sb-acc-hdr fp-sb-acc-completed" onClick={() => setSidebarSection(open ? 'none' : 'completed')}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#16a34a"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-                    <span>Completed</span>
+                    <span style={{color:'#111827'}}>Completed</span>
                     {completedTasks.length > 0 && <span className="fp-sb-acc-badge fp-sb-acc-badge-green">{completedTasks.length}</span>}
                     <svg className={`fp-sb-acc-chevron${open ? ' open' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="#94a3b8"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
                   </button>
@@ -1530,8 +1527,7 @@ export default function FreelancerProfile() {
               return (
                 <div className="fp-sb-accordion">
                   <button className="fp-sb-acc-hdr fp-sb-acc-inprogress" onClick={() => setSidebarSection(open ? 'none' : 'inprogress')}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#d97706"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
-                    <span>In Progress</span>
+                    <span style={{color:'#111827'}}>In Progress</span>
                     {inProgressTasks.length > 0 && <span className="fp-sb-acc-badge fp-sb-acc-badge-amber">{inProgressTasks.length}</span>}
                     <svg className={`fp-sb-acc-chevron${open ? ' open' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="#94a3b8"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
                   </button>

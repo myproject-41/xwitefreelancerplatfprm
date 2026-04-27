@@ -620,7 +620,7 @@ export default function ClientProfile() {
           {/* ── MY POSTS ── */}
           <section className="cp-posts-card">
             <div className="cp-posts-hdr">
-              <p className="cp-posts-title">My Posts</p>
+              <p className="cp-posts-title" style={{color:'#111827'}}>My Posts</p>
               {myPosts.length > 0 && (
                 <div className="cp-posts-arrows">
                   <button className="cp-posts-arrow" onClick={() => scrollPosts('left')} aria-label="Scroll left">
@@ -658,8 +658,7 @@ export default function ClientProfile() {
                         {post.description && <p className="cp-post-desc">{post.description}</p>}
                         <div className="cp-post-meta">
                           {post.budget != null && (
-                            <span className="cp-post-budget">
-                              <svg width="12" height="12" viewBox="0 0 24 24" fill="#0369a1"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+                            <span className="cp-post-budget" style={{color:'#111827'}}>
                               {fmt(post.budget, 'INR')}
                             </span>
                           )}
@@ -789,8 +788,7 @@ export default function ClientProfile() {
             <div className="cp-accord">
               <button className="cp-accord-hdr" onClick={() => setOpenCompleted(p => !p)}>
                 <div className="cp-accord-left">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#16a34a"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-                  <span>Completed Tasks</span>
+                  <span style={{color:'#111827'}}>Completed Tasks</span>
                   <span className="cp-accord-badge">{completedTasks.length}</span>
                 </div>
                 <svg className={`cp-accord-chev${openCompleted?' open':''}`} width="16" height="16" viewBox="0 0 24 24" fill="#94a3b8"><path d="M7 10l5 5 5-5z"/></svg>
@@ -803,8 +801,7 @@ export default function ClientProfile() {
                       ? <p className="cp-accord-empty">No completed tasks</p>
                       : completedTasks.map((t: any, i: number) => (
                         <div key={t.id ?? i} className="cp-accord-item">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="#16a34a"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-                          <span>{t.task?.title ?? t.title ?? 'Task'}</span>
+                          <span style={{color:'#111827'}}>{t.task?.title ?? t.title ?? 'Task'}</span>
                         </div>
                       ))
                   }
@@ -816,8 +813,7 @@ export default function ClientProfile() {
             <div className="cp-accord">
               <button className="cp-accord-hdr" onClick={() => setOpenInProgress(p => !p)}>
                 <div className="cp-accord-left">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#d97706"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
-                  <span>In Progress</span>
+                  <span style={{color:'#111827'}}>In Progress</span>
                   <span className="cp-accord-badge inprog">{inProgressTasks.length}</span>
                 </div>
                 <svg className={`cp-accord-chev${openInProgress?' open':''}`} width="16" height="16" viewBox="0 0 24 24" fill="#94a3b8"><path d="M7 10l5 5 5-5z"/></svg>
@@ -830,8 +826,7 @@ export default function ClientProfile() {
                       ? <p className="cp-accord-empty">No tasks in progress</p>
                       : inProgressTasks.map((t: any, i: number) => (
                         <div key={t.id ?? i} className="cp-accord-item">
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="#d97706"><circle cx="12" cy="12" r="10"/></svg>
-                          <span>{t.task?.title ?? t.title ?? 'Task'}</span>
+                          <span style={{color:'#111827'}}>{t.task?.title ?? t.title ?? 'Task'}</span>
                           <span className="cp-accord-status">{t.status}</span>
                         </div>
                       ))
@@ -844,8 +839,7 @@ export default function ClientProfile() {
             <div className="cp-accord">
               <button className="cp-accord-hdr" onClick={() => setOpenRequests(p => !p)}>
                 <div className="cp-accord-left">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#0077b5"><path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/></svg>
-                  <span>Requests</span>
+                  <span style={{color:'#111827'}}>Requests</span>
                   <span className="cp-accord-badge req">{requests.length}</span>
                 </div>
                 <svg className={`cp-accord-chev${openRequests?' open':''}`} width="16" height="16" viewBox="0 0 24 24" fill="#94a3b8"><path d="M7 10l5 5 5-5z"/></svg>

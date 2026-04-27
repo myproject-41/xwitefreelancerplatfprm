@@ -463,10 +463,10 @@ export default function PostCard({
           <div className="inline-flex items-center gap-1.5">
             <button
               onClick={() => void handleLike()}
-              disabled={!viewerId || likeLoading}
+              disabled={!viewerId}
               className={`inline-flex items-center gap-1.5 transition ${
                 liked ? 'text-[#005d8f]' : 'hover:text-[#005d8f]'
-              } ${!viewerId || likeLoading ? 'cursor-not-allowed opacity-70' : ''}`}
+              } ${!viewerId ? 'cursor-not-allowed opacity-70' : ''}`}
             >
               <HeartIcon filled={liked} />
               <span>{likesCount}</span>
