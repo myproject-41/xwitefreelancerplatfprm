@@ -37,16 +37,17 @@ apiClient.interceptors.request.use((config) => {
   return config
 })
 
-// Handle 401 globally
+// Handle 401 globally — skip auth endpoints since they intentionally return 401 for wrong credentials
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const url: string = error.config?.url ?? ''
+    const isAuthEndpoint = /\/api\/auth\/(login|register)/.test(url)
+
+    if (error.response?.status === 401 && !isAuthEndpoint) {
       if (typeof window !== 'undefined') {
         clearAuthState()
-        if (window.location.pathname !== '/login') {
-          window.location.href = '/login'
-        }
+        window.location.href = '/login'
       }
     }
     return Promise.reject(error)
