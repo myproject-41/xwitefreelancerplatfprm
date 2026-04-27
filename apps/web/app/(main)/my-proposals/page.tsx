@@ -18,7 +18,7 @@ interface ClientInfo {
 }
 interface TaskInfo  { id: string; escrow?: { id: string; status: string } | null }
 interface PostInfo  { id: string; title: string; budget?: number; type: PostType; status: string; client: ClientInfo; tasks: TaskInfo[] }
-interface MyProposal { id: string; postId: string; status: ProposalStatus; coverLetter: string; proposedRate?: number; createdAt: string; post: PostInfo }
+interface MyProposal { id: string; postId: string; status: ProposalStatus; coverLetter: string; proposedRate?: number; estimatedDays?: number; createdAt: string; post: PostInfo }
 
 /* ══════════════════════════════════════
    STYLES
@@ -63,6 +63,7 @@ const STYLES = `
 .mp-type-SKILL_EXCHANGE{background:#fae8ff;color:#7e22ce;}
 .mp-budget{font-size:11px;font-weight:700;color:#64748b;}
 .mp-proposed{font-size:11px;font-weight:700;color:#0077b5;background:#e8f4fd;padding:3px 9px;border-radius:999px;}
+.mp-timeline{font-size:11px;font-weight:700;color:#7c3aed;background:#ede9fe;padding:3px 9px;border-radius:999px;display:inline-flex;align-items:center;gap:4px;}
 .mp-date{font-size:10px;color:#94a3b8;}
 
 /* cover letter preview */
@@ -178,6 +179,12 @@ function ProposalCard({
           </span>
           {proposal.post.budget && <span className="mp-budget">Budget: {fmt(proposal.post.budget)}</span>}
           {proposal.proposedRate  && <span className="mp-proposed">Your bid: {fmt(proposal.proposedRate)}</span>}
+          {proposal.estimatedDays && (
+            <span className="mp-timeline">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+              {proposal.estimatedDays}d timeline
+            </span>
+          )}
           <span className="mp-date">{timeAgo(proposal.createdAt)}</span>
         </div>
 

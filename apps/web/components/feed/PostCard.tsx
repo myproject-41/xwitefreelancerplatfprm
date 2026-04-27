@@ -151,6 +151,7 @@ export default function PostCard({
   const [showLikersModal, setShowLikersModal] = useState(false)
   const [likers, setLikers] = useState<any[]>([])
   const [likersLoading, setLikersLoading] = useState(false)
+  const [estimatedDays, setEstimatedDays] = useState('')
 
   const author = getAuthor(post)
   const targetUserId = post.client?.id || post.clientId || ''
@@ -303,8 +304,9 @@ export default function PostCard({
 
     try {
       await postService.sendProposal(post.id, {
-        coverLetter: previousCoverLetter,
-        proposedRate: requiresRate && previousProposedRate ? Number(previousProposedRate) : undefined,
+        coverLetter:   previousCoverLetter,
+        proposedRate:  requiresRate && previousProposedRate ? Number(previousProposedRate) : undefined,
+        estimatedDays: estimatedDays ? Number(estimatedDays) : undefined,
       })
       toast.success(
         actionKind === 'collaborate'
@@ -583,6 +585,24 @@ export default function PostCard({
                 />
               </div>
             ) : null}
+
+            <div className="mt-4">
+              <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#707881]">
+                Estimated Delivery <span className="normal-case text-[#9ca3af] font-normal">(optional)</span>
+              </label>
+              <div className="relative mt-2">
+                <input
+                  type="number"
+                  min={1}
+                  max={365}
+                  value={estimatedDays}
+                  onChange={(e) => setEstimatedDays(e.target.value)}
+                  className="w-full rounded-2xl border-none bg-[#efeeeb] p-3 pr-14 text-sm text-[#1b1c1a] outline-none placeholder:text-[#8b949e] focus:ring-2 focus:ring-[#005d8f]"
+                  placeholder="e.g. 7"
+                />
+                <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-[#707881]">days</span>
+              </div>
+            </div>
 
             <button
               onClick={handleProposal}

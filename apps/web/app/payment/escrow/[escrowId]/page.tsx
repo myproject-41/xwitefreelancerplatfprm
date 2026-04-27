@@ -194,6 +194,17 @@ const STYLES = `
 
 /* deadline */
 .ep-deadline{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#f59e0b;background:#fffbeb;padding:4px 10px;border-radius:999px;border:1px solid #fde68a;}
+.ep-deadline.overdue{color:#dc2626;background:#fef2f2;border-color:#fca5a5;}
+.ep-deadline.urgent{color:#ea580c;background:#fff7ed;border-color:#fdba74;}
+/* countdown */
+.ep-countdown{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;}
+.ep-countdown-box{display:flex;flex-direction:column;align-items:center;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:8px 14px;min-width:56px;}
+.ep-countdown-box.urgent{background:#fff7ed;border-color:#fdba74;}
+.ep-countdown-box.overdue{background:#fef2f2;border-color:#fca5a5;}
+.ep-countdown-num{font-size:22px;font-weight:800;color:#0D1B2A;line-height:1;}
+.ep-countdown-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748b;margin-top:3px;}
+.ep-countdown-box.urgent .ep-countdown-num{color:#ea580c;}
+.ep-countdown-box.overdue .ep-countdown-num{color:#dc2626;}
 `
 
 /* ══════════════════════════════════════
@@ -210,6 +221,54 @@ function fmtDate(d?: string) {
 function fmtDateTime(d?: string) {
   if (!d) return ''
   return new Date(d).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
+
+function DeadlineCountdown({ deadline, status }: { deadline: string; status: EscrowStatus }) {
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    if (status === 'RELEASED' || status === 'REFUNDED') return
+    const t = setInterval(() => setNow(Date.now()), 1000)
+    return () => clearInterval(t)
+  }, [status])
+
+  const end    = new Date(deadline).getTime()
+  const diff   = end - now
+  const done   = status === 'RELEASED' || status === 'REFUNDED'
+  const overdue = diff <= 0 && !done
+  const urgent  = !overdue && diff < 2 * 24 * 3600 * 1000 // < 2 days
+
+  const absMs  = Math.abs(diff)
+  const days   = Math.floor(absMs / 86400000)
+  const hours  = Math.floor((absMs % 86400000) / 3600000)
+  const mins   = Math.floor((absMs % 3600000) / 60000)
+  const secs   = Math.floor((absMs % 60000) / 1000)
+
+  const cls = overdue ? 'overdue' : urgent ? 'urgent' : ''
+
+  return (
+    <div style={{ marginTop: 14 }}>
+      <span className={`ep-deadline ${cls}`}>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+        {overdue ? 'Overdue since' : 'Deadline:'} {fmtDate(deadline)}
+        {overdue && ' — please resolve'}
+      </span>
+      {!done && (
+        <div className="ep-countdown">
+          {[
+            { n: days,  l: 'Days' },
+            { n: hours, l: 'Hrs'  },
+            { n: mins,  l: 'Min'  },
+            { n: secs,  l: 'Sec'  },
+          ].map(({ n, l }) => (
+            <div key={l} className={`ep-countdown-box ${cls}`}>
+              <span className="ep-countdown-num">{String(n).padStart(2, '0')}</span>
+              <span className="ep-countdown-lbl">{overdue ? `+${l}` : l}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
 function getPartyName(party: EscrowData['client'] | EscrowData['freelancer']) {
@@ -572,14 +631,7 @@ export default function EscrowDetailPage() {
             })}
           </div>
 
-          {escrow.task.deadline && (
-            <div style={{ marginTop: 14 }}>
-              <span className="ep-deadline">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
-                Deadline: {fmtDate(escrow.task.deadline)}
-              </span>
-            </div>
-          )}
+          {escrow.task.deadline && <DeadlineCountdown deadline={escrow.task.deadline} status={escrow.status} />}
         </div>
 
         {/* two-col */}

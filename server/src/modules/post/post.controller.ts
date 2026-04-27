@@ -14,8 +14,9 @@ const createPostSchema = z.object({
 })
 
 const proposalSchema = z.object({
-  coverLetter: z.string().min(50, 'Cover letter must be at least 50 characters'),
-  proposedRate: z.number().optional(),
+  coverLetter:   z.string().min(50, 'Cover letter must be at least 50 characters'),
+  proposedRate:  z.number().optional(),
+  estimatedDays: z.number().int().min(1).max(365).optional(),
 })
 
 export class PostController {

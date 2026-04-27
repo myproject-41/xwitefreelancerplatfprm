@@ -8,6 +8,7 @@ interface CreateProposalInput {
   freelancerId: string
   coverLetter: string
   proposedRate?: number
+  estimatedDays?: number
 }
 
 export class ProposalService {
@@ -25,10 +26,11 @@ export class ProposalService {
 
     const proposal = await prisma.proposal.create({
       data: {
-        postId: input.postId,
-        freelancerId: input.freelancerId,
-        coverLetter: input.coverLetter,
-        proposedRate: input.proposedRate,
+        postId:        input.postId,
+        freelancerId:  input.freelancerId,
+        coverLetter:   input.coverLetter,
+        proposedRate:  input.proposedRate,
+        estimatedDays: input.estimatedDays,
       },
       include: {
         freelancer: {
@@ -189,7 +191,7 @@ export class ProposalService {
   async acceptProposal(proposalId: string, clientId: string) {
     const proposal = await prisma.proposal.findUnique({
       where: { id: proposalId },
-      include: { post: true },
+      include: { post: true, freelancer: { select: { id: true } } },
     })
     if (!proposal) throw new Error('Proposal not found')
     if (proposal.post.clientId !== clientId) throw new Error('Not authorized')
@@ -208,12 +210,21 @@ export class ProposalService {
 
     // Create Task linked to the post
     const amount = proposal.proposedRate ?? proposal.post.budget ?? 0
+
+    // Deadline: prefer post deadline; fall back to freelancer's proposed timeline
+    let taskDeadline: Date | undefined = proposal.post.deadline ?? undefined
+    if (!taskDeadline && proposal.estimatedDays) {
+      const d = new Date()
+      d.setDate(d.getDate() + proposal.estimatedDays)
+      taskDeadline = d
+    }
+
     const task = await prisma.task.create({
       data: {
         title:        proposal.post.title,
         description:  proposal.post.description,
         budget:       amount,
-        deadline:     proposal.post.deadline ?? undefined,
+        deadline:     taskDeadline,
         skills:       proposal.post.skills,
         clientId,
         freelancerId: proposal.freelancerId,

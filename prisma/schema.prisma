@@ -369,14 +369,15 @@ model Task {
 }
 
 model Proposal {
-  id           String         @id @default(cuid())
-  postId       String
-  post         Post           @relation(fields: [postId], references: [id], onDelete: Cascade)
-  freelancerId String
-  freelancer   User           @relation(fields: [freelancerId], references: [id])
-  coverLetter  String
-  proposedRate Float?
-  status       ProposalStatus @default(PENDING)
+  id            String         @id @default(cuid())
+  postId        String
+  post          Post           @relation(fields: [postId], references: [id], onDelete: Cascade)
+  freelancerId  String
+  freelancer    User           @relation(fields: [freelancerId], references: [id])
+  coverLetter   String
+  proposedRate  Float?
+  estimatedDays Int?
+  status        ProposalStatus @default(PENDING)
 
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
