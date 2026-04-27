@@ -211,11 +211,14 @@ export class ProposalService {
     // Create Task linked to the post
     const amount = proposal.proposedRate ?? proposal.post.budget ?? 0
 
+    // estimatedDays is a new column — cast until the TS language server picks up the regenerated Prisma client
+    const estimatedDays = (proposal as unknown as { estimatedDays?: number | null }).estimatedDays
+
     // Deadline: prefer post deadline; fall back to freelancer's proposed timeline
     let taskDeadline: Date | undefined = proposal.post.deadline ?? undefined
-    if (!taskDeadline && proposal.estimatedDays) {
+    if (!taskDeadline && estimatedDays) {
       const d = new Date()
-      d.setDate(d.getDate() + proposal.estimatedDays)
+      d.setDate(d.getDate() + estimatedDays)
       taskDeadline = d
     }
 
