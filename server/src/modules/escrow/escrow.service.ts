@@ -533,7 +533,7 @@ export class EscrowService {
     return prisma.escrow.findMany({
       where: { OR: [{ clientId: userId }, { freelancerId: userId }] },
       include: {
-        task: { select: { id: true, title: true, description: true, deadline: true } },
+        task: { select: { id: true, title: true, description: true, deadline: true, estimatedDays: true } },
         client: {
           select: {
             id: true,

@@ -25,7 +25,7 @@ interface EscrowData {
   releasedAt?: string
   createdAt: string
   updatedAt: string
-  task: { id: string; title: string; description: string; budget: number; deadline?: string; submissionNote?: string; submissionFiles?: string[] }
+  task: { id: string; title: string; description: string; budget: number; deadline?: string; estimatedDays?: number; submissionNote?: string; submissionFiles?: string[] }
   client: {
     id: string; role: string
     clientProfile?:  { fullName?: string; profileImage?: string; companyName?: string }
@@ -221,6 +221,33 @@ function fmtDate(d?: string) {
 function fmtDateTime(d?: string) {
   if (!d) return ''
   return new Date(d).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
+
+function TimelineBanner({ task, status }: { task: EscrowData['task']; status: EscrowStatus }) {
+  const days = task.estimatedDays
+  const funded = status !== 'CREATED'
+
+  if (!days && !task.deadline) return null
+
+  // Before funding — show static "waiting" badge
+  if (!funded && days) {
+    return (
+      <div style={{ marginTop: 14 }}>
+        <span className="ep-deadline" style={{ gap: 8 }}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+          {days} day{days !== 1 ? 's' : ''} delivery timeline
+          <span style={{ fontSize: 10, fontWeight: 600, color: '#92400e', background: '#fef9c3', padding: '2px 8px', borderRadius: 999, border: '1px solid #fde68a', marginLeft: 4 }}>
+            Starts when escrow is funded
+          </span>
+        </span>
+      </div>
+    )
+  }
+
+  // After funding — show live countdown
+  if (task.deadline) return <DeadlineCountdown deadline={task.deadline} status={status} />
+
+  return null
 }
 
 function DeadlineCountdown({ deadline, status }: { deadline: string; status: EscrowStatus }) {
@@ -631,7 +658,7 @@ export default function EscrowDetailPage() {
             })}
           </div>
 
-          {escrow.task.deadline && <DeadlineCountdown deadline={escrow.task.deadline} status={escrow.status} />}
+          <TimelineBanner task={escrow.task} status={escrow.status} />
         </div>
 
         {/* two-col */}
