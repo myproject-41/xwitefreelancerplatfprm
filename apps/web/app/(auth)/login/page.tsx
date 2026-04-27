@@ -1,7 +1,6 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import toast from 'react-hot-toast'
 import { authService } from '../../../services/auth.service'
 import { useAuthStore } from '../../../store/authStore'
 
@@ -11,34 +10,31 @@ export default function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' })
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
     if (!form.email || !form.password) {
-      return toast.error('Please fill in all fields')
+      setError('Please fill in all fields')
+      return
     }
     setLoading(true)
     try {
       const res = await authService.login(form)
       const { user, token } = res.data
 
-      // Save token to cookie + localStorage
       authService.saveToken(token)
       setToken(token)
-
-      // Save FULL user with profile to store
       setUser(user)
 
-      toast.success('Welcome back!')
-
-      // Redirect based on onboarding status
       if (!user.isOnboarded) {
         router.push(`/onboarding/${user.role.toLowerCase()}`)
       } else {
         router.push('/')
       }
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Invalid email or password')
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Invalid email or password')
     } finally {
       setLoading(false)
     }
@@ -60,6 +56,16 @@ export default function LoginPage() {
             </span>
           </div>
 
+          {/* Inline error banner — stays visible until user retypes */}
+          {error && (
+            <div className="mb-4 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
+              <svg className="mt-0.5 h-4 w-4 shrink-0 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
+              </svg>
+              <p className="text-sm font-semibold text-red-700">{error}</p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="mb-1 block text-sm font-bold text-slate-700">Email</label>
@@ -67,7 +73,7 @@ export default function LoginPage() {
                 type="email"
                 required
                 value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                onChange={(e) => { setForm({ ...form, email: e.target.value }); setError(null) }}
                 className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-[#0D1B2A] outline-none transition focus:border-[#0077b5] focus:ring-2 focus:ring-[#e8f4fd]"
                 placeholder="you@example.com"
               />
@@ -80,7 +86,7 @@ export default function LoginPage() {
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  onChange={(e) => { setForm({ ...form, password: e.target.value }); setError(null) }}
                   className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 pr-14 text-sm text-[#0D1B2A] outline-none transition focus:border-[#0077b5] focus:ring-2 focus:ring-[#e8f4fd]"
                   placeholder="Your password"
                 />
