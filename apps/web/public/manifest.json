@@ -1,0 +1,28 @@
+{
+  "name": "Xwite — Freelance Platform",
+  "short_name": "Xwite",
+  "description": "Connect with top freelancers and clients. Find tasks, send proposals, and manage work — all in one place.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#005d8f",
+  "background_color": "#EDF1F7",
+  "icons": [
+    {
+      "src": "/xwiteprofile.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/xwiteprofile.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "en",
+  "dir": "ltr"
+}
