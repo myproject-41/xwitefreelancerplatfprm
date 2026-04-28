@@ -29,14 +29,39 @@ export class AgentController {
     }
   }
 
-  async sendRequest(req: Request, res: Response): Promise<void> {
+  async generateProposal(req: Request, res: Response): Promise<void> {
     try {
-      const { toUserId, taskTitle } = req.body
-      if (!toUserId) {
-        res.status(400).json({ success: false, message: 'toUserId is required' })
+      const { postId } = req.body
+      if (!postId) { res.status(400).json({ success: false, message: 'postId required' }); return }
+      const draft = await agentService.generateProposalDraft(postId, req.user!.userId)
+      res.json({ success: true, data: draft })
+    } catch (e: any) {
+      res.status(400).json({ success: false, message: e.message })
+    }
+  }
+
+  async generateInvite(req: Request, res: Response): Promise<void> {
+    try {
+      const { postId, freelancerId } = req.body
+      if (!postId || !freelancerId) {
+        res.status(400).json({ success: false, message: 'postId and freelancerId required' })
         return
       }
-      await agentService.agentSendRequest(req.user!.userId, toUserId, taskTitle ?? 'a task')
+      const result = await agentService.generateInviteAndNotify(postId, freelancerId, req.user!.userId)
+      res.json({ success: true, data: result })
+    } catch (e: any) {
+      res.status(400).json({ success: false, message: e.message })
+    }
+  }
+
+  async notifyFreelancer(req: Request, res: Response): Promise<void> {
+    try {
+      const { postId, freelancerId } = req.body
+      if (!postId || !freelancerId) {
+        res.status(400).json({ success: false, message: 'postId and freelancerId required' })
+        return
+      }
+      await agentService.notifyFreelancerDirect(postId, freelancerId, req.user!.userId)
       res.json({ success: true })
     } catch (e: any) {
       res.status(400).json({ success: false, message: e.message })

@@ -16,8 +16,18 @@ export const agentService = {
     return res.data
   },
 
-  async sendRequest(toUserId: string, taskTitle: string) {
-    const res = await apiClient.post('/api/agent/send-request', { toUserId, taskTitle })
+  async generateProposal(postId: string) {
+    const res = await apiClient.post('/api/agent/generate-proposal', { postId })
+    return res.data
+  },
+
+  async generateInvite(postId: string, freelancerId: string) {
+    const res = await apiClient.post('/api/agent/generate-invite', { postId, freelancerId })
+    return res.data
+  },
+
+  async notifyFreelancer(postId: string, freelancerId: string) {
+    const res = await apiClient.post('/api/agent/notify-freelancer', { postId, freelancerId })
     return res.data
   },
 }
