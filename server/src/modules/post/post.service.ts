@@ -1,6 +1,7 @@
 import { Prisma } from '.prisma/client'
 import { prisma } from '../../config/db'
 import { Role } from '../auth/roles'
+import { agentService } from '../agent/agent.service'
 
 interface CreatePostInput {
   type: 'JOB' | 'TASK' | 'COLLAB' | 'SKILL_EXCHANGE'
@@ -168,6 +169,15 @@ export class PostService {
         _count: { select: { proposals: true } },
       },
     })
+
+    // Fire-and-forget agent classification
+    agentService.handleNewPost({
+      id: post.id,
+      type: post.type,
+      title: post.title,
+      clientId: post.clientId,
+      skills: post.skills,
+    }).catch(() => {})
 
     return {
       ...post,

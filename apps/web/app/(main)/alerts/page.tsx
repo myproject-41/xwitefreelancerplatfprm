@@ -45,7 +45,7 @@ const TYPE_ICON: Record<string, string> = {
   ESCROW_FUNDED: '💰', TASK_COMPLETED: '🔍', PAYMENT_RECEIVED: '💸',
   PAYMENT_RELEASED: '💸', NEW_MESSAGE: '💬', CONNECTION_REQUEST: '🤝',
   CONNECTION_ACCEPTED: '🤝', DISPUTE_OPENED: '⚠️', DISPUTE_RESOLVED: '✅',
-  REVIEW_RECEIVED: '⭐',
+  REVIEW_RECEIVED: '⭐', AGENT_MATCH: '🤖',
 }
 
 const TYPE_COLOR: Record<string, string> = {
@@ -293,10 +293,11 @@ function NotifRow({
   const icon = TYPE_ICON[notif.type] ?? '🔔'
   const color = TYPE_COLOR[notif.type] ?? '#707881'
   const isProposal = notif.type === 'NEW_PROPOSAL'
+  const isAgent = notif.type === 'AGENT_MATCH'
 
   const handleClick = () => {
     if (!notif.isRead) onRead(notif.id)
-    if (!isProposal && notif.link) router.push(notif.link)
+    if (!isProposal && !isAgent && notif.link) router.push(notif.link)
   }
 
   return (
@@ -304,9 +305,9 @@ function NotifRow({
       onClick={handleClick}
       style={{
         padding: '16px 18px',
-        background: notif.isRead ? '#fff' : '#f0f7ff',
+        background: notif.isRead ? '#fff' : isAgent ? '#f5f0ff' : '#f0f7ff',
         borderBottom: '1px solid #f0f3f6',
-        cursor: isProposal ? 'default' : notif.link ? 'pointer' : 'default',
+        cursor: isProposal || isAgent ? 'default' : notif.link ? 'pointer' : 'default',
         transition: 'background .15s',
       }}
     >
@@ -314,7 +315,7 @@ function NotifRow({
         {/* Icon */}
         <div style={{
           width: 40, height: 40, borderRadius: '50%', flexShrink: 0,
-          background: `${color}18`,
+          background: isAgent ? '#ede9fe' : `${color}18`,
           display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18,
         }}>
           {icon}
@@ -333,7 +334,24 @@ function NotifRow({
             <ProposalCard notif={notif} onAccepted={onAccepted} onRejected={onRejected} />
           )}
 
-          {!isProposal && notif.link && (
+          {isAgent && (
+            <div style={{ marginTop: 10 }}>
+              <Link
+                href="/agent"
+                onClick={e => { e.stopPropagation(); if (!notif.isRead) onRead(notif.id) }}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  padding: '8px 16px', borderRadius: 20,
+                  background: 'linear-gradient(135deg,#7c3aed,#9333ea)',
+                  color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none',
+                }}
+              >
+                🤖 AI Agent
+              </Link>
+            </div>
+          )}
+
+          {!isProposal && !isAgent && notif.link && (
             <Link href={notif.link} onClick={e => e.stopPropagation()}
               style={{ fontSize: 12, color: '#0077b5', fontWeight: 600, marginTop: 6, display: 'inline-block' }}>
               View →
@@ -342,7 +360,7 @@ function NotifRow({
         </div>
 
         {!notif.isRead && (
-          <div style={{ width: 9, height: 9, borderRadius: '50%', background: '#0077b5', flexShrink: 0, marginTop: 6 }} />
+          <div style={{ width: 9, height: 9, borderRadius: '50%', background: isAgent ? '#7c3aed' : '#0077b5', flexShrink: 0, marginTop: 6 }} />
         )}
       </div>
     </div>

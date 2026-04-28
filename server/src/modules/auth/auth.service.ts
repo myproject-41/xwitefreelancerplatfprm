@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import { prisma } from '../../config/db'
 import { env } from '../../config/env'
 import { Role } from './roles'
+import { agentService } from '../agent/agent.service'
 
 interface RegisterInput {
   email: string
@@ -59,6 +60,9 @@ export class AuthService {
       email: user.email,
       role: user.role as Role,
     })
+
+    // Fire-and-forget welcome notification from AI agent
+    agentService.sendWelcomeNotification(user.id, user.role).catch(() => {})
 
     return {
       existingAccount: false as const,

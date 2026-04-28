@@ -13,6 +13,7 @@ import notificationRoutes from './modules/notification/notification.routes'
 import chatRoutes from './modules/chat/chat.routes'
 import uploadRoutes from './modules/upload/upload.routes'
 import escrowRoutes from './modules/escrow/escrow.routes'
+import agentRoutes from './modules/agent/agent.routes'
 
 const app: Application = express()
 app.set('trust proxy', 1)
@@ -78,6 +79,7 @@ app.use('/api/notifications', notificationRoutes)
 app.use('/api/chat', chatRoutes)
 app.use('/api/upload', uploadLimiter, uploadRoutes)
 app.use('/api/escrow', escrowRoutes)
+app.use('/api/agent', agentRoutes)
 
 app.use(errorMiddleware)
 
