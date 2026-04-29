@@ -23,7 +23,6 @@ const baseURL =
 const apiClient = axios.create({
   baseURL,
   headers: { 'Content-Type': 'application/json' },
-  withCredentials: true,
 })
 
 // Attach token to every request

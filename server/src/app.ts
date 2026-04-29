@@ -34,10 +34,16 @@ app.use(helmet({
 
 app.use(cors({
   origin: (origin, callback) => {
+    // No origin = server-to-server, Postman, curl
     if (!origin) { callback(null, true); return }
+    // PWA standalone mode on some mobile browsers sends the string "null"
+    if (origin === 'null') { callback(null, true); return }
+    // Explicitly listed origins
     if (allowedOrigins.includes(origin as string)) { callback(null, true); return }
-    // Allow any Vercel deployment (*.vercel.app) — JWT auth secures the data
-    if (/^https:\/\/[a-z0-9][a-z0-9-]*\.vercel\.app$/.test(origin)) { callback(null, true); return }
+    // Any Vercel deployment (*.vercel.app) — JWT handles auth security
+    if (/^https:\/\/[\w-]+\.vercel\.app$/.test(origin)) { callback(null, true); return }
+    // TWA (Android Trusted Web Activity) — android-app:// scheme
+    if (origin.startsWith('android-app://')) { callback(null, true); return }
     callback(new Error('Not allowed by CORS'))
   },
   credentials: true,
