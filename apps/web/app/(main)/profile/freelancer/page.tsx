@@ -536,6 +536,8 @@ export default function FreelancerProfile() {
   function togglePanel(p: Panel) { setActivePanel(prev => prev === p ? 'none' : p) }
 
   const balanceLabel = fmtBalance(wallet?.balance ?? 0, currency)
+  const escrowLabel  = wallet?.heldBalance && wallet.heldBalance > 0
+    ? `${fmtBalance(wallet.heldBalance, currency)} in escrow` : null
 
   /* ═══════════════════
      RENDER
@@ -726,6 +728,36 @@ export default function FreelancerProfile() {
               }
             </div>
           </section>
+
+          {/* ── MOBILE WALLET + SETTINGS (hidden on desktop) ── */}
+          <div className="fp-mobile-quickbar">
+            <div className="fp-mobile-qbar-top">
+              <div className="fp-mobile-qbal">
+                <span className="fp-mobile-qbal-lbl">Balance</span>
+                {walletLoading
+                  ? <div className="skel" style={{height:22,width:90,borderRadius:6}} />
+                  : <span className="fp-mobile-qbal-amt">{balanceLabel}</span>
+                }
+                {!walletLoading && escrowLabel && (
+                  <span className="fp-mobile-qbal-escrow">{escrowLabel}</span>
+                )}
+              </div>
+              <div className="fp-mobile-qbar-actions">
+                <button className="fp-mobile-qbtn fp-mobile-qbtn-add" onClick={() => togglePanel('addFunds')}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                  Add
+                </button>
+                <button className="fp-mobile-qbtn fp-mobile-qbtn-out" onClick={() => togglePanel('withdraw')}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M21 18v1c0 1.1-.9 2-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14c1.1 0 2 .9 2 2v1h-9a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h9zm-9-2h10V8H12v8zm4-2.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
+                  Withdraw
+                </button>
+                <button className="fp-mobile-qbtn fp-mobile-qbtn-set" onClick={() => togglePanel('settings')}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                  Settings
+                </button>
+              </div>
+            </div>
+          </div>
 
           {/* ── MINI STATS CARDS ── */}
           {!pageLoading && (hourlyRate > 0 || minBudget > 0 || fixedPrice || languages.length > 0) && (
@@ -2369,6 +2401,31 @@ const STYLES = `
 }
 .fp-ai-card-highlight{
   animation:fp-ai-highlight 1.5s ease-out forwards;
+}
+
+/* ── MOBILE QUICKBAR (wallet + settings, mobile only) ── */
+.fp-mobile-quickbar{display:none;}
+@media(max-width:899px){
+  .fp-mobile-quickbar{
+    display:block;
+    background:#fff;
+    border-radius:16px;
+    margin:10px 12px 0;
+    padding:14px 16px;
+    box-shadow:0 1px 4px rgba(0,0,0,0.06),0 4px 14px rgba(0,0,0,0.08);
+    border:1px solid rgba(0,0,0,0.05);
+  }
+  .fp-mobile-qbar-top{display:flex;align-items:center;gap:12px;}
+  .fp-mobile-qbal{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;}
+  .fp-mobile-qbal-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;font-family:'Inter',sans-serif;}
+  .fp-mobile-qbal-amt{font-size:18px;font-weight:800;color:#0f172a;font-family:'Inter',sans-serif;letter-spacing:-.02em;line-height:1.1;}
+  .fp-mobile-qbal-escrow{font-size:11px;font-weight:600;color:#0369a1;background:#e0f2fe;border-radius:999px;padding:2px 8px;margin-top:3px;display:inline-block;}
+  .fp-mobile-qbar-actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0;}
+  .fp-mobile-qbtn{border:none;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:filter .15s;white-space:nowrap;}
+  .fp-mobile-qbtn:active{filter:brightness(.88);}
+  .fp-mobile-qbtn-add{background:linear-gradient(135deg,#0077b5,#005d8f);color:#fff;box-shadow:0 2px 8px rgba(0,119,181,0.28);}
+  .fp-mobile-qbtn-out{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;box-shadow:0 2px 8px rgba(34,197,94,0.28);}
+  .fp-mobile-qbtn-set{background:#f1f5f9;color:#475569;}
 }
 `
 

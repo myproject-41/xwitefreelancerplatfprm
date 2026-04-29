@@ -521,6 +521,9 @@ export default function ClientProfile() {
                   ? <div className="skel" style={{height:20,width:80,borderRadius:6}} />
                   : <span className="cp-mobile-bal-amt">{balanceLabel}</span>
                 }
+                {!walletLoading && escrowLabel && (
+                  <span className="cp-mobile-bal-escrow">{escrowLabel}</span>
+                )}
               </div>
               <div className="cp-mobile-wallet-actions">
                 <button className="cp-mobile-action-btn cp-mobile-add" onClick={() => togglePanel('addFunds')}>
@@ -1969,6 +1972,7 @@ const STYLES = `
 .cp-mobile-balance{flex:1;min-width:0;}
 .cp-mobile-bal-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;display:block;margin-bottom:3px;}
 .cp-mobile-bal-amt{font-size:20px;font-weight:800;color:#0D1B2A;letter-spacing:-.02em;}
+.cp-mobile-bal-escrow{font-size:11px;font-weight:600;color:#0369a1;background:#e0f2fe;border-radius:999px;padding:2px 8px;margin-top:4px;display:inline-block;}
 .cp-mobile-wallet-actions{display:flex;gap:6px;flex-shrink:0;}
 .cp-mobile-action-btn{
   display:flex;align-items:center;gap:4px;
