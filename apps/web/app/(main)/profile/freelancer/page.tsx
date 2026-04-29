@@ -559,6 +559,10 @@ export default function FreelancerProfile() {
         />
       )}
 
+      <div className="fp-mobile-only-header">
+        <MainHeader />
+      </div>
+
       <div className="fp-root">
 
         {/* ══ LEFT SIDEBAR ══ */}
@@ -743,32 +747,6 @@ export default function FreelancerProfile() {
             </div>
           </section>
 
-          {/* ── MOBILE WALLET + SETTINGS (hidden on desktop) ── */}
-          <div className="fp-mobile-quickbar">
-            <div className="fp-mobile-qbar-top">
-              <div className="fp-mobile-qbal">
-                <span className="fp-mobile-qbal-lbl">Balance</span>
-                {walletLoading
-                  ? <div className="skel" style={{height:22,width:90,borderRadius:6}} />
-                  : <span className="fp-mobile-qbal-amt">{balanceLabel}</span>
-                }
-                {!walletLoading && escrowLabel && (
-                  <span className="fp-mobile-qbal-escrow">{escrowLabel}</span>
-                )}
-              </div>
-              <div className="fp-mobile-qbar-actions">
-                <button className="fp-mobile-qbtn fp-mobile-qbtn-add" onClick={() => togglePanel('addFunds')}>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                  Add
-                </button>
-                <button className="fp-mobile-qbtn fp-mobile-qbtn-out" onClick={() => togglePanel('withdraw')}>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M21 18v1c0 1.1-.9 2-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14c1.1 0 2 .9 2 2v1h-9a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h9zm-9-2h10V8H12v8zm4-2.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
-                  Withdraw
-                </button>
-              </div>
-            </div>
-          </div>
-
           {/* ── MINI STATS CARDS ── */}
           {!pageLoading && (hourlyRate > 0 || minBudget > 0 || fixedPrice || languages.length > 0) && (
             <div className="fp-mini-cards-row">
@@ -844,6 +822,32 @@ export default function FreelancerProfile() {
 
             </div>
           )}
+
+          {/* ── MOBILE WALLET (hidden on desktop, below rate/language cards) ── */}
+          <div className="fp-mobile-quickbar">
+            <div className="fp-mobile-qbar-top">
+              <div className="fp-mobile-qbal">
+                <span className="fp-mobile-qbal-lbl">Balance</span>
+                {walletLoading
+                  ? <div className="skel" style={{height:22,width:90,borderRadius:6}} />
+                  : <span className="fp-mobile-qbal-amt">{balanceLabel}</span>
+                }
+                {!walletLoading && escrowLabel && (
+                  <span className="fp-mobile-qbal-escrow">{escrowLabel}</span>
+                )}
+              </div>
+              <div className="fp-mobile-qbar-actions">
+                <button className="fp-mobile-qbtn fp-mobile-qbtn-add" onClick={() => togglePanel('addFunds')}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                  Add
+                </button>
+                <button className="fp-mobile-qbtn fp-mobile-qbtn-out" onClick={() => togglePanel('withdraw')}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M21 18v1c0 1.1-.9 2-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14c1.1 0 2 .9 2 2v1h-9a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h9zm-9-2h10V8H12v8zm4-2.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
+                  Withdraw
+                </button>
+              </div>
+            </div>
+          </div>
 
           {/* ── EDIT SECTIONS ── */}
 
@@ -1977,7 +1981,9 @@ const STYLES = `
 @media(min-width:900px){.fp-root{grid-template-areas:"left-sidebar main right-sidebar";grid-template-columns:230px 1fr 260px;grid-template-rows:1fr;}}
 
 /* ── MOBILE HEADER ── */
-
+.fp-mobile-only-header{display:block;}
+@media(min-width:900px){.fp-mobile-only-header{display:none;}}
+@media(max-width:899px){.fp-root{padding-top:64px;}}
 
 .fp-brand{font-size:19px;font-weight:800;color:#0077b5;letter-spacing:-0.03em;font-family:'Inter',sans-serif;}
 

@@ -380,6 +380,10 @@ export default function CompanyProfile() {
         />
       )}
 
+      <div className="cp-mobile-only-header">
+        <MainHeader />
+      </div>
+
       <div className="cp-root">
 
         {/* ══ LEFT SIDEBAR ══ */}
@@ -1406,8 +1410,10 @@ const STYLES = `
 .cp-root{display:grid;grid-template-areas:"main";grid-template-rows:1fr;grid-template-columns:1fr;background:#f1f5f9;min-height:100dvh;font-family:'Inter',sans-serif;color:#0f172a;}
 @media(min-width:900px){.cp-root{grid-template-areas:"left-sidebar main right-sidebar";grid-template-columns:230px 1fr 260px;grid-template-rows:1fr;}}
 
-
-
+/* ── MOBILE HEADER ── */
+.cp-mobile-only-header{display:block;}
+@media(min-width:900px){.cp-mobile-only-header{display:none;}}
+@media(max-width:899px){.cp-root{padding-top:64px;}}
 
 .cp-brand{font-size:19px;font-weight:800;color:#0077b5;letter-spacing:-0.03em;font-family:'Inter',sans-serif;}
 
