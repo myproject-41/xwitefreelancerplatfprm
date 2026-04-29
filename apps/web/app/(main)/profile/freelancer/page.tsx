@@ -2041,7 +2041,7 @@ const STYLES = `
 }
 
 /* ── MAIN ── */
-.fp-main{grid-area:main;min-width:0;padding-bottom:70px;display:flex;flex-direction:column;gap:0;}
+.fp-main{grid-area:main;min-width:0;padding-top:8px;padding-bottom:70px;display:flex;flex-direction:column;gap:0;}
 @media(min-width:900px){.fp-main{padding:24px 22px 40px;gap:14px;}}
 
 /* ── PROFILE CARD ── */

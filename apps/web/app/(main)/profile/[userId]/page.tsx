@@ -254,11 +254,9 @@ export default function PublicProfilePage() {
             <span className="pub-brand">Xwite</span>
           </div>
           <div className="pub-hdr-right">
-            {isConnected && (
-              <button className="pub-hdr-msg-btn" onClick={handleMessage} disabled={msgLoading}>
-                <MaterialIcon name="chat" size={20} color="#0077b5" />
-              </button>
-            )}
+            <button className="pub-hdr-msg-btn" onClick={handleMessage} disabled={msgLoading}>
+              <MaterialIcon name="chat" size={20} color="#0077b5" />
+            </button>
           </div>
         </header>
 
@@ -741,19 +739,6 @@ export default function PublicProfilePage() {
           )}
         </aside>
 
-        {/* ── MOBILE NAV ── */}
-        <nav className="pub-mobile-nav">
-          {NAV_ITEMS.map(item => (
-            <button
-              key={item.href}
-              className="pub-mob-item"
-              onClick={() => router.push(item.href)}
-            >
-              <MaterialIcon name={item.icon} size={22} />
-              <span className="pub-mob-label">{item.label}</span>
-            </button>
-          ))}
-        </nav>
       </div>
     </>
   )
@@ -771,7 +756,7 @@ const STYLES = `
 @keyframes pub-shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}
 
 /* ── ROOT ── */
-.pub-root{display:grid;grid-template-areas:"header""main""mobile-nav";grid-template-rows:60px 1fr 60px;grid-template-columns:1fr;background:#f1f5f9;min-height:100dvh;font-family:'Inter',sans-serif;color:#0f172a;}
+.pub-root{display:grid;grid-template-areas:"header""main";grid-template-rows:60px 1fr;grid-template-columns:1fr;background:#f1f5f9;min-height:100dvh;font-family:'Inter',sans-serif;color:#0f172a;}
 @media(min-width:900px){.pub-root{grid-template-areas:"left-sidebar main right-sidebar";grid-template-columns:230px 1fr 260px;grid-template-rows:1fr;}}
 
 /* ── MOBILE HEADER ── */
@@ -796,7 +781,7 @@ const STYLES = `
 .pub-sidebar-bottom{display:flex;flex-direction:column;gap:3px;border-top:1px solid #f1f5f9;padding-top:10px;}
 
 /* ── MAIN ── */
-.pub-main{grid-area:main;min-width:0;padding-bottom:70px;display:flex;flex-direction:column;gap:0;}
+.pub-main{grid-area:main;min-width:0;padding-top:8px;padding-bottom:70px;display:flex;flex-direction:column;gap:0;}
 @media(min-width:900px){.pub-main{padding:24px 22px 40px;gap:14px;}}
 
 /* ── LOADER ── */
@@ -866,7 +851,7 @@ const STYLES = `
 
 /* ── SECTION CARDS ── */
 .pub-section-card{background:#fff;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 14px rgba(0,0,0,0.07);border:1px solid rgba(0,0,0,0.04);overflow:hidden;}
-@media(max-width:899px){.pub-section-card{border-radius:0;border-left:none;border-right:none;}}
+@media(max-width:899px){.pub-section-card{margin:10px 12px 0;}}
 .pub-section-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 12px;border-bottom:1px solid #f1f5f9;border-left:3px solid #0077b5;}
 .pub-section-hdr-left{display:flex;align-items:center;gap:8px;}
 .pub-section-title{font-size:15px;font-weight:700;color:#0f172a;}
@@ -960,9 +945,4 @@ const STYLES = `
 .pub-spend-lbl{font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.04em;}
 .pub-spend-val{font-size:14px;font-weight:800;color:#0f172a;}
 
-/* ── MOBILE BOTTOM NAV ── */
-.pub-mobile-nav{grid-area:mobile-nav;display:flex;justify-content:space-around;align-items:center;background:#fff;border-top:1px solid #e2e8f0;z-index:100;position:sticky;bottom:0;box-shadow:0 -2px 12px rgba(0,0,0,0.06);}
-@media(min-width:900px){.pub-mobile-nav{display:none;}}
-.pub-mob-item{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;color:#94a3b8;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-family:'Inter',sans-serif;padding:6px 8px;transition:color .15s;}
-.pub-mob-label{font-size:9px;}
 `

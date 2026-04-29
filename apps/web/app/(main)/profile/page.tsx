@@ -1706,7 +1706,7 @@ const STYLES = `
 .cp-nav-danger:hover{background:#fef2f2!important;color:#dc2626!important;}
 
 /* ── MAIN ── */
-.cp-main{grid-area:main;min-width:0;padding-bottom:70px;}
+.cp-main{grid-area:main;min-width:0;padding-top:8px;padding-bottom:70px;}
 @media(min-width:900px){.cp-main{padding:28px 24px 40px;display:flex;flex-direction:column;gap:16px;}}
 
 /* ── PROFILE CARD ── */
