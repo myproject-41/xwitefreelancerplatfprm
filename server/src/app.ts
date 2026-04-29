@@ -24,6 +24,8 @@ const allowedOrigins = [
   process.env.FRONTEND_URL_2,
   'http://localhost:3000',
   'http://127.0.0.1:3000',
+  'https://xwite.com',
+  'https://www.xwite.com',
   'https://project-5jorl.vercel.app',
   'https://project-5jorl-git-main-myproject-41s-projects.vercel.app',
 ].filter(Boolean)
@@ -42,6 +44,8 @@ app.use(cors({
     if (allowedOrigins.includes(origin as string)) { callback(null, true); return }
     // Any Vercel deployment (*.vercel.app) — JWT handles auth security
     if (/^https:\/\/[\w-]+\.vercel\.app$/.test(origin)) { callback(null, true); return }
+    // xwite.com and any subdomain
+    if (/^https:\/\/([\w-]+\.)?xwite\.com$/.test(origin)) { callback(null, true); return }
     // TWA (Android Trusted Web Activity) — android-app:// scheme
     if (origin.startsWith('android-app://')) { callback(null, true); return }
     callback(new Error('Not allowed by CORS'))
