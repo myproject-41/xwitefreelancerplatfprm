@@ -910,22 +910,6 @@ export default function ClientProfile() {
           </button>
         </aside>
 
-        {/* ══════════════════════════
-            MOBILE BOTTOM NAV
-        ══════════════════════════ */}
-        <nav className="cp-mobile-nav">
-          {NAV_ITEMS.map(item => (
-            <button
-              key={item.label}
-              className={`cp-mob-item${item.href === '/profile' ? ' active' : ''}`}
-              onClick={() => router.push(item.href)}
-            >
-              <NavIcon name={item.icon} active={item.href === '/profile'} size={item.icon === 'add_box' ? 28 : 22} />
-              {item.icon !== 'add_box' && <span className="cp-mob-label">{item.label}</span>}
-            </button>
-          ))}
-        </nav>
-
       </div>
     </>
   )
@@ -1645,8 +1629,8 @@ const STYLES = `
 /* ── ROOT GRID ── */
 .cp-root{
   display:grid;
-  grid-template-areas:"header""main""mobile-nav";
-  grid-template-rows:60px 1fr 60px;
+  grid-template-areas:"header""main";
+  grid-template-rows:60px 1fr;
   grid-template-columns:1fr;
   background:#f1f5f9;
   min-height:100dvh;
@@ -2043,24 +2027,6 @@ const STYLES = `
 .cp-mobile-withdraw{background:#f0f9ff;color:#0077b5;border:1.5px solid #bae6fd;}
 .cp-mobile-settings{background:#f8fafc;color:#475569;border:1.5px solid #e2e8f0;}
 
-/* ── MOBILE BOTTOM NAV ── */
-.cp-mobile-nav{
-  grid-area:mobile-nav;
-  display:flex;justify-content:space-around;align-items:center;
-  background:#fff;border-top:1px solid #e2e8f0;z-index:100;
-  position:sticky;bottom:0;
-  box-shadow:0 -2px 12px rgba(0,0,0,0.06);
-}
-@media(min-width:900px){.cp-mobile-nav{display:none;}}
-.cp-mob-item{
-  display:flex;flex-direction:column;align-items:center;gap:2px;
-  background:none;border:none;cursor:pointer;
-  color:#94a3b8;font-size:9px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.04em;
-  font-family:'Manrope',sans-serif;padding:6px 8px;transition:color .15s;
-}
-.cp-mob-item.active{color:#0077b5;}
-.cp-mob-label{font-size:9px;}
 
 /* ── BIO MODAL ── */
 .cp-modal-ov{
