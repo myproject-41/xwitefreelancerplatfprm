@@ -370,6 +370,30 @@ export default function ClientProfile() {
         {/* ══════════════════════════
             MOBILE HEADER
         ══════════════════════════ */}
+        <header className="cp-header">
+          <div className="cp-hdr-left">
+            {/* bolt icon as SVG to avoid font flash */}
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="#0077b5">
+              <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+            </svg>
+            <span className="cp-brand">Xwite</span>
+          </div>
+          <div className="cp-hdr-right">
+            <button className="cp-agent-btn" onClick={() => router.push('/agent')}>
+              <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                <path d="m12 2 1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2Z" />
+              </svg>
+              <span className="cp-agent-text">AI Agent</span>
+            </button>
+            <button className="cp-msg-btn" onClick={() => router.push('/messages')}>
+              {/* chat bubble SVG */}
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0077b5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            </button>
+          </div>
+        </header>
+
         {/* ══════════════════════════
             LEFT SIDEBAR (desktop)
         ══════════════════════════ */}
@@ -885,6 +909,22 @@ export default function ClientProfile() {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="#94a3b8" style={{marginLeft:'auto'}}><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6-6-6z"/></svg>
           </button>
         </aside>
+
+        {/* ══════════════════════════
+            MOBILE BOTTOM NAV
+        ══════════════════════════ */}
+        <nav className="cp-mobile-nav">
+          {NAV_ITEMS.map(item => (
+            <button
+              key={item.label}
+              className={`cp-mob-item${item.href === '/profile' ? ' active' : ''}`}
+              onClick={() => router.push(item.href)}
+            >
+              <NavIcon name={item.icon} active={item.href === '/profile'} size={item.icon === 'add_box' ? 28 : 22} />
+              {item.icon !== 'add_box' && <span className="cp-mob-label">{item.label}</span>}
+            </button>
+          ))}
+        </nav>
 
       </div>
     </>
@@ -1605,8 +1645,8 @@ const STYLES = `
 /* ── ROOT GRID ── */
 .cp-root{
   display:grid;
-  grid-template-areas:"main";
-  grid-template-rows:1fr;
+  grid-template-areas:"header""main""mobile-nav";
+  grid-template-rows:60px 1fr 60px;
   grid-template-columns:1fr;
   background:#f1f5f9;
   min-height:100dvh;
@@ -1621,6 +1661,19 @@ const STYLES = `
   }
 }
 
+/* ── MOBILE HEADER ── */
+.cp-header{
+  grid-area:header;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 18px;background:#fff;
+  border-bottom:1px solid #e2e8f0;
+  box-shadow:0 1px 4px rgba(0,0,0,0.05);
+  position:sticky;top:0;z-index:100;
+}
+@media(min-width:900px){.cp-header{display:none;}}
+.cp-hdr-left{display:flex;align-items:center;gap:7px;}
+.cp-brand{font-size:19px;font-weight:800;color:#0077b5;letter-spacing:-0.02em;}
+.cp-hdr-right{display:flex;align-items:center;gap:10px;}
 
 /* ── AGENT BUTTON ── */
 .cp-agent-btn{
@@ -1990,6 +2043,24 @@ const STYLES = `
 .cp-mobile-withdraw{background:#f0f9ff;color:#0077b5;border:1.5px solid #bae6fd;}
 .cp-mobile-settings{background:#f8fafc;color:#475569;border:1.5px solid #e2e8f0;}
 
+/* ── MOBILE BOTTOM NAV ── */
+.cp-mobile-nav{
+  grid-area:mobile-nav;
+  display:flex;justify-content:space-around;align-items:center;
+  background:#fff;border-top:1px solid #e2e8f0;z-index:100;
+  position:sticky;bottom:0;
+  box-shadow:0 -2px 12px rgba(0,0,0,0.06);
+}
+@media(min-width:900px){.cp-mobile-nav{display:none;}}
+.cp-mob-item{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  background:none;border:none;cursor:pointer;
+  color:#94a3b8;font-size:9px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.04em;
+  font-family:'Manrope',sans-serif;padding:6px 8px;transition:color .15s;
+}
+.cp-mob-item.active{color:#0077b5;}
+.cp-mob-label{font-size:9px;}
 
 /* ── BIO MODAL ── */
 .cp-modal-ov{

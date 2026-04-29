@@ -557,6 +557,27 @@ export default function FreelancerProfile() {
 
       <div className="fp-root">
 
+        {/* ══ MOBILE HEADER ══ */}
+        <header className="fp-header">
+          <div className="fp-hdr-left">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="#0077b5"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+            <span className="fp-brand">Xwite</span>
+          </div>
+          <div className="fp-hdr-right">
+            <button className="fp-agent-btn" onClick={() => router.push('/agent')}>
+              <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                <path d="m12 2 1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2Z" />
+              </svg>
+              <span className="fp-agent-text">AI Agent</span>
+            </button>
+            <button className="fp-msg-btn" onClick={() => router.push('/messages')}>
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#0077b5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            </button>
+          </div>
+        </header>
+
         {/* ══ LEFT SIDEBAR ══ */}
         <aside className="fp-sidebar-left">
           <div className="fp-sidebar-brand">
@@ -1602,6 +1623,19 @@ export default function FreelancerProfile() {
           </div>
         </aside>
 
+        {/* ══ MOBILE BOTTOM NAV ══ */}
+        <nav className="fp-mobile-nav">
+          {NAV_ITEMS.map(item => (
+            <button key={item.label}
+              className={`fp-mob-item${item.href === '/profile' ? ' active' : ''}`}
+              onClick={() => router.push(item.href)}>
+              <NavIcon name={item.icon} active={item.href === '/profile'}
+                size={item.icon === 'add_box' ? 28 : 22} />
+              {item.icon !== 'add_box' && <span className="fp-mob-label">{item.label}</span>}
+            </button>
+          ))}
+        </nav>
+
       </div>
     </>
   )
@@ -1913,11 +1947,15 @@ const STYLES = `
 .skel{background:linear-gradient(90deg,#e8eaed 25%,#f5f5f5 50%,#e8eaed 75%);background-size:1200px 100%;animation:fp-shimmer 1.4s ease infinite;}
 
 /* ── ROOT ── */
-.fp-root{display:grid;grid-template-areas:"main";grid-template-rows:1fr;grid-template-columns:1fr;background:#f1f5f9;min-height:100dvh;font-family:'Inter',sans-serif;color:#0f172a;}
+.fp-root{display:grid;grid-template-areas:"header""main""mobile-nav";grid-template-rows:60px 1fr 60px;grid-template-columns:1fr;background:#f1f5f9;min-height:100dvh;font-family:'Inter',sans-serif;color:#0f172a;}
 @media(min-width:900px){.fp-root{grid-template-areas:"left-sidebar main right-sidebar";grid-template-columns:230px 1fr 260px;grid-template-rows:1fr;}}
 
 /* ── MOBILE HEADER ── */
+.fp-header{grid-area:header;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,0.05);position:sticky;top:0;z-index:100;}
+@media(min-width:900px){.fp-header{display:none;}}
+.fp-hdr-left{display:flex;align-items:center;gap:7px;}
 .fp-brand{font-size:19px;font-weight:800;color:#0077b5;letter-spacing:-0.03em;font-family:'Inter',sans-serif;}
+.fp-hdr-right{display:flex;align-items:center;gap:10px;}
 .fp-agent-btn{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#0077b5,#005d8f);color:#fff;border:none;border-radius:999px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 2px 8px rgba(0,119,181,0.3);transition:transform .15s;}
 .fp-agent-btn:active{transform:scale(.95);}
 .fp-agent-text{display:none;}
@@ -2191,6 +2229,11 @@ const STYLES = `
 .fp-switch-menu-item+.fp-switch-menu-item{border-top:1px solid #f1f5f9;}
 
 /* ── MOBILE BOTTOM NAV ── */
+.fp-mobile-nav{grid-area:mobile-nav;display:flex;justify-content:space-around;align-items:center;background:#fff;border-top:1px solid #e2e8f0;z-index:100;position:sticky;bottom:0;box-shadow:0 -2px 12px rgba(0,0,0,0.06);}
+@media(min-width:900px){.fp-mobile-nav{display:none;}}
+.fp-mob-item{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;color:#94a3b8;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-family:'Inter',sans-serif;padding:6px 8px;transition:color .15s;}
+.fp-mob-item.active{color:#0077b5;}
+.fp-mob-label{font-size:9px;}
 
 /* ── PORTFOLIO INLINE (replaces Edit Profile button) ── */
 .fp-portfolio-inline{display:flex;flex-direction:column;gap:7px;margin-top:2px;}
