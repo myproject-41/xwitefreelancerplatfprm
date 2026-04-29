@@ -7,7 +7,7 @@
  */
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import toast from 'react-hot-toast'
 import apiClient        from '../../../../services/apiClient'
 import { authService }  from '../../../../services/auth.service'
@@ -60,6 +60,7 @@ function fmtBalance(n: number, cur: string) {
 ═══════════════════════════════════════════════ */
 export default function CompanyProfile() {
   const router = useRouter()
+  const pathname = usePathname()
   const { setUser, logout, user } = useAuthStore()
 
   /* ── Profile fields ── */
@@ -379,16 +380,29 @@ export default function CompanyProfile() {
         />
       )}
 
-      <MainHeader />
-
       <div className="cp-root">
 
         {/* ══ LEFT SIDEBAR ══ */}
         <aside className="cp-sidebar-left">
-          <div className="cp-sidebar-brand">
+          <button className="cp-sidebar-brand" onClick={() => router.push('/')}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="#0077b5"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
             <span className="cp-brand">Xwite</span>
-          </div>
+          </button>
+          <nav className="cp-sidebar-nav">
+            {NAV_ITEMS.map(item => {
+              const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
+              return (
+                <button
+                  key={item.href}
+                  className={`cp-nav-item${isActive ? ' active' : ''}`}
+                  onClick={() => router.push(item.href)}
+                >
+                  <NavIcon name={item.icon} active={isActive} />
+                  <span className="cp-nav-label">{item.label}</span>
+                </button>
+              )
+            })}
+          </nav>
           <div className="cp-sidebar-bottom">
             <button className="cp-nav-item" onClick={() => togglePanel('settings')}>
               <SettingsIcon /><span className="cp-nav-label">Settings</span>
@@ -544,10 +558,6 @@ export default function CompanyProfile() {
                 <button className="cp-mobile-qbtn cp-mobile-qbtn-out" onClick={() => togglePanel('withdraw')}>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M21 18v1c0 1.1-.9 2-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14c1.1 0 2 .9 2 2v1h-9a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h9zm-9-2h10V8H12v8zm4-2.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
                   Withdraw
-                </button>
-                <button className="cp-mobile-qbtn cp-mobile-qbtn-set" onClick={() => togglePanel('settings')}>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-                  Settings
                 </button>
               </div>
             </div>
@@ -731,6 +741,31 @@ export default function CompanyProfile() {
                     })
                 }
               </div>
+            </div>
+
+            {/* ── MOBILE SETTINGS CARD (bottom of profile, mobile only) ── */}
+            <div className="cp-mobile-settings-bottom">
+              <button className="cp-mobile-set-btn" onClick={() => togglePanel('settings')}>
+                <div className="cp-mobile-set-icon">
+                  <SettingsIcon />
+                </div>
+                <div className="cp-mobile-set-text">
+                  <span className="cp-mobile-set-lbl">Settings</span>
+                  <span className="cp-mobile-set-sub">Password, account</span>
+                </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#94a3b8"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+              </button>
+              <div className="cp-mobile-set-divider" />
+              <button className="cp-mobile-set-btn cp-mobile-set-logout" onClick={handleLogout}>
+                <div className="cp-mobile-set-icon cp-mobile-set-logout-icon">
+                  <LogoutIcon />
+                </div>
+                <div className="cp-mobile-set-text">
+                  <span className="cp-mobile-set-lbl">Log out</span>
+                  <span className="cp-mobile-set-sub">Sign out of your account</span>
+                </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#94a3b8"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+              </button>
             </div>
           )}
 
@@ -1367,7 +1402,6 @@ const STYLES = `
 
 /* ── ROOT ── */
 .cp-root{display:grid;grid-template-areas:"main";grid-template-rows:1fr;grid-template-columns:1fr;background:#f1f5f9;min-height:100dvh;font-family:'Inter',sans-serif;color:#0f172a;}
-@media(max-width:899px){.cp-root{padding-top:64px;}}
 @media(min-width:900px){.cp-root{grid-template-areas:"left-sidebar main right-sidebar";grid-template-columns:230px 1fr 260px;grid-template-rows:1fr;}}
 
 
@@ -1385,7 +1419,7 @@ const STYLES = `
 /* ── LEFT SIDEBAR ── */
 .cp-sidebar-left{display:none;grid-area:left-sidebar;}
 @media(min-width:900px){.cp-sidebar-left{display:flex;flex-direction:column;background:#fff;border-right:1px solid #e2e8f0;padding:24px 14px;position:sticky;top:0;height:100dvh;overflow-y:auto;}}
-.cp-sidebar-brand{display:flex;align-items:center;gap:8px;padding:0 8px;margin-bottom:24px;}
+.cp-sidebar-brand{display:flex;align-items:center;gap:8px;padding:0 8px;margin-bottom:24px;background:none;border:none;cursor:pointer;text-decoration:none;}
 .cp-sidebar-nav{display:flex;flex-direction:column;gap:3px;flex:1;}
 .cp-nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;border:none;background:transparent;color:#475569;font-size:14px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;text-align:left;width:100%;transition:background .15s,color .15s;}
 .cp-nav-item:hover{background:#f0f9ff;color:#0077b5;}
@@ -1394,6 +1428,39 @@ const STYLES = `
 .cp-sidebar-bottom{display:flex;flex-direction:column;gap:3px;border-top:1px solid #f1f5f9;padding-top:10px;}
 .cp-nav-danger{color:#dc2626!important;}
 .cp-nav-danger:hover{background:#fef2f2!important;color:#dc2626!important;}
+
+/* ── MOBILE SETTINGS BOTTOM CARD (mobile only) ── */
+.cp-mobile-settings-bottom{display:none;}
+@media(max-width:899px){
+  .cp-mobile-settings-bottom{
+    display:flex;flex-direction:column;
+    background:#fff;border-radius:16px;
+    margin:10px 12px 80px;
+    box-shadow:0 1px 4px rgba(0,0,0,0.06),0 4px 14px rgba(0,0,0,0.08);
+    border:1px solid rgba(0,0,0,0.05);
+    overflow:hidden;
+  }
+  .cp-mobile-set-btn{
+    display:flex;align-items:center;gap:12px;
+    background:none;border:none;cursor:pointer;
+    padding:14px 16px;width:100%;text-align:left;
+    font-family:'Inter',sans-serif;transition:background .15s;
+  }
+  .cp-mobile-set-btn:hover{background:#f8fafc;}
+  .cp-mobile-set-btn:active{background:#f1f5f9;}
+  .cp-mobile-set-icon{
+    width:36px;height:36px;border-radius:10px;
+    background:#f0f9ff;border:1px solid #bae6fd;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;color:#0077b5;
+  }
+  .cp-mobile-set-logout-icon{background:#fef2f2;border-color:#fca5a5;color:#dc2626;}
+  .cp-mobile-set-text{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;}
+  .cp-mobile-set-lbl{font-size:14px;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;}
+  .cp-mobile-set-logout .cp-mobile-set-lbl{color:#dc2626;}
+  .cp-mobile-set-sub{font-size:11px;color:#94a3b8;font-family:'Inter',sans-serif;}
+  .cp-mobile-set-divider{height:1px;background:#f1f5f9;margin:0 16px;}
+}
 
 /* ── MAIN ── */
 .cp-main{grid-area:main;min-width:0;padding-bottom:70px;display:flex;flex-direction:column;gap:0;}
@@ -1774,7 +1841,6 @@ const STYLES = `
   .cp-mobile-qbtn:active{filter:brightness(.88);}
   .cp-mobile-qbtn-add{background:linear-gradient(135deg,#0077b5,#005d8f);color:#fff;box-shadow:0 2px 8px rgba(0,119,181,0.28);}
   .cp-mobile-qbtn-out{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;box-shadow:0 2px 8px rgba(34,197,94,0.28);}
-  .cp-mobile-qbtn-set{background:#f1f5f9;color:#475569;}
 }
 
 `
