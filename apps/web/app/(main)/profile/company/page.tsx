@@ -699,6 +699,7 @@ export default function CompanyProfile() {
 
           {/* ── MY POSTS ── */}
           {!pageLoading && (
+            <>
             <div className="cp-posts-card">
               <div className="cp-posts-card-hdr">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
@@ -767,6 +768,7 @@ export default function CompanyProfile() {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="#94a3b8"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
               </button>
             </div>
+            </>
           )}
 
         </main>
