@@ -546,6 +546,32 @@ export default function ClientProfile() {
             </div>
           </section>
 
+          {/* ── MOBILE WALLET + SETTINGS (hidden on desktop, visible only on mobile) ── */}
+          <div className="cp-mobile-quickbar">
+            <div className="cp-mobile-wallet-row">
+              <div className="cp-mobile-balance">
+                <span className="cp-mobile-bal-lbl">Balance</span>
+                {walletLoading
+                  ? <div className="skel" style={{height:20,width:80,borderRadius:6}} />
+                  : <span className="cp-mobile-bal-amt">{balanceLabel}</span>
+                }
+              </div>
+              <div className="cp-mobile-wallet-actions">
+                <button className="cp-mobile-action-btn cp-mobile-add" onClick={() => togglePanel('addFunds')}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                  Add
+                </button>
+                <button className="cp-mobile-action-btn cp-mobile-withdraw" onClick={() => togglePanel('withdraw')}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M21 18v1c0 1.1-.9 2-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14c1.1 0 2 .9 2 2v1h-9a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h9zm-9-2h10V8H12v8zm4-2.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
+                  Withdraw
+                </button>
+                <button className="cp-mobile-action-btn cp-mobile-settings" onClick={() => togglePanel('settings')}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                  Settings
+                </button>
+              </div>
+            </div>
+          </div>
 
           {activePanel === 'settings' && (
             <InlinePanel title="Account Settings" onClose={() => togglePanel('none')}>
@@ -1989,6 +2015,33 @@ const STYLES = `
 .cp-switch:hover{box-shadow:0 3px 14px rgba(0,0,0,0.1);}
 .cp-switch-title{font-size:13px;font-weight:700;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .cp-switch-sub{font-size:12px;color:#94a3b8;margin-top:2px;}
+
+/* ── MOBILE WALLET + SETTINGS QUICKBAR ── */
+.cp-mobile-quickbar{
+  display:block;
+  background:#fff;
+  border-radius:16px;
+  margin:12px 16px 0;
+  padding:14px 16px;
+  box-shadow:0 1px 3px rgba(0,0,0,0.06),0 4px 14px rgba(0,0,0,0.07);
+  border:1px solid rgba(0,0,0,0.05);
+}
+@media(min-width:900px){.cp-mobile-quickbar{display:none;}}
+.cp-mobile-wallet-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.cp-mobile-balance{flex:1;min-width:0;}
+.cp-mobile-bal-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;display:block;margin-bottom:3px;}
+.cp-mobile-bal-amt{font-size:20px;font-weight:800;color:#0D1B2A;letter-spacing:-.02em;}
+.cp-mobile-wallet-actions{display:flex;gap:6px;flex-shrink:0;}
+.cp-mobile-action-btn{
+  display:flex;align-items:center;gap:4px;
+  border:none;border-radius:10px;
+  font-size:12px;font-weight:700;font-family:'Manrope',sans-serif;
+  cursor:pointer;padding:8px 12px;transition:opacity .15s;
+}
+.cp-mobile-action-btn:active{opacity:.75;}
+.cp-mobile-add{background:linear-gradient(135deg,#0284c7,#0077b5);color:#fff;}
+.cp-mobile-withdraw{background:#f0f9ff;color:#0077b5;border:1.5px solid #bae6fd;}
+.cp-mobile-settings{background:#f8fafc;color:#475569;border:1.5px solid #e2e8f0;}
 
 /* ── MOBILE BOTTOM NAV ── */
 .cp-mobile-nav{

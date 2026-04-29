@@ -13,7 +13,6 @@ const NAV_ITEMS = [
   { label: 'Post', icon: 'Post', path: '/post' },
   { label: 'Alerts', icon: 'Alerts', path: '/alerts' },
   { label: 'Profile', icon: 'Profile', path: '/profile' },
-  { label: 'Messages', icon: 'Messages', path: '/messages' },
 ]
 
 function HomeIcon({ active = false }: { active?: boolean }) {
@@ -100,18 +99,26 @@ export default function BottomNav() {
     if (pathname === '/alerts') setUnreadCount(0)
   }, [pathname])
 
+  const profilePath =
+    user?.role === 'FREELANCER' ? '/profile/freelancer'
+    : user?.role === 'COMPANY' ? '/profile/company'
+    : '/profile'
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-zinc-200 bg-white md:hidden">
       <div className="mx-auto flex max-w-screen-sm">
         {NAV_ITEMS.map((item) => {
-          const isActive = pathname === item.path
+          const resolvedPath = item.label === 'Profile' ? profilePath : item.path
+          const isActive = item.label === 'Profile'
+            ? pathname.startsWith('/profile')
+            : pathname === item.path
           const isPost = item.label === 'Post'
           const isAlerts = item.label === 'Alerts'
 
           return (
             <Link
               key={item.path}
-              href={item.path}
+              href={resolvedPath}
               className={`relative flex flex-1 flex-col items-center justify-center gap-0.5 py-3 transition-colors ${
                 isPost ? '' : isActive ? 'text-[#005d8f]' : 'text-[#707881] hover:text-[#005d8f]'
               }`}
