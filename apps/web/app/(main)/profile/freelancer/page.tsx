@@ -1336,31 +1336,6 @@ export default function FreelancerProfile() {
                 </div>
               </div>
 
-              {/* ── MOBILE SETTINGS CARD (hidden on desktop) ── */}
-              <div className="fp-mobile-settings-card">
-                <button className="fp-mobile-settings-btn" onClick={() => togglePanel('settings')}>
-                  <div className="fp-mobile-settings-icon">
-                    <SettingsIcon />
-                  </div>
-                  <div className="fp-mobile-settings-text">
-                    <span className="fp-mobile-settings-lbl">Settings</span>
-                    <span className="fp-mobile-settings-sub">Password, account</span>
-                  </div>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#94a3b8"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-                </button>
-                <div className="fp-mobile-settings-divider" />
-                <button className="fp-mobile-settings-btn fp-mobile-logout-btn" onClick={handleLogout}>
-                  <div className="fp-mobile-settings-icon fp-mobile-logout-icon">
-                    <LogoutIcon />
-                  </div>
-                  <div className="fp-mobile-settings-text">
-                    <span className="fp-mobile-settings-lbl">Log out</span>
-                    <span className="fp-mobile-settings-sub">Sign out of your account</span>
-                  </div>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#94a3b8"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-                </button>
-              </div>
-
 </>
           )}
         </main>
@@ -2426,39 +2401,6 @@ const STYLES = `
 }
 .fp-ai-card-highlight{
   animation:fp-ai-highlight 1.5s ease-out forwards;
-}
-
-/* ── MOBILE SETTINGS CARD (below My Posts, mobile only) ── */
-.fp-mobile-settings-card{display:none;}
-@media(max-width:899px){
-  .fp-mobile-settings-card{
-    display:flex;flex-direction:column;
-    background:#fff;border-radius:16px;
-    margin:10px 12px 0;
-    box-shadow:0 1px 4px rgba(0,0,0,0.06),0 4px 14px rgba(0,0,0,0.08);
-    border:1px solid rgba(0,0,0,0.05);
-    overflow:hidden;
-  }
-  .fp-mobile-settings-btn{
-    display:flex;align-items:center;gap:12px;
-    background:none;border:none;cursor:pointer;
-    padding:14px 16px;width:100%;text-align:left;
-    font-family:'Inter',sans-serif;transition:background .15s;
-  }
-  .fp-mobile-settings-btn:hover{background:#f8fafc;}
-  .fp-mobile-settings-btn:active{background:#f1f5f9;}
-  .fp-mobile-settings-icon{
-    width:36px;height:36px;border-radius:10px;
-    background:#f0f9ff;border:1px solid #bae6fd;
-    display:flex;align-items:center;justify-content:center;
-    flex-shrink:0;color:#0077b5;
-  }
-  .fp-mobile-logout-icon{background:#fef2f2;border-color:#fca5a5;color:#dc2626;}
-  .fp-mobile-settings-text{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;}
-  .fp-mobile-settings-lbl{font-size:14px;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;}
-  .fp-mobile-logout-btn .fp-mobile-settings-lbl{color:#dc2626;}
-  .fp-mobile-settings-sub{font-size:11px;color:#94a3b8;font-family:'Inter',sans-serif;}
-  .fp-mobile-settings-divider{height:1px;background:#f1f5f9;margin:0 16px;}
 }
 
 /* ── MOBILE QUICKBAR (wallet + settings, mobile only) ── */
