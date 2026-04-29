@@ -1,7 +1,7 @@
 ﻿'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import toast from 'react-hot-toast'
 import apiClient        from '../../../services/apiClient'
 import { authService }  from '../../../services/auth.service'
@@ -49,6 +49,7 @@ function fmt(amount: number, currency: 'INR' | 'USD'): string {
 ═══════════════════════════════════════════ */
 export default function ClientProfile() {
   const router = useRouter()
+  const pathname = usePathname()
   const { setUser, logout, user } = useAuthStore()
 
   useEffect(() => {
@@ -366,37 +367,41 @@ export default function ClientProfile() {
         />
       )}
 
-      <MainHeader />
+      <div className="cp-mobile-only-header">
+        <MainHeader />
+      </div>
 
         <div className="cp-root">
-
-        {/* ══════════════════════════
-            MOBILE HEADER
-        ══════════════════════════ */}
 
         {/* ══════════════════════════
             LEFT SIDEBAR (desktop)
         ══════════════════════════ */}
         <aside className="cp-sidebar-left">
-          <div className="cp-sidebar-brand">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="#0077b5">
-              <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
-            </svg>
+          <button className="cp-sidebar-brand" onClick={() => router.push('/')}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="#0077b5"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
             <span className="cp-brand">Xwite</span>
-          </div>
-
+          </button>
+          <nav className="cp-sidebar-nav">
+            {NAV_ITEMS.map(item => {
+              const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
+              return (
+                <button
+                  key={item.href}
+                  className={`cp-nav-item${isActive ? ' active' : ''}`}
+                  onClick={() => router.push(item.href)}
+                >
+                  <NavIcon name={item.icon} active={isActive} />
+                  <span className="cp-nav-label">{item.label}</span>
+                </button>
+              )
+            })}
+          </nav>
           <div className="cp-sidebar-bottom">
             <button className="cp-nav-item" onClick={() => togglePanel('settings')}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style={{flexShrink:0}}>
-                <path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
-              </svg>
-              <span className="cp-nav-label">Settings</span>
+              <SettingsIcon /><span className="cp-nav-label">Settings</span>
             </button>
             <button className="cp-nav-item cp-nav-danger" onClick={handleLogout}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style={{flexShrink:0}}>
-                <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
-              </svg>
-              <span className="cp-nav-label">Log out</span>
+              <LogoutIcon /><span className="cp-nav-label">Log out</span>
             </button>
           </div>
         </aside>
@@ -528,15 +533,11 @@ export default function ClientProfile() {
               <div className="cp-mobile-wallet-actions">
                 <button className="cp-mobile-action-btn cp-mobile-add" onClick={() => togglePanel('addFunds')}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                  Add
+                  Add Funds
                 </button>
                 <button className="cp-mobile-action-btn cp-mobile-withdraw" onClick={() => togglePanel('withdraw')}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M21 18v1c0 1.1-.9 2-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14c1.1 0 2 .9 2 2v1h-9a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h9zm-9-2h10V8H12v8zm4-2.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg>
                   Withdraw
-                </button>
-                <button className="cp-mobile-action-btn cp-mobile-settings" onClick={() => togglePanel('settings')}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-                  Settings
                 </button>
               </div>
             </div>
@@ -667,6 +668,32 @@ export default function ClientProfile() {
                 )
             }
           </section>
+
+          {/* ── MOBILE SETTINGS CARD (bottom of profile, mobile only) ── */}
+          <div className="cp-mobile-settings-bottom">
+            <button className="cp-mobile-set-btn" onClick={() => togglePanel('settings')}>
+              <div className="cp-mobile-set-icon">
+                <SettingsIcon />
+              </div>
+              <div className="cp-mobile-set-text">
+                <span className="cp-mobile-set-lbl">Settings</span>
+                <span className="cp-mobile-set-sub">Password, account</span>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#94a3b8"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+            </button>
+            <div className="cp-mobile-set-divider" />
+            <button className="cp-mobile-set-btn cp-mobile-set-logout" onClick={handleLogout}>
+              <div className="cp-mobile-set-icon cp-mobile-set-logout-icon">
+                <LogoutIcon />
+              </div>
+              <div className="cp-mobile-set-text">
+                <span className="cp-mobile-set-lbl">Log out</span>
+                <span className="cp-mobile-set-sub">Sign out of your account</span>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#94a3b8"><path d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+            </button>
+          </div>
+
         </main>
 
         {/* ══════════════════════════
@@ -907,6 +934,13 @@ function NavIcon({ name, active = false, size = 22 }: { name: string; active?: b
       <path d={paths[name] ?? ''} />
     </svg>
   )
+}
+
+function SettingsIcon() {
+  return <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{flexShrink:0}}><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+}
+function LogoutIcon() {
+  return <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={{flexShrink:0}}><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
 }
 
 /* ═══════════════════════════════════════════
@@ -1598,8 +1632,8 @@ const STYLES = `
 /* ── ROOT GRID ── */
 .cp-root{
   display:grid;
-  grid-template-areas:"header""main""mobile-nav";
-  grid-template-rows:60px 1fr 60px;
+  grid-template-areas:"main";
+  grid-template-rows:1fr;
   grid-template-columns:1fr;
   background:#f1f5f9;
   min-height:100dvh;
@@ -1613,8 +1647,9 @@ const STYLES = `
     grid-template-rows:1fr;
   }
 }
-
-
+.cp-mobile-only-header{display:block;}
+@media(min-width:900px){.cp-mobile-only-header{display:none;}}
+@media(max-width:899px){.cp-root{padding-top:64px;}}
 
 /* ── AGENT BUTTON ── */
 .cp-agent-btn{
@@ -1958,32 +1993,28 @@ const STYLES = `
 .cp-switch-sub{font-size:12px;color:#94a3b8;margin-top:2px;}
 
 /* ── MOBILE WALLET + SETTINGS QUICKBAR ── */
-.cp-mobile-quickbar{
-  display:block;
-  background:#fff;
-  border-radius:16px;
-  margin:12px 16px 0;
-  padding:14px 16px;
-  box-shadow:0 1px 3px rgba(0,0,0,0.06),0 4px 14px rgba(0,0,0,0.07);
-  border:1px solid rgba(0,0,0,0.05);
+.cp-mobile-quickbar{display:none;}
+@media(max-width:899px){
+  .cp-mobile-quickbar{
+    display:block;
+    background:linear-gradient(135deg,#e8f4fd 0%,#dbeffe 60%,#eff8ff 100%);
+    border-radius:16px;
+    margin:10px 12px 0;
+    padding:14px 16px;
+    box-shadow:0 1px 4px rgba(0,119,181,0.08),0 4px 14px rgba(0,119,181,0.1);
+    border:1px solid rgba(0,119,181,0.14);
+  }
+  .cp-mobile-wallet-row{display:flex;align-items:center;gap:12px;}
+  .cp-mobile-balance{flex:1;min-width:0;}
+  .cp-mobile-bal-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#0369a1;display:block;margin-bottom:2px;font-family:'Manrope',sans-serif;}
+  .cp-mobile-bal-amt{font-size:20px;font-weight:800;color:#0f172a;font-family:'Manrope',sans-serif;letter-spacing:-.02em;line-height:1.1;}
+  .cp-mobile-bal-escrow{font-size:11px;font-weight:600;color:#0369a1;background:#bae6fd;border-radius:999px;padding:2px 8px;margin-top:3px;display:inline-block;}
+  .cp-mobile-wallet-actions{display:flex;flex-direction:row;gap:8px;flex-shrink:0;}
+  .cp-mobile-action-btn{display:flex;align-items:center;gap:5px;border:none;border-radius:10px;padding:9px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif;transition:filter .15s;white-space:nowrap;}
+  .cp-mobile-action-btn:active{filter:brightness(.88);}
+  .cp-mobile-add{background:linear-gradient(135deg,#0077b5,#005d8f);color:#fff;box-shadow:0 2px 8px rgba(0,119,181,0.28);}
+  .cp-mobile-withdraw{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;box-shadow:0 2px 8px rgba(34,197,94,0.28);}
 }
-@media(min-width:900px){.cp-mobile-quickbar{display:none;}}
-.cp-mobile-wallet-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.cp-mobile-balance{flex:1;min-width:0;}
-.cp-mobile-bal-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;display:block;margin-bottom:3px;}
-.cp-mobile-bal-amt{font-size:20px;font-weight:800;color:#0D1B2A;letter-spacing:-.02em;}
-.cp-mobile-bal-escrow{font-size:11px;font-weight:600;color:#0369a1;background:#e0f2fe;border-radius:999px;padding:2px 8px;margin-top:4px;display:inline-block;}
-.cp-mobile-wallet-actions{display:flex;gap:6px;flex-shrink:0;}
-.cp-mobile-action-btn{
-  display:flex;align-items:center;gap:4px;
-  border:none;border-radius:10px;
-  font-size:12px;font-weight:700;font-family:'Manrope',sans-serif;
-  cursor:pointer;padding:8px 12px;transition:opacity .15s;
-}
-.cp-mobile-action-btn:active{opacity:.75;}
-.cp-mobile-add{background:linear-gradient(135deg,#0284c7,#0077b5);color:#fff;}
-.cp-mobile-withdraw{background:#f0f9ff;color:#0077b5;border:1.5px solid #bae6fd;}
-.cp-mobile-settings{background:#f8fafc;color:#475569;border:1.5px solid #e2e8f0;}
 
 
 
@@ -2121,6 +2152,43 @@ const STYLES = `
 .cp-accord-req-name{font-size:12px;font-weight:700;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .cp-accord-req-post{font-size:11px;color:#64748b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .cp-accord-req-rate{font-size:11px;font-weight:700;color:#0369a1;flex-shrink:0;}
+
+/* ── MOBILE CARD MARGINS ── */
+@media(max-width:899px){.cp-panel{margin:10px 12px 0;}}
+@media(max-width:899px){.cp-posts-card{margin:10px 12px 0;}}
+
+/* ── MOBILE SETTINGS BOTTOM CARD (mobile only) ── */
+.cp-mobile-settings-bottom{display:none;}
+@media(max-width:899px){
+  .cp-mobile-settings-bottom{
+    display:flex;flex-direction:column;
+    background:#fff;border-radius:16px;
+    margin:10px 12px 80px;
+    box-shadow:0 1px 4px rgba(0,0,0,0.06),0 4px 14px rgba(0,0,0,0.08);
+    border:1px solid rgba(0,0,0,0.05);
+    overflow:hidden;
+  }
+  .cp-mobile-set-btn{
+    display:flex;align-items:center;gap:12px;
+    background:none;border:none;cursor:pointer;
+    padding:14px 16px;width:100%;text-align:left;
+    font-family:'Manrope',sans-serif;transition:background .15s;
+  }
+  .cp-mobile-set-btn:hover{background:#f8fafc;}
+  .cp-mobile-set-btn:active{background:#f1f5f9;}
+  .cp-mobile-set-icon{
+    width:36px;height:36px;border-radius:10px;
+    background:#f0f9ff;border:1px solid #bae6fd;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;color:#0077b5;
+  }
+  .cp-mobile-set-logout-icon{background:#fef2f2;border-color:#fca5a5;color:#dc2626;}
+  .cp-mobile-set-text{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;}
+  .cp-mobile-set-lbl{font-size:14px;font-weight:700;color:#0f172a;font-family:'Manrope',sans-serif;}
+  .cp-mobile-set-logout .cp-mobile-set-lbl{color:#dc2626;}
+  .cp-mobile-set-sub{font-size:11px;color:#94a3b8;font-family:'Manrope',sans-serif;}
+  .cp-mobile-set-divider{height:1px;background:#f1f5f9;margin:0 16px;}
+}
 `
 
 
