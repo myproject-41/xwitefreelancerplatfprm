@@ -165,7 +165,7 @@ export default function HomePage() {
       }
       if (!currentUser) { setLoading(false); return }
 
-      if (showLoader) {
+      if (showLoader && posts.length === 0) {
         setLoading(true)
       }
       if (showLoader || !posts.length) {

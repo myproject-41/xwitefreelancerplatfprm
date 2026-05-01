@@ -562,13 +562,10 @@ function ConnectionsSection({ pending, connections, onAccept, onIgnore, onRemove
   const [search, setSearch] = useState('')
   const router = useRouter()
 
-  const handleOpenChat = async (userId?: string) => {
+  const handleOpenChat = (userId?: string) => {
     if (!userId) return
-    try {
-      const res = await chatService.getOrCreateConversation(userId)
-      const cid = res?.data?.id
-      router.push(cid ? `/messages?conversationId=${cid}` : '/messages')
-    } catch { toast.error('Could not open chat') }
+    chatService.getOrCreateConversation(userId).catch(() => {})
+    router.push('/messages')
   }
 
   const filtered = connections.filter((c: any) => {
@@ -611,7 +608,7 @@ function ConnectionsSection({ pending, connections, onAccept, onIgnore, onRemove
                   </div>
                 </button>
                 <div className="flex gap-2 shrink-0">
-                  <button onClick={() => void handleOpenChat(c.user?.id)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#005d8f] text-[#005d8f] text-xs font-bold hover:bg-[#005d8f]/5 transition"><Icons.Message /> Message</button>
+                  <button onClick={() => handleOpenChat(c.user?.id)} className="flex items-center gap-1 px-2 py-1 rounded-full border border-[#005d8f] text-[#005d8f] text-xs font-bold hover:bg-[#005d8f]/5 transition"><Icons.Message /> Msg</button>
                   <button onClick={() => onRemove(c.connectionId)} className="px-3 py-1.5 rounded-full border border-[#bfc7d1] text-[#707881] text-xs font-bold hover:bg-[#efeeeb] transition">Remove</button>
                 </div>
               </div>
@@ -873,7 +870,7 @@ function NetworkPageInner() {
   }, [searchParams])
 
   const loadAll = async () => {
-    setLoading(true)
+    setLoading(connections.length === 0 && pending.length === 0)
     try {
       if (!user) {
         const { authService: auth } = await import('../../../services/auth.service')

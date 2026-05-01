@@ -801,6 +801,7 @@ const STYLES = `
 
 /* ── BELOW COVER ── */
 .pub-below-cover{display:flex;align-items:flex-end;justify-content:space-between;padding:0 18px;margin-top:-42px;margin-bottom:10px;position:relative;z-index:20;}
+@media(max-width:899px){.pub-below-cover{flex-wrap:wrap;align-items:flex-start;margin-top:0;padding-top:8px;}.pub-action-row{width:100%;padding-top:8px;justify-content:flex-start;}}
 @media(min-width:900px){.pub-below-cover{padding:0 22px;margin-top:-46px;margin-bottom:16px;}}
 .pub-avatar{width:80px;height:80px;border-radius:14px;overflow:hidden;background:#e2e5e9;border:3px solid #fff;box-shadow:0 2px 12px rgba(0,0,0,0.18);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
 .pub-avatar img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;}
