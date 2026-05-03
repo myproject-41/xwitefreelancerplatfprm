@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
@@ -124,7 +124,7 @@ export default function SettingsPage() {
           <div className="mb-4 flex items-center gap-3">
             <button
               onClick={() => { setPage('menu'); setShowPwForm(false); setShowDeleteConfirm(false) }}
-              className="flex items-center gap-1.5 rounded-full border border-[#d6dce3] bg-white px-3 py-1.5 text-sm font-bold text-[#005d8f] transition hover:bg-[#f4f8fb]"
+              className="flex items-center gap-1.5 rounded-full border border-[#d6dce3] bg-white px-3 py-1.5 text-sm font-bold text-[#1565C0] transition hover:bg-[#f4f8fb]"
             >
               <BackArrow />
               Back
@@ -140,12 +140,12 @@ export default function SettingsPage() {
 
             {/* User card */}
             <div className="flex items-center gap-4 rounded-2xl border border-[#e2e8f0] bg-white p-4 shadow-sm">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#e8f4fd] text-xl font-extrabold text-[#005d8f]">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#e8f4fd] text-xl font-extrabold text-[#1565C0]">
                 {user?.email?.[0]?.toUpperCase() ?? 'U'}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate font-bold text-[#1b1c1a]">{user?.email}</p>
-                <span className="mt-0.5 inline-block rounded-full bg-[#e8f4fd] px-2.5 py-0.5 text-[11px] font-bold text-[#0077b5]">
+                <span className="mt-0.5 inline-block rounded-full bg-[#e8f4fd] px-2.5 py-0.5 text-[11px] font-bold text-[#1976D2]">
                   {user?.role}
                 </span>
               </div>
@@ -214,7 +214,7 @@ export default function SettingsPage() {
                 </div>
                 <button
                   onClick={() => setShowPwForm(v => !v)}
-                  className="shrink-0 rounded-xl bg-[#005d8f] px-3 py-1.5 text-xs font-bold text-white transition hover:opacity-90"
+                  className="shrink-0 rounded-xl bg-[#1565C0] px-3 py-1.5 text-xs font-bold text-white transition hover:opacity-90"
                 >
                   {showPwForm ? 'Cancel' : 'Change'}
                 </button>
@@ -228,7 +228,7 @@ export default function SettingsPage() {
                       type="password"
                       value={oldPassword}
                       onChange={e => setOldPassword(e.target.value)}
-                      className="mt-1 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm outline-none focus:ring-2 focus:ring-[#005d8f]/30"
+                      className="mt-1 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm outline-none focus:ring-2 focus:ring-[#1565C0]/30"
                       placeholder="Your current password"
                     />
                   </div>
@@ -238,7 +238,7 @@ export default function SettingsPage() {
                       type="password"
                       value={newPassword}
                       onChange={e => setNewPassword(e.target.value)}
-                      className="mt-1 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm outline-none focus:ring-2 focus:ring-[#005d8f]/30"
+                      className="mt-1 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm outline-none focus:ring-2 focus:ring-[#1565C0]/30"
                       placeholder="Min 8 characters"
                     />
                   </div>
@@ -248,14 +248,14 @@ export default function SettingsPage() {
                       type="password"
                       value={confirmPassword}
                       onChange={e => setConfirmPassword(e.target.value)}
-                      className="mt-1 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm outline-none focus:ring-2 focus:ring-[#005d8f]/30"
+                      className="mt-1 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm outline-none focus:ring-2 focus:ring-[#1565C0]/30"
                       placeholder="Repeat new password"
                     />
                   </div>
                   <button
                     type="submit"
                     disabled={pwLoading}
-                    className="w-full rounded-xl bg-[linear-gradient(135deg,#005d8f,#0077b5)] py-3 text-sm font-bold text-white shadow-sm transition hover:opacity-95 disabled:opacity-60"
+                    className="w-full rounded-xl bg-[linear-gradient(135deg,#1565C0,#1976D2)] py-3 text-sm font-bold text-white shadow-sm transition hover:opacity-95 disabled:opacity-60"
                   >
                     {pwLoading ? 'Changing…' : 'Change Password'}
                   </button>
@@ -341,7 +341,7 @@ export default function SettingsPage() {
               </ul>
             </StaticCard>
             <StaticCard title="Contact">
-              <p>For data-related requests, contact us at <span className="font-semibold text-[#005d8f]">privacy@xwite.com</span></p>
+              <p>For data-related requests, contact us at <span className="font-semibold text-[#1565C0]">privacy@xwite.com</span></p>
             </StaticCard>
           </div>
         )}
@@ -350,8 +350,8 @@ export default function SettingsPage() {
         {page === 'privacy-policy' && (
           <div className="space-y-4">
             <div className="rounded-2xl border border-[#e2e8f0] bg-[#e8f4fd] p-4">
-              <p className="text-xs font-bold text-[#0077b5]">Last updated: May 2026</p>
-              <p className="mt-1 text-sm font-bold text-[#005d8f]">Xwite Privacy Policy</p>
+              <p className="text-xs font-bold text-[#1976D2]">Last updated: May 2026</p>
+              <p className="mt-1 text-sm font-bold text-[#1565C0]">Xwite Privacy Policy</p>
             </div>
             <StaticCard title="1. Introduction">
               <p>Welcome to Xwite. We respect your privacy and are committed to protecting your personal data. This policy explains how Xwite ("we", "us", "our") collects, uses, and safeguards your information when you use our platform.</p>
@@ -383,13 +383,13 @@ export default function SettingsPage() {
               <p>We use essential cookies for authentication and session management. We do not use third-party advertising cookies.</p>
             </StaticCard>
             <StaticCard title="7. Your Rights">
-              <p>Depending on your location, you may have rights including access, correction, deletion, and portability of your data. Contact us at <span className="font-semibold text-[#005d8f]">privacy@xwite.com</span> to exercise these rights.</p>
+              <p>Depending on your location, you may have rights including access, correction, deletion, and portability of your data. Contact us at <span className="font-semibold text-[#1565C0]">privacy@xwite.com</span> to exercise these rights.</p>
             </StaticCard>
             <StaticCard title="8. Changes to This Policy">
               <p>We may update this policy from time to time. We will notify you of significant changes via email or an in-app notice.</p>
             </StaticCard>
             <StaticCard title="9. Contact Us">
-              <p>Xwite Inc. · <span className="font-semibold text-[#005d8f]">legal@xwite.com</span></p>
+              <p>Xwite Inc. · <span className="font-semibold text-[#1565C0]">legal@xwite.com</span></p>
             </StaticCard>
           </div>
         )}
@@ -417,7 +417,7 @@ export default function SettingsPage() {
               </ul>
             </StaticCard>
             <StaticCard title="Feedback">
-              <p>If you encounter any accessibility barriers on Xwite, please let us know at <span className="font-semibold text-[#005d8f]">accessibility@xwite.com</span>. We aim to respond within 2 business days.</p>
+              <p>If you encounter any accessibility barriers on Xwite, please let us know at <span className="font-semibold text-[#1565C0]">accessibility@xwite.com</span>. We aim to respond within 2 business days.</p>
             </StaticCard>
           </div>
         )}
@@ -426,8 +426,8 @@ export default function SettingsPage() {
         {page === 'user-agreement' && (
           <div className="space-y-4">
             <div className="rounded-2xl border border-[#e2e8f0] bg-[#e8f4fd] p-4">
-              <p className="text-xs font-bold text-[#0077b5]">Effective: May 2026</p>
-              <p className="mt-1 text-sm font-bold text-[#005d8f]">Xwite User Agreement</p>
+              <p className="text-xs font-bold text-[#1976D2]">Effective: May 2026</p>
+              <p className="mt-1 text-sm font-bold text-[#1565C0]">Xwite User Agreement</p>
             </div>
             <StaticCard title="1. Acceptance">
               <p>By creating an account on Xwite, you agree to be bound by this User Agreement and our Privacy Policy. If you do not agree, do not use the platform.</p>
@@ -467,7 +467,7 @@ export default function SettingsPage() {
               <p>This agreement is governed by the laws of India. Disputes shall be resolved by arbitration in accordance with applicable rules.</p>
             </StaticCard>
             <StaticCard title="10. Contact">
-              <p><span className="font-semibold text-[#005d8f]">legal@xwite.com</span></p>
+              <p><span className="font-semibold text-[#1565C0]">legal@xwite.com</span></p>
             </StaticCard>
           </div>
         )}

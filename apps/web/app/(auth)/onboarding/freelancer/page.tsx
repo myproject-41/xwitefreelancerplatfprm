@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
@@ -48,7 +48,7 @@ export default function FreelancerOnboarding() {
   const [profileUploading, setProfileUploading] = useState(false)
   const [profileHover, setProfileHover] = useState(false)
 
-  const BRAND = '#005d8f'
+  const BRAND = '#1565C0'
   const GREEN = '#16a34a'
 
   const optimizeSquareImage = async (file: File) => {
@@ -309,7 +309,7 @@ export default function FreelancerOnboarding() {
                     background: BRAND, color: 'white',
                     border: '2px solid white', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    boxShadow: '0 2px 8px rgba(0,93,143,0.45)',
+                    boxShadow: '0 2px 8px rgba(21,101,192,0.45)',
                     zIndex: 5,
                   }}
                 >

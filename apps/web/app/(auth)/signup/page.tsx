@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -103,7 +103,7 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen bg-[#EDF1F7] px-4 py-8">
       <div className="mx-auto w-full max-w-md">
-        <div className="mb-6 overflow-hidden rounded-[28px] bg-gradient-to-br from-[#0077b5] via-[#005d8f] to-[#0077b5] px-6 py-7 text-white shadow-[0_24px_60px_rgba(0,119,181,0.32)]">
+        <div className="mb-6 overflow-hidden rounded-[28px] bg-gradient-to-br from-[#1976D2] via-[#1565C0] to-[#1976D2] px-6 py-7 text-white shadow-[0_24px_60px_rgba(0,119,181,0.32)]">
           <h1 className="font-headline text-3xl font-extrabold tracking-tight">Xwite</h1>
           <p className="mt-2 text-sm font-medium text-white/75">Create your account</p>
         </div>
@@ -126,8 +126,8 @@ export default function SignupPage() {
                       aria-pressed={isSelected}
                       className={`w-full rounded-2xl border px-4 py-4 text-left transition ${
                         isSelected
-                          ? 'border-[#0077b5] bg-[#0077b5] text-white shadow-[0_14px_30px_rgba(0,119,181,0.28)]'
-                          : 'border-slate-200 bg-white text-[#0D1B2A] hover:-translate-y-0.5 hover:border-[#0077b5]/30'
+                          ? 'border-[#1976D2] bg-[#1976D2] text-white shadow-[0_14px_30px_rgba(0,119,181,0.28)]'
+                          : 'border-slate-200 bg-white text-[#0D1B2A] hover:-translate-y-0.5 hover:border-[#1976D2]/30'
                       }`}
                     >
                       <div className="flex items-start gap-3">
@@ -150,7 +150,7 @@ export default function SignupPage() {
                 type="button"
                 onClick={handleContinue}
                 disabled={!selectedRole}
-                className="mt-6 w-full rounded-xl bg-[#0077b5] py-3.5 text-sm font-extrabold text-white shadow-[0_16px_34px_rgba(0,119,181,0.30)] transition hover:bg-[#005d8f] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                className="mt-6 w-full rounded-xl bg-[#1976D2] py-3.5 text-sm font-extrabold text-white shadow-[0_16px_34px_rgba(0,119,181,0.30)] transition hover:bg-[#1565C0] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Continue
               </button>
@@ -162,13 +162,13 @@ export default function SignupPage() {
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="text-sm font-semibold text-slate-500 transition hover:text-[#0077b5]"
+                className="text-sm font-semibold text-slate-500 transition hover:text-[#1976D2]"
               >
                 Back
               </button>
 
-              <div className="rounded-xl border border-[#0077b5]/20 bg-[#e8f4fd] p-3">
-                <span className="text-sm font-bold text-[#005d8f]">
+              <div className="rounded-xl border border-[#1976D2]/20 bg-[#e8f4fd] p-3">
+                <span className="text-sm font-bold text-[#1565C0]">
                   Joining as {ROLES.find((item) => item.value === selectedRole)?.title}
                 </span>
               </div>
@@ -180,7 +180,7 @@ export default function SignupPage() {
                   required
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-[#0D1B2A] outline-none transition focus:border-[#0077b5] focus:ring-2 focus:ring-[#e8f4fd]"
+                  className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-[#0D1B2A] outline-none transition focus:border-[#1976D2] focus:ring-2 focus:ring-[#e8f4fd]"
                   placeholder="you@example.com"
                 />
               </div>
@@ -192,7 +192,7 @@ export default function SignupPage() {
                   required
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-[#0D1B2A] outline-none transition focus:border-[#0077b5] focus:ring-2 focus:ring-[#e8f4fd]"
+                  className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-[#0D1B2A] outline-none transition focus:border-[#1976D2] focus:ring-2 focus:ring-[#e8f4fd]"
                   placeholder="Min 8 characters"
                 />
               </div>
@@ -204,7 +204,7 @@ export default function SignupPage() {
                   required
                   value={form.confirm}
                   onChange={(e) => setForm({ ...form, confirm: e.target.value })}
-                  className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-[#0D1B2A] outline-none transition focus:border-[#0077b5] focus:ring-2 focus:ring-[#e8f4fd]"
+                  className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-[#0D1B2A] outline-none transition focus:border-[#1976D2] focus:ring-2 focus:ring-[#e8f4fd]"
                   placeholder="Repeat password"
                 />
               </div>
@@ -212,7 +212,7 @@ export default function SignupPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-xl bg-[#0077b5] py-3.5 text-sm font-extrabold text-white shadow-[0_16px_34px_rgba(0,119,181,0.30)] transition hover:bg-[#005d8f] active:scale-95 disabled:opacity-60"
+                className="w-full rounded-xl bg-[#1976D2] py-3.5 text-sm font-extrabold text-white shadow-[0_16px_34px_rgba(0,119,181,0.30)] transition hover:bg-[#1565C0] active:scale-95 disabled:opacity-60"
               >
                 {loading ? 'Creating account...' : 'Create Account'}
               </button>
@@ -221,7 +221,7 @@ export default function SignupPage() {
 
           <p className="mt-6 text-center text-sm text-slate-500">
             Already have an account?{' '}
-            <a href="/login" className="font-bold text-[#0077b5] hover:underline">
+            <a href="/login" className="font-bold text-[#1976D2] hover:underline">
               Sign in
             </a>
           </p>

@@ -243,7 +243,7 @@ export default function CompanyPublicProfilePage() {
                       <MaterialIcon
                         name={isFollowing ? 'check' : 'add'}
                         size={16}
-                        color={isFollowing ? '#0077b5' : '#fff'}
+                        color={isFollowing ? '#1976D2' : '#fff'}
                       />
                       {followLoading ? '…' : isFollowing ? 'Following' : 'Follow'}
                     </button>
@@ -253,7 +253,7 @@ export default function CompanyPublicProfilePage() {
                       onClick={handleMessage}
                       disabled={msgLoading}
                     >
-                      <MaterialIcon name="chat" size={16} color="#0077b5" />
+                      <MaterialIcon name="chat" size={16} color="#1976D2" />
                       {msgLoading ? 'Opening…' : 'Message'}
                     </button>
                   </div>
@@ -262,7 +262,7 @@ export default function CompanyPublicProfilePage() {
                 {/* Company info */}
                 <div className="cp-pub-info">
                   <div className="cp-pub-followers-row">
-                    <MaterialIcon name="people" size={14} color="#0077b5" />
+                    <MaterialIcon name="people" size={14} color="#1976D2" />
                     <span className="cp-pub-follower-count">{followerCount} followers</span>
                   </div>
 
@@ -290,7 +290,7 @@ export default function CompanyPublicProfilePage() {
                       rel="noopener noreferrer"
                       className="cp-pub-website"
                     >
-                      <MaterialIcon name="language" size={13} color="#0077b5" />
+                      <MaterialIcon name="language" size={13} color="#1976D2" />
                       {profile.website.replace(/^https?:\/\//, '')}
                     </a>
                   )}
@@ -306,7 +306,7 @@ export default function CompanyPublicProfilePage() {
                   onClick={() => setPostsOpen(v => !v)}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <MaterialIcon name="article" size={18} color="#0077b5" />
+                    <MaterialIcon name="article" size={18} color="#1976D2" />
                     <span className="cp-pub-section-title">Posts</span>
                     {posts.length > 0 && (
                       <span className="cp-pub-count-badge">{posts.length}</span>
@@ -393,7 +393,7 @@ export default function CompanyPublicProfilePage() {
                   <MaterialIcon
                     name={isFollowing ? 'check' : 'add'}
                     size={15}
-                    color={isFollowing ? '#0077b5' : '#fff'}
+                    color={isFollowing ? '#1976D2' : '#fff'}
                   />
                   {followLoading ? '…' : isFollowing ? 'Following' : 'Follow'}
                 </button>
@@ -425,12 +425,12 @@ export default function CompanyPublicProfilePage() {
                   )}
                   {profile.website && (
                     <div className="cp-pub-detail-row">
-                      <MaterialIcon name="language" size={15} color="#0077b5" />
+                      <MaterialIcon name="language" size={15} color="#1976D2" />
                       <a
                         href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{ color: '#0077b5', textDecoration: 'none', fontWeight: 600 }}
+                        style={{ color: '#1976D2', textDecoration: 'none', fontWeight: 600 }}
                       >
                         {profile.website.replace(/^https?:\/\//, '')}
                       </a>
@@ -459,20 +459,20 @@ const STYLES = `
 @media(min-width:900px){.cp-pub-root{grid-template-areas:"left-sidebar main";grid-template-columns:230px 1fr;grid-template-rows:1fr;}}
 
 .cp-pub-hdr-left{display:flex;align-items:center;gap:8px;}
-.cp-pub-brand{font-size:19px;font-weight:800;color:#0077b5;letter-spacing:-0.03em;font-family:'Inter',sans-serif;}
+.cp-pub-brand{font-size:19px;font-weight:800;color:#1976D2;letter-spacing:-0.03em;font-family:'Inter',sans-serif;}
 .cp-pub-back-btn{background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background .15s;color:#475569;}
 .cp-pub-back-btn:hover{background:#f1f5f9;}
 
 .cp-pub-sidebar-left{display:none;grid-area:left-sidebar;}
 @media(min-width:900px){.cp-pub-sidebar-left{display:flex;flex-direction:column;background:#fff;border-right:1px solid #e2e8f0;padding:24px 14px;position:sticky;top:0;height:100dvh;overflow-y:auto;}}
 .cp-pub-nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;border:none;background:transparent;color:#475569;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;text-align:left;width:100%;transition:background .15s,color .15s;}
-.cp-pub-nav-item:hover{background:#f0f9ff;color:#0077b5;}
+.cp-pub-nav-item:hover{background:#f0f9ff;color:#1976D2;}
 
 .cp-pub-main{grid-area:main;min-width:0;padding-top:8px;padding-bottom:70px;display:flex;flex-direction:column;gap:0;}
 @media(min-width:900px){.cp-pub-main{padding:24px 22px 40px;gap:14px;}}
 
 .cp-pub-loader{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:80px 20px;color:#94a3b8;font-size:14px;}
-.cp-pub-spinner{width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#0077b5;border-radius:50%;animation:cp-pub-spin .8s linear infinite;}
+.cp-pub-spinner{width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#1976D2;border-radius:50%;animation:cp-pub-spin .8s linear infinite;}
 
 .cp-pub-card{background:#fff;border-radius:0 0 24px 24px;overflow:visible;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 16px rgba(0,0,0,0.08);border:1px solid rgba(0,0,0,0.04);}
 @media(min-width:900px){.cp-pub-card{border-radius:20px;}}
@@ -480,7 +480,7 @@ const STYLES = `
 .cp-pub-cover{position:relative;margin:0;border-radius:20px 20px 0 0;overflow:hidden;height:130px;}
 @media(min-width:900px){.cp-pub-cover{height:160px;}}
 .cp-pub-cover-img{width:100%;height:100%;object-fit:cover;display:block;}
-.cp-pub-cover-ph{width:100%;height:100%;background:linear-gradient(135deg,#0f4c75 0%,#1b6ca8 30%,#0077b5 55%,#2196c4 80%,#4db8d9 100%);}
+.cp-pub-cover-ph{width:100%;height:100%;background:linear-gradient(135deg,#0f4c75 0%,#1b6ca8 30%,#1976D2 55%,#2196c4 80%,#4db8d9 100%);}
 
 .cp-pub-below-cover{display:flex;align-items:flex-end;justify-content:space-between;padding:0 18px;margin-top:-44px;margin-bottom:10px;position:relative;z-index:20;}
 @media(max-width:899px){.cp-pub-below-cover{flex-wrap:wrap;}.cp-pub-action-row{width:100%;padding-top:10px;}}
@@ -491,13 +491,13 @@ const STYLES = `
 @media(min-width:900px){.cp-pub-logo{width:96px;height:96px;}}
 .cp-pub-action-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 
-.cp-pub-btn-follow{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#0284c7,#0077b5);color:#fff;border:none;border-radius:999px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 3px 12px rgba(0,119,181,0.3);transition:all .15s;}
+.cp-pub-btn-follow{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#0284c7,#1976D2);color:#fff;border:none;border-radius:999px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 3px 12px rgba(0,119,181,0.3);transition:all .15s;}
 .cp-pub-btn-follow:hover{box-shadow:0 5px 18px rgba(0,119,181,0.4);}
 .cp-pub-btn-follow:active{transform:scale(.96);}
-.cp-pub-btn-follow.following{background:#fff;color:#0077b5;border:1.5px solid #bae6fd;box-shadow:0 2px 8px rgba(0,119,181,0.12);}
+.cp-pub-btn-follow.following{background:#fff;color:#1976D2;border:1.5px solid #bae6fd;box-shadow:0 2px 8px rgba(0,119,181,0.12);}
 .cp-pub-btn-follow.following:hover{background:#fff;}
 .cp-pub-btn-follow:disabled{opacity:.75;cursor:not-allowed;}
-.cp-pub-btn-message{display:flex;align-items:center;gap:6px;background:#fff;color:#0077b5;border:1.5px solid #bae6fd;border-radius:999px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 2px 8px rgba(0,119,181,0.12);transition:all .15s;}
+.cp-pub-btn-message{display:flex;align-items:center;gap:6px;background:#fff;color:#1976D2;border:1.5px solid #bae6fd;border-radius:999px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 2px 8px rgba(0,119,181,0.12);transition:all .15s;}
 .cp-pub-btn-message:hover{background:#f0f9ff;}
 .cp-pub-btn-message:active{transform:scale(.96);}
 .cp-pub-btn-message:disabled{opacity:.75;cursor:not-allowed;}
@@ -505,18 +505,18 @@ const STYLES = `
 .cp-pub-info{padding:2px 18px 18px 20px;display:flex;flex-direction:column;gap:7px;}
 @media(min-width:900px){.cp-pub-info{padding:4px 24px 22px;}}
 .cp-pub-followers-row{display:flex;align-items:center;gap:4px;}
-.cp-pub-follower-count{font-size:12px;font-weight:700;color:#0077b5;}
+.cp-pub-follower-count{font-size:12px;font-weight:700;color:#1976D2;}
 .cp-pub-name{font-size:22px;font-weight:800;line-height:1.15;color:#0f172a;letter-spacing:-0.03em;}
 @media(min-width:900px){.cp-pub-name{font-size:26px;}}
 .cp-pub-industry{font-size:13px;font-weight:500;color:#475569;display:flex;align-items:center;gap:5px;}
 .cp-pub-location{font-size:12px;color:#94a3b8;display:flex;align-items:center;gap:3px;}
-.cp-pub-website{font-size:12px;font-weight:600;color:#0077b5;text-decoration:none;display:flex;align-items:center;gap:4px;}
+.cp-pub-website{font-size:12px;font-weight:600;color:#1976D2;text-decoration:none;display:flex;align-items:center;gap:4px;}
 .cp-pub-website:hover{text-decoration:underline;}
 .cp-pub-bio{font-size:14px;color:#475569;line-height:1.7;}
 
 .cp-pub-section-card{background:#fff;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 14px rgba(0,0,0,0.07);border:1px solid rgba(0,0,0,0.04);overflow:hidden;}
 @media(max-width:899px){.cp-pub-section-card{margin:10px 12px 0;}}
-.cp-pub-accordion-hdr{width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 18px 12px;border-left:3px solid #0077b5;background:none;border-top:none;border-right:none;border-bottom:1px solid #f1f5f9;cursor:pointer;font-family:'Inter',sans-serif;text-align:left;transition:background .15s;}
+.cp-pub-accordion-hdr{width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 18px 12px;border-left:3px solid #1976D2;background:none;border-top:none;border-right:none;border-bottom:1px solid #f1f5f9;cursor:pointer;font-family:'Inter',sans-serif;text-align:left;transition:background .15s;}
 .cp-pub-accordion-hdr:hover{background:#f8fafc;}
 .cp-pub-section-title{font-size:15px;font-weight:700;color:#0f172a;}
 .cp-pub-count-badge{font-size:10px;font-weight:800;background:#f1f5f9;color:#64748b;border-radius:999px;padding:2px 8px;}
@@ -532,7 +532,7 @@ const STYLES = `
 .cp-pub-post-proposals{font-size:11px;color:#94a3b8;font-weight:600;margin-left:auto;}
 .cp-pub-post-title{font-size:14px;font-weight:700;color:#0f172a;line-height:1.4;margin-bottom:4px;}
 .cp-pub-post-desc{font-size:12px;color:#536279;line-height:1.5;margin-bottom:4px;}
-.cp-pub-post-budget{font-size:13px;font-weight:800;color:#0077b5;margin-bottom:4px;}
+.cp-pub-post-budget{font-size:13px;font-weight:800;color:#1976D2;margin-bottom:4px;}
 .cp-pub-post-skills{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
 .cp-pub-post-skill{font-size:10px;font-weight:600;background:#e0f2fe;color:#0369a1;border-radius:999px;padding:2px 9px;}
 
@@ -543,13 +543,13 @@ const STYLES = `
 .cp-pub-right-logo img{width:100%;height:100%;object-fit:cover;}
 .cp-pub-right-name{font-size:14px;font-weight:700;color:#0f172a;}
 .cp-pub-right-industry{font-size:12px;color:#64748b;}
-.cp-pub-right-followers{font-size:12px;font-weight:700;color:#0077b5;}
-.cp-pub-btn-follow-full{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;background:linear-gradient(135deg,#0284c7,#0077b5);color:#fff;border:none;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 3px 10px rgba(0,119,181,0.28);transition:all .15s;}
+.cp-pub-right-followers{font-size:12px;font-weight:700;color:#1976D2;}
+.cp-pub-btn-follow-full{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;background:linear-gradient(135deg,#0284c7,#1976D2);color:#fff;border:none;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 3px 10px rgba(0,119,181,0.28);transition:all .15s;}
 .cp-pub-btn-follow-full:hover{transform:translateY(-1px);}
-.cp-pub-btn-follow-full.following{background:#fff;color:#0077b5;border:1.5px solid #bae6fd;box-shadow:0 2px 8px rgba(0,119,181,0.12);}
+.cp-pub-btn-follow-full.following{background:#fff;color:#1976D2;border:1.5px solid #bae6fd;box-shadow:0 2px 8px rgba(0,119,181,0.12);}
 .cp-pub-btn-follow-full.following:hover{background:#fff;}
 .cp-pub-btn-follow-full:disabled{opacity:.7;cursor:not-allowed;}
-.cp-pub-btn-msg-full{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;background:#fff;color:#0077b5;border:1.5px solid #bae6fd;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 2px 8px rgba(0,119,181,0.12);transition:all .15s;margin-top:2px;}
+.cp-pub-btn-msg-full{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;background:#fff;color:#1976D2;border:1.5px solid #bae6fd;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 2px 8px rgba(0,119,181,0.12);transition:all .15s;margin-top:2px;}
 .cp-pub-btn-msg-full:hover{background:#f0f9ff;transform:translateY(-1px);}
 .cp-pub-btn-msg-full:disabled{opacity:.7;cursor:not-allowed;}
 .cp-pub-details-card{background:#fff;border-radius:16px;padding:14px;border:1px solid #e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,0.05);}

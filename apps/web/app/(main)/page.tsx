@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
@@ -303,7 +303,7 @@ export default function HomePage() {
     return (
       <main className="min-h-screen bg-[linear-gradient(180deg,#faf9f6_0%,#f3f4ef_100%)] px-6 py-24 text-[#1b1c1a]">
         <div className="mx-auto max-w-3xl rounded-[28px] border border-[#e3e2df] bg-white/90 p-8 shadow-[0_20px_60px_rgba(27,28,26,0.08)] backdrop-blur">
-          <div className="inline-flex items-center gap-2 rounded-full bg-[#e8f1f8] px-4 py-2 text-sm font-semibold text-[#005d8f]">
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#E3F2FD] px-4 py-2 text-sm font-semibold text-[#1565C0]">
             <BoltIcon />
             Xwite Home
           </div>
@@ -316,7 +316,7 @@ export default function HomePage() {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               href="/login"
-              className="inline-flex items-center justify-center rounded-full bg-[#005d8f] px-6 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(0,93,143,0.2)] transition hover:bg-[#0b6ea3]"
+              className="inline-flex items-center justify-center rounded-full bg-[#1565C0] px-6 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(21,101,192,0.2)] transition hover:bg-[#1565C0]"
             >
               Login
             </Link>
@@ -362,15 +362,15 @@ export default function HomePage() {
         <aside className="hidden space-y-4 lg:col-span-3 lg:block">
           <div className="overflow-hidden rounded-xl border border-[#e2e8f0] bg-white shadow-sm">
             <div
-              className="h-14 bg-[linear-gradient(90deg,rgba(0,93,143,0.2),rgba(69,97,122,0.2))]"
+              className="h-14 bg-[linear-gradient(90deg,rgba(21,101,192,0.2),rgba(69,97,122,0.2))]"
               style={coverImage ? { backgroundImage: `url(${coverImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
             />
             <div className="-mt-8 px-4 pb-5 text-center">
-              <div className="mx-auto flex h-20 w-20 items-center justify-center overflow-hidden rounded-xl border-4 border-white bg-[#edf5fb]">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center overflow-hidden rounded-xl border-4 border-white bg-[#E3F2FD]">
                 {profileImage ? (
                   <img src={profileImage} alt={displayName} className="h-full w-full object-cover" />
                 ) : (
-                  <span className="text-2xl font-extrabold text-[#005d8f]">{getInitials(displayName)}</span>
+                  <span className="text-2xl font-extrabold text-[#1565C0]">{getInitials(displayName)}</span>
                 )}
               </div>
 
@@ -380,15 +380,15 @@ export default function HomePage() {
               <div className="mt-4 space-y-2 border-t border-[#e9e8e5] pt-3 text-left text-xs">
                 <div className="flex justify-between">
                   <span className="text-[#404850]">Role</span>
-                  <span className="font-bold text-[#005d8f]">{formatRole(user.role)}</span>
+                  <span className="font-bold text-[#1565C0]">{formatRole(user.role)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#404850]">Visible Posts</span>
-                  <span className="font-bold text-[#005d8f]">{visiblePosts.length}</span>
+                  <span className="font-bold text-[#1565C0]">{visiblePosts.length}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#404850]">Responses</span>
-                  <span className="font-bold text-[#005d8f]">{totalResponses}</span>
+                  <span className="font-bold text-[#1565C0]">{totalResponses}</span>
                 </div>
               </div>
             </div>
@@ -400,7 +400,7 @@ export default function HomePage() {
               <div className="mt-3 flex flex-wrap gap-2">
                 {skills.length ? (
                   skills.map((skill: string) => (
-                    <span key={skill} className="rounded-full bg-[#c3e0fe] px-3 py-1 text-[10px] font-bold uppercase text-[#48647d]">
+                    <span key={skill} className="rounded-full bg-[#BBDEFB] px-3 py-1 text-[10px] font-bold uppercase text-[#1565C0]">
                       {skill}
                     </span>
                   ))
@@ -503,8 +503,8 @@ export default function HomePage() {
                   <div key={skill} className="flex items-center gap-2">
                     <span className="w-4 shrink-0 text-[10px] font-bold text-[#b0b8c4]">#{idx + 1}</span>
                     <div className="flex flex-1 items-center justify-between overflow-hidden rounded-lg bg-[#f4f7fa] px-3 py-1.5">
-                      <span className="truncate text-[11px] font-bold uppercase text-[#1b3a52]">{skill}</span>
-                      <span className="ml-2 shrink-0 rounded-full bg-[#005d8f]/10 px-2 py-0.5 text-[10px] font-extrabold text-[#005d8f]">
+                      <span className="truncate text-[11px] font-bold uppercase text-[#0D47A1]">{skill}</span>
+                      <span className="ml-2 shrink-0 rounded-full bg-[#1565C0]/10 px-2 py-0.5 text-[10px] font-extrabold text-[#1565C0]">
                         {count} {count === 1 ? 'post' : 'posts'}
                       </span>
                     </div>
@@ -514,7 +514,7 @@ export default function HomePage() {
             ) : skills.length ? (
               <div className="mt-3 flex flex-wrap gap-2">
                 {skills.map((skill: string) => (
-                  <span key={skill} className="rounded-full bg-[#c3e0fe] px-3 py-1 text-[10px] font-bold uppercase text-[#48647d]">
+                  <span key={skill} className="rounded-full bg-[#BBDEFB] px-3 py-1 text-[10px] font-bold uppercase text-[#1565C0]">
                     {skill}
                   </span>
                 ))}
@@ -543,7 +543,7 @@ export default function HomePage() {
                       <div
                         key={liker.id}
                         style={{ marginLeft: i === 0 ? 0 : -10, zIndex: i, position: 'relative' }}
-                        className="h-10 w-10 shrink-0 overflow-hidden rounded-full border-2 border-white bg-[#c3e0fe] flex items-center justify-center text-xs font-bold text-[#005d8f]"
+                        className="h-10 w-10 shrink-0 overflow-hidden rounded-full border-2 border-white bg-[#BBDEFB] flex items-center justify-center text-xs font-bold text-[#1565C0]"
                       >
                         {liker.image
                           ? <img src={liker.image} alt={liker.name} className="h-full w-full object-cover" />
@@ -601,7 +601,7 @@ export default function HomePage() {
                         onClick={() => { setShowLikersModal(false); liker.id && router.push(`/profile/${liker.id}`) }}
                         className="flex w-full items-center gap-3 rounded-lg bg-[#f4f3f0] p-3 text-left transition hover:bg-[#ece9e2]"
                       >
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#c3e0fe] text-sm font-bold text-[#005d8f]">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#BBDEFB] text-sm font-bold text-[#1565C0]">
                           {liker.image ? (
                             <img src={liker.image} alt={liker.name} className="h-full w-full object-cover" />
                           ) : (
@@ -633,9 +633,9 @@ export default function HomePage() {
                       key={suggestion.id}
                       type="button"
                       onClick={() => suggestion.id && router.push(`/profile/${suggestion.id}`)}
-                      className="flex w-full items-center gap-3 rounded-lg bg-[#f8fafc] p-3 text-left transition hover:bg-[#edf5fb]"
+                      className="flex w-full items-center gap-3 rounded-lg bg-[#f8fafc] p-3 text-left transition hover:bg-[#E3F2FD]"
                     >
-                      <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-[#dceefc] text-sm font-bold text-[#005d8f]">
+                      <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-[#BBDEFB] text-sm font-bold text-[#1565C0]">
                         {suggestion.image ? (
                           <img src={suggestion.image} alt={suggestion.name} className="h-full w-full object-cover" />
                         ) : (
@@ -658,7 +658,7 @@ export default function HomePage() {
             </div>
             {peopleYouMayKnow.length > 3 ? (
               <div className="mt-4 border-t border-[#ece9e2] pt-3">
-                <Link href="/network?section=overview" className="text-[11px] font-bold text-[#005d8f] hover:underline">
+                <Link href="/network?section=overview" className="text-[11px] font-bold text-[#1565C0] hover:underline">
                   See all in Network
                 </Link>
               </div>

@@ -150,7 +150,7 @@ const STYLES = `
 .pp-client-grid{display:grid;grid-template-columns:1fr;gap:16px;align-items:start;}
 .pp-client-side{display:flex;flex-direction:column;gap:16px;}
 @media(min-width:960px){.pp-client-grid{grid-template-columns:minmax(0,1fr) 300px;}}
-.pp-section-hdr{display:flex;align-items:center;justify-content:space-between;padding:15px 20px 12px;border-bottom:1px solid #f1f5f9;border-left:3px solid #0077b5;}
+.pp-section-hdr{display:flex;align-items:center;justify-content:space-between;padding:15px 20px 12px;border-bottom:1px solid #f1f5f9;border-left:3px solid #1976D2;}
 .pp-section-title{font-size:14px;font-weight:700;color:#0f172a;font-family:'Inter',sans-serif;letter-spacing:-0.01em;}
 .pp-section-body{padding:16px 20px 20px;}
 
@@ -168,23 +168,23 @@ const STYLES = `
 
 /* ── buttons ── */
 .pp-actions{display:flex;align-items:center;gap:10px;}
-.pp-btn-connect{display:flex;align-items:center;gap:7px;background:linear-gradient(135deg,#0284c7,#0077b5);color:#fff;border:none;padding:11px 22px;border-radius:999px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 3px 14px rgba(0,119,181,0.38);transition:transform .15s,box-shadow .15s;}
+.pp-btn-connect{display:flex;align-items:center;gap:7px;background:linear-gradient(135deg,#0284c7,#1976D2);color:#fff;border:none;padding:11px 22px;border-radius:999px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 3px 14px rgba(0,119,181,0.38);transition:transform .15s,box-shadow .15s;}
 .pp-btn-connect:hover:not(:disabled){box-shadow:0 5px 20px rgba(0,119,181,0.48);transform:translateY(-1px);}
 .pp-btn-connect:active:not(:disabled){transform:scale(.96);}
 .pp-btn-connect.pending{background:#f1f5f9;color:#64748b;box-shadow:none;border:1.5px solid #cbd5e1;cursor:default;}
 .pp-btn-connect.connected{background:linear-gradient(135deg,#d1fae5,#dcfce7);color:#15803d;box-shadow:none;border:1.5px solid #86efac;cursor:default;}
-.pp-btn-follow{display:flex;align-items:center;gap:7px;background:transparent;color:#0077b5;border:1.5px solid #0077b5;padding:10px 20px;border-radius:999px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;}
+.pp-btn-follow{display:flex;align-items:center;gap:7px;background:transparent;color:#1976D2;border:1.5px solid #1976D2;padding:10px 20px;border-radius:999px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;}
 .pp-btn-follow:hover:not(:disabled):not(.following){background:#e8f4fd;transform:translateY(-1px);}
 .pp-btn-follow.following{background:#f0f9ff;color:#0369a1;border-color:#bae6fd;}
 
 /* ── profile info ── */
 .pp-info{padding:4px 24px 24px;display:flex;flex-direction:column;gap:8px;}
 .pp-conn-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
-.pp-conn-count{font-size:12px;font-weight:700;color:#0077b5;display:flex;align-items:center;gap:4px;}
-.pp-followers-btn{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:#0077b5;cursor:pointer;background:none;border:none;padding:0;font-family:'Inter',sans-serif;}
+.pp-conn-count{font-size:12px;font-weight:700;color:#1976D2;display:flex;align-items:center;gap:4px;}
+.pp-followers-btn{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:#1976D2;cursor:pointer;background:none;border:none;padding:0;font-family:'Inter',sans-serif;}
 .pp-followers-btn:hover{text-decoration:underline;}
 .pp-name{font-size:26px;font-weight:800;line-height:1.15;color:#0f172a;letter-spacing:-0.03em;font-family:'Inter',sans-serif;}
-.pp-subtitle{font-size:14px;font-weight:600;color:#0077b5;margin-top:2px;}
+.pp-subtitle{font-size:14px;font-weight:600;color:#1976D2;margin-top:2px;}
 .pp-level{color:#475569;font-weight:700;}
 .pp-location{font-size:12px;color:#94a3b8;display:flex;align-items:center;gap:3px;margin-top:2px;}
 .pp-bio{font-size:14px;color:#475569;line-height:1.75;}
@@ -198,30 +198,30 @@ const STYLES = `
 .pp-rate-chip{display:flex;flex-direction:column;gap:2px;background:linear-gradient(135deg,#f8fafc,#f0f9ff);border:1px solid #bae6fd;padding:8px 14px;border-radius:12px;}
 .pp-rate-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#64748b;}
 .pp-rate-val{font-size:15px;font-weight:800;color:#0f172a;}
-.pp-portfolio-link{display:flex;align-items:center;gap:8px;color:#0077b5;text-decoration:none;font-size:13px;font-weight:600;padding:9px 14px;background:linear-gradient(135deg,#f0f9ff,#e8f4fd);border-radius:12px;border:1px solid #bae6fd;transition:all .15s;}
+.pp-portfolio-link{display:flex;align-items:center;gap:8px;color:#1976D2;text-decoration:none;font-size:13px;font-weight:600;padding:9px 14px;background:linear-gradient(135deg,#f0f9ff,#e8f4fd);border-radius:12px;border:1px solid #bae6fd;transition:all .15s;}
 .pp-portfolio-link:hover{background:linear-gradient(135deg,#e8f4fd,#dbeffe);transform:translateY(-1px);}
 
 /* ── company ── */
 .pp-company-name{font-size:28px;font-weight:800;line-height:1.15;color:#0f172a;letter-spacing:-0.03em;}
-.pp-industry{font-size:14px;font-weight:600;color:#0077b5;margin-top:3px;display:flex;align-items:center;gap:5px;}
+.pp-industry{font-size:14px;font-weight:600;color:#1976D2;margin-top:3px;display:flex;align-items:center;gap:5px;}
 .pp-badges-row{display:flex;flex-wrap:wrap;gap:7px;align-items:center;}
 .pp-badge{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:999px;font-size:11px;font-weight:600;}
 .pp-badge-emp{background:#eff6ff;color:#0369a1;border:1px solid #bae6fd;}
-.pp-badge-web{background:#f8fafc;color:#0077b5;border:1px solid #e2e8f0;text-decoration:none;}
+.pp-badge-web{background:#f8fafc;color:#1976D2;border:1px solid #e2e8f0;text-decoration:none;}
 .pp-badge-web:hover{background:#e8f4fd;}
 .pp-description{font-size:14px;color:#475569;line-height:1.75;}
 .pp-detail-row{display:flex;align-items:baseline;justify-content:space-between;padding:11px 0;border-bottom:1px solid #f8fafc;gap:12px;}
 .pp-detail-row:last-child{border-bottom:none;}
 .pp-detail-lbl{font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;flex-shrink:0;}
 .pp-detail-val{font-size:14px;font-weight:500;color:#0f172a;text-align:right;}
-.pp-detail-link{font-size:14px;font-weight:500;color:#0077b5;text-align:right;text-decoration:none;}
+.pp-detail-link{font-size:14px;font-weight:500;color:#1976D2;text-align:right;text-decoration:none;}
 .pp-detail-link:hover{text-decoration:underline;}
 .pp-skill-chip{padding:7px 15px;border-radius:999px;background:linear-gradient(135deg,#eff6ff,#e0f2fe);color:#0369a1;font-size:13px;font-weight:600;border:1px solid #bae6fd;}
 
 /* ── timeline ── */
 .pp-timeline{display:flex;flex-direction:column;gap:18px;}
 .pp-tl-item{display:flex;gap:14px;align-items:flex-start;}
-.pp-tl-dot{width:10px;height:10px;border-radius:50%;background:#0077b5;flex-shrink:0;margin-top:5px;box-shadow:0 0 0 3px rgba(0,119,181,0.15);}
+.pp-tl-dot{width:10px;height:10px;border-radius:50%;background:#1976D2;flex-shrink:0;margin-top:5px;box-shadow:0 0 0 3px rgba(0,119,181,0.15);}
 .pp-tl-body{flex:1;min-width:0;}
 .pp-tl-title{font-size:14px;font-weight:700;color:#0f172a;}
 .pp-tl-sub{font-size:12px;color:#64748b;margin-top:3px;}
@@ -240,7 +240,7 @@ const STYLES = `
 
 /* ── spinners ── */
 .pp-spin{width:15px;height:15px;border-radius:50%;border:2.5px solid rgba(255,255,255,0.3);border-top-color:#fff;animation:pp-spin .7s linear infinite;display:inline-block;flex-shrink:0;}
-.pp-spin-blue{width:15px;height:15px;border-radius:50%;border:2.5px solid rgba(0,119,181,0.2);border-top-color:#0077b5;animation:pp-spin .7s linear infinite;display:inline-block;flex-shrink:0;}
+.pp-spin-blue{width:15px;height:15px;border-radius:50%;border:2.5px solid rgba(0,119,181,0.2);border-top-color:#1976D2;animation:pp-spin .7s linear infinite;display:inline-block;flex-shrink:0;}
 
 /* ── followers drawer ── */
 .pp-overlay{position:fixed;inset:0;z-index:900;background:rgba(15,23,42,0.5);backdrop-filter:blur(4px);}
@@ -476,7 +476,7 @@ function FreelancerView({ profile, posts, completedTasks, connectState, connecti
         </div>
         <div className="pp-info">
           <p className="pp-conn-count">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="#0077b5"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="#1976D2"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
             {connectionsCount.toLocaleString()} connections
           </p>
           <div>
@@ -506,7 +506,7 @@ function FreelancerView({ profile, posts, completedTasks, connectState, connecti
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {portfolioLinks.map((p: any, i: number) => (
                 <a key={i} href={p.url} target="_blank" rel="noopener noreferrer" className="pp-portfolio-link">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="#0077b5"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="#1976D2"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
                   <span>{p.label || p.url}</span>
                 </a>
               ))}
@@ -631,11 +631,11 @@ function CompanyView({ profile, posts, connectState, followState, connectionsCou
         <div className="pp-info">
           <div className="pp-conn-row">
             <p className="pp-conn-count">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="#0077b5"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="#1976D2"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
               {connectionsCount.toLocaleString()} connections
             </p>
             <button className="pp-followers-btn" onClick={onOpenFollowers}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="#0077b5"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="#1976D2"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
               {followersCount.toLocaleString()} followers
             </button>
           </div>
@@ -718,7 +718,7 @@ function ClientView({ profile, posts, connectState, connectionsCount, onConnect 
             </div>
             <div className="pp-info">
               <p className="pp-conn-count">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="#0077b5"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="#1976D2"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
                 {connectionsCount.toLocaleString()} connections
               </p>
               <div>

@@ -122,14 +122,14 @@ function ProposalCard({
       borderRadius: 20,
       padding: '18px 20px',
       maxWidth: 460,
-      boxShadow: '0 4px 16px rgba(0,93,143,0.07)',
+      boxShadow: '0 4px 16px rgba(21,101,192,0.07)',
     }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
         <div style={{
           width: 38, height: 38, borderRadius: '50%', background: '#e8f4fd',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 13, fontWeight: 700, color: '#005d8f', flexShrink: 0, overflow: 'hidden',
+          fontSize: 13, fontWeight: 700, color: '#1565C0', flexShrink: 0, overflow: 'hidden',
         }}>
           {payload.freelancerName ? getInitials(payload.freelancerName) : '?'}
         </div>
@@ -169,7 +169,7 @@ function ProposalCard({
             type="button"
             onClick={() => setExpanded((e) => !e)}
             style={{
-              marginTop: 6, fontSize: 12, color: '#0077b5', fontWeight: 600,
+              marginTop: 6, fontSize: 12, color: '#1976D2', fontWeight: 600,
               background: 'none', border: 'none', cursor: 'pointer', padding: 0,
             }}
           >
@@ -200,7 +200,7 @@ function ProposalCard({
             disabled={accepting || rejecting}
             style={{
               flex: 1, minWidth: 100, padding: '9px 16px',
-              background: 'linear-gradient(135deg,#005d8f 0%,#0077b5 100%)',
+              background: 'linear-gradient(135deg,#1565C0 0%,#1976D2 100%)',
               color: 'white', border: 'none', borderRadius: 12,
               fontSize: 13, fontWeight: 700, cursor: 'pointer',
               opacity: accepting || rejecting ? 0.65 : 1,
@@ -213,8 +213,8 @@ function ProposalCard({
             target="_blank"
             style={{
               flex: 1, minWidth: 100, padding: '9px 16px',
-              background: '#f0f7ff', color: '#005d8f',
-              border: '1.5px solid #bdd8f0', borderRadius: 12,
+              background: '#f0f7ff', color: '#1565C0',
+              border: '1.5px solid #90CAF9', borderRadius: 12,
               fontSize: 13, fontWeight: 700, textDecoration: 'none',
               textAlign: 'center', display: 'inline-block',
             }}
@@ -246,8 +246,8 @@ function ProposalCard({
             target="_blank"
             style={{
               flex: 1, padding: '9px 16px',
-              background: '#f0f7ff', color: '#005d8f',
-              border: '1.5px solid #bdd8f0', borderRadius: 12,
+              background: '#f0f7ff', color: '#1565C0',
+              border: '1.5px solid #90CAF9', borderRadius: 12,
               fontSize: 13, fontWeight: 700, textDecoration: 'none',
               textAlign: 'center', display: 'inline-block',
             }}
@@ -459,12 +459,12 @@ export default function ConversationPage() {
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#707881]">Messages</p>
-            <h1 className="mt-2 text-3xl font-extrabold text-[#005d8f]">{otherParticipantName}</h1>
+            <h1 className="mt-2 text-3xl font-extrabold text-[#1565C0]">{otherParticipantName}</h1>
           </div>
           <button
             type="button"
             onClick={() => router.push('/messages')}
-            className="rounded-full border border-[#d6dce3] bg-white px-4 py-2 text-sm font-bold text-[#005d8f] transition hover:bg-[#f4f8fb]"
+            className="rounded-full border border-[#d6dce3] bg-white px-4 py-2 text-sm font-bold text-[#1565C0] transition hover:bg-[#f4f8fb]"
           >
             ← Back to inbox
           </button>
@@ -491,14 +491,14 @@ export default function ConversationPage() {
                       <div>
                         {!isOwn && (
                           <div className="mb-2 flex items-center gap-2">
-                            <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-[#e8f1f8] text-[11px] font-bold text-[#005d8f]">
+                            <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-[#E3F2FD] text-[11px] font-bold text-[#1565C0]">
                               {message.senderProfileImage ? (
                                 <img src={message.senderProfileImage} alt={message.senderName} className="h-full w-full object-cover" />
                               ) : (
                                 getInitials(message.senderName)
                               )}
                             </div>
-                            <span className="text-xs font-bold text-[#005d8f]">{message.senderName}</span>
+                            <span className="text-xs font-bold text-[#1565C0]">{message.senderName}</span>
                           </div>
                         )}
                         <ProposalCard
@@ -524,20 +524,20 @@ export default function ConversationPage() {
                     <div
                       className={`max-w-[85%] rounded-[22px] px-4 py-3 shadow-sm md:max-w-[70%] ${
                         isOwn
-                          ? 'bg-[linear-gradient(135deg,#005d8f_0%,#0077b5_100%)] text-white'
+                          ? 'bg-[linear-gradient(135deg,#1565C0_0%,#1976D2_100%)] text-white'
                           : 'border border-[#e5e7eb] bg-white text-[#1b1c1a]'
                       }`}
                     >
                       {!isOwn && (
                         <div className="mb-2 flex items-center gap-2">
-                          <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-[#e8f1f8] text-[11px] font-bold text-[#005d8f]">
+                          <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-[#E3F2FD] text-[11px] font-bold text-[#1565C0]">
                             {message.senderProfileImage ? (
                               <img src={message.senderProfileImage} alt={message.senderName} className="h-full w-full object-cover" />
                             ) : (
                               getInitials(message.senderName)
                             )}
                           </div>
-                          <span className="text-xs font-bold text-[#005d8f]">{message.senderName}</span>
+                          <span className="text-xs font-bold text-[#1565C0]">{message.senderName}</span>
                         </div>
                       )}
                       <p className="whitespace-pre-wrap text-sm leading-6">{message.content}</p>
@@ -566,7 +566,7 @@ export default function ConversationPage() {
                 }}
                 rows={3}
                 disabled={isChatLocked}
-                className="min-h-[96px] flex-1 resize-none rounded-2xl border border-[#d6dce3] bg-[#fafbfc] px-4 py-3 text-sm text-[#1b1c1a] outline-none transition focus:border-[#0077b5] focus:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+                className="min-h-[96px] flex-1 resize-none rounded-2xl border border-[#d6dce3] bg-[#fafbfc] px-4 py-3 text-sm text-[#1b1c1a] outline-none transition focus:border-[#1976D2] focus:bg-white disabled:cursor-not-allowed disabled:opacity-50"
                 placeholder="Write your message here… (Enter to send, Shift+Enter for new line)"
               />
 
@@ -575,14 +575,14 @@ export default function ConversationPage() {
                   type="button"
                   onClick={() => void sendMessage()}
                   disabled={sending || !draft.trim() || isChatLocked}
-                  className="rounded-2xl bg-[linear-gradient(135deg,#005d8f_0%,#0077b5_100%)] px-5 py-3 text-sm font-bold text-white shadow-[0_12px_28px_rgba(0,93,143,0.22)] transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="rounded-2xl bg-[linear-gradient(135deg,#1565C0_0%,#1976D2_100%)] px-5 py-3 text-sm font-bold text-white shadow-[0_12px_28px_rgba(21,101,192,0.22)] transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {sending ? 'Sending…' : 'Send message'}
                 </button>
 
                 <Link
                   href="/messages"
-                  className="rounded-2xl border border-[#d6dce3] px-5 py-3 text-center text-sm font-bold text-[#005d8f] transition hover:bg-[#f4f8fb]"
+                  className="rounded-2xl border border-[#d6dce3] px-5 py-3 text-center text-sm font-bold text-[#1565C0] transition hover:bg-[#f4f8fb]"
                 >
                   View inbox
                 </Link>

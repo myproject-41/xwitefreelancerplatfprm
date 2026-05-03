@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { Suspense } from 'react'
 import { useEffect, useState } from 'react'
@@ -46,7 +46,7 @@ function getInitials(name: string) {
 function Avatar({ name, image, size = 'md' }: { name: string; image: string | null; size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' }) {
   const sz = { xs: 'w-8 h-8 text-xs', sm: 'w-10 h-10 text-sm', md: 'w-12 h-12 text-sm', lg: 'w-14 h-14 text-base', xl: 'w-20 h-20 text-xl' }[size]
   return (
-    <div className={`${sz} rounded-full overflow-hidden bg-[#c3e0fe] flex items-center justify-center shrink-0 border-2 border-white shadow-sm font-bold text-[#005d8f]`}>
+    <div className={`${sz} rounded-full overflow-hidden bg-[#BBDEFB] flex items-center justify-center shrink-0 border-2 border-white shadow-sm font-bold text-[#1565C0]`}>
       {image ? (
         <img src={image} alt={name} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
       ) : (
@@ -121,8 +121,8 @@ const Icons = {
 
 // ── Gradient banners per index ─────────────────────────────────────────────────
 const CARD_GRADIENTS = [
-  'from-[#cde5ff] to-[#0077b5]',
-  'from-[#c3e0fe] to-[#45617a]',
+  'from-[#cde5ff] to-[#1976D2]',
+  'from-[#BBDEFB] to-[#45617a]',
   'from-[#ffdcc0] to-[#a85f00]',
 ]
 
@@ -163,17 +163,17 @@ function CreateGroupModal({ onClose }: { onClose: () => void }) {
         <div className="p-5 space-y-4">
           <div>
             <label className="text-xs font-bold text-[#404850] block mb-1">Group Name *</label>
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. React Developers India" className="w-full rounded-lg border border-[#bfc7d1] px-3 py-2.5 text-sm text-[#1b1c1a] outline-none focus:border-[#005d8f] focus:ring-1 focus:ring-[#005d8f]/30" />
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. React Developers India" className="w-full rounded-lg border border-[#bfc7d1] px-3 py-2.5 text-sm text-[#1b1c1a] outline-none focus:border-[#1565C0] focus:ring-1 focus:ring-[#1565C0]/30" />
           </div>
           <div>
             <label className="text-xs font-bold text-[#404850] block mb-1">Description</label>
-            <textarea value={desc} onChange={(e) => setDesc(e.target.value)} rows={3} placeholder="What is this group about?" className="w-full rounded-lg border border-[#bfc7d1] px-3 py-2.5 text-sm text-[#1b1c1a] outline-none focus:border-[#005d8f] focus:ring-1 focus:ring-[#005d8f]/30 resize-none" />
+            <textarea value={desc} onChange={(e) => setDesc(e.target.value)} rows={3} placeholder="What is this group about?" className="w-full rounded-lg border border-[#bfc7d1] px-3 py-2.5 text-sm text-[#1b1c1a] outline-none focus:border-[#1565C0] focus:ring-1 focus:ring-[#1565C0]/30 resize-none" />
           </div>
-          <p className="bg-[#c3e0fe]/30 rounded-lg p-3 text-xs text-[#005d8f]">Your connections and followers will be able to join this group.</p>
+          <p className="bg-[#BBDEFB]/30 rounded-lg p-3 text-xs text-[#1565C0]">Your connections and followers will be able to join this group.</p>
         </div>
         <div className="px-5 pb-5 flex gap-3">
           <button onClick={onClose} className="flex-1 py-2.5 rounded-full border border-[#bfc7d1] text-[#404850] text-sm font-bold hover:bg-[#efeeeb] transition">Cancel</button>
-          <button onClick={() => { if (!name.trim()) return toast.error('Name required'); setLoading(true); setTimeout(() => { toast.success(`Group "${name}" created!`); setLoading(false); onClose() }, 800) }} disabled={loading} className="flex-1 py-2.5 rounded-full bg-[#005d8f] text-white text-sm font-bold disabled:opacity-60 transition">{loading ? 'Creating…' : 'Create Group'}</button>
+          <button onClick={() => { if (!name.trim()) return toast.error('Name required'); setLoading(true); setTimeout(() => { toast.success(`Group "${name}" created!`); setLoading(false); onClose() }, 800) }} disabled={loading} className="flex-1 py-2.5 rounded-full bg-[#1565C0] text-white text-sm font-bold disabled:opacity-60 transition">{loading ? 'Creating…' : 'Create Group'}</button>
         </div>
       </div>
     </div>
@@ -196,30 +196,30 @@ function CreateEventModal({ onClose }: { onClose: () => void }) {
         <div className="p-5 space-y-4">
           <div>
             <label className="text-xs font-bold text-[#404850] block mb-1">Event Name *</label>
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. AI Design Summit 2026" className="w-full rounded-lg border border-[#bfc7d1] px-3 py-2.5 text-sm text-[#1b1c1a] outline-none focus:border-[#005d8f] focus:ring-1 focus:ring-[#005d8f]/30" />
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. AI Design Summit 2026" className="w-full rounded-lg border border-[#bfc7d1] px-3 py-2.5 text-sm text-[#1b1c1a] outline-none focus:border-[#1565C0] focus:ring-1 focus:ring-[#1565C0]/30" />
           </div>
           <div>
             <label className="text-xs font-bold text-[#404850] block mb-1">Date & Time *</label>
-            <input type="datetime-local" value={date} onChange={(e) => setDate(e.target.value)} className="w-full rounded-lg border border-[#bfc7d1] px-3 py-2.5 text-sm text-[#1b1c1a] outline-none focus:border-[#005d8f] focus:ring-1 focus:ring-[#005d8f]/30" />
+            <input type="datetime-local" value={date} onChange={(e) => setDate(e.target.value)} className="w-full rounded-lg border border-[#bfc7d1] px-3 py-2.5 text-sm text-[#1b1c1a] outline-none focus:border-[#1565C0] focus:ring-1 focus:ring-[#1565C0]/30" />
           </div>
           <div>
             <label className="text-xs font-bold text-[#404850] block mb-2">Event Type</label>
             <div className="flex gap-2">
               {(['virtual', 'physical'] as const).map((t) => (
-                <button key={t} onClick={() => setType(t)} className={`flex-1 py-2 rounded-full text-sm font-bold border-2 transition ${type === t ? 'border-[#005d8f] bg-[#005d8f]/5 text-[#005d8f]' : 'border-[#bfc7d1] text-[#404850]'}`}>{t === 'virtual' ? 'Virtual' : 'In-Person'}</button>
+                <button key={t} onClick={() => setType(t)} className={`flex-1 py-2 rounded-full text-sm font-bold border-2 transition ${type === t ? 'border-[#1565C0] bg-[#1565C0]/5 text-[#1565C0]' : 'border-[#bfc7d1] text-[#404850]'}`}>{t === 'virtual' ? 'Virtual' : 'In-Person'}</button>
               ))}
             </div>
           </div>
           {type === 'physical' && (
             <div>
               <label className="text-xs font-bold text-[#404850] block mb-1">Location</label>
-              <input type="text" value={loc} onChange={(e) => setLoc(e.target.value)} placeholder="City, Venue" className="w-full rounded-lg border border-[#bfc7d1] px-3 py-2.5 text-sm text-[#1b1c1a] outline-none focus:border-[#005d8f] focus:ring-1 focus:ring-[#005d8f]/30" />
+              <input type="text" value={loc} onChange={(e) => setLoc(e.target.value)} placeholder="City, Venue" className="w-full rounded-lg border border-[#bfc7d1] px-3 py-2.5 text-sm text-[#1b1c1a] outline-none focus:border-[#1565C0] focus:ring-1 focus:ring-[#1565C0]/30" />
             </div>
           )}
         </div>
         <div className="px-5 pb-5 flex gap-3">
           <button onClick={onClose} className="flex-1 py-2.5 rounded-full border border-[#bfc7d1] text-[#404850] text-sm font-bold hover:bg-[#efeeeb] transition">Cancel</button>
-          <button onClick={() => { if (!name.trim()) return toast.error('Name required'); if (!date) return toast.error('Date required'); setLoading(true); setTimeout(() => { toast.success(`Event "${name}" created!`); setLoading(false); onClose() }, 800) }} disabled={loading} className="flex-1 py-2.5 rounded-full bg-[#005d8f] text-white text-sm font-bold disabled:opacity-60 transition">{loading ? 'Creating…' : 'Create Event'}</button>
+          <button onClick={() => { if (!name.trim()) return toast.error('Name required'); if (!date) return toast.error('Date required'); setLoading(true); setTimeout(() => { toast.success(`Event "${name}" created!`); setLoading(false); onClose() }, 800) }} disabled={loading} className="flex-1 py-2.5 rounded-full bg-[#1565C0] text-white text-sm font-bold disabled:opacity-60 transition">{loading ? 'Creating…' : 'Create Event'}</button>
         </div>
       </div>
     </div>
@@ -241,24 +241,24 @@ function CreateNewsletterModal({ onClose }: { onClose: () => void }) {
         <div className="p-5 space-y-4">
           <div>
             <label className="text-xs font-bold text-[#404850] block mb-1">Title *</label>
-            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. The Design Weekly" className="w-full rounded-lg border border-[#bfc7d1] px-3 py-2.5 text-sm text-[#1b1c1a] outline-none focus:border-[#005d8f] focus:ring-1 focus:ring-[#005d8f]/30" />
+            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. The Design Weekly" className="w-full rounded-lg border border-[#bfc7d1] px-3 py-2.5 text-sm text-[#1b1c1a] outline-none focus:border-[#1565C0] focus:ring-1 focus:ring-[#1565C0]/30" />
           </div>
           <div>
             <label className="text-xs font-bold text-[#404850] block mb-1">Description *</label>
-            <textarea value={desc} onChange={(e) => setDesc(e.target.value)} rows={3} placeholder="What topics will you cover?" className="w-full rounded-lg border border-[#bfc7d1] px-3 py-2.5 text-sm text-[#1b1c1a] outline-none focus:border-[#005d8f] focus:ring-1 focus:ring-[#005d8f]/30 resize-none" />
+            <textarea value={desc} onChange={(e) => setDesc(e.target.value)} rows={3} placeholder="What topics will you cover?" className="w-full rounded-lg border border-[#bfc7d1] px-3 py-2.5 text-sm text-[#1b1c1a] outline-none focus:border-[#1565C0] focus:ring-1 focus:ring-[#1565C0]/30 resize-none" />
           </div>
           <div>
             <label className="text-xs font-bold text-[#404850] block mb-2">Frequency</label>
             <div className="grid grid-cols-2 gap-2">
               {[{ value: 'daily', label: 'Daily' }, { value: 'weekly', label: 'Weekly' }, { value: 'biweekly', label: 'Bi-weekly' }, { value: 'monthly', label: 'Monthly' }].map((f) => (
-                <button key={f.value} onClick={() => setFreq(f.value)} className={`py-2 rounded-lg text-sm font-bold border-2 transition ${freq === f.value ? 'border-[#005d8f] bg-[#005d8f]/5 text-[#005d8f]' : 'border-[#bfc7d1] text-[#404850] hover:border-[#005d8f]'}`}>{f.label}</button>
+                <button key={f.value} onClick={() => setFreq(f.value)} className={`py-2 rounded-lg text-sm font-bold border-2 transition ${freq === f.value ? 'border-[#1565C0] bg-[#1565C0]/5 text-[#1565C0]' : 'border-[#bfc7d1] text-[#404850] hover:border-[#1565C0]'}`}>{f.label}</button>
               ))}
             </div>
           </div>
         </div>
         <div className="px-5 pb-5 flex gap-3">
           <button onClick={onClose} className="flex-1 py-2.5 rounded-full border border-[#bfc7d1] text-[#404850] text-sm font-bold hover:bg-[#efeeeb] transition">Cancel</button>
-          <button onClick={() => { if (!title.trim()) return toast.error('Title required'); if (!desc.trim()) return toast.error('Description required'); setLoading(true); setTimeout(() => { toast.success(`Newsletter "${title}" published!`); setLoading(false); onClose() }, 800) }} disabled={loading} className="flex-1 py-2.5 rounded-full bg-[#005d8f] text-white text-sm font-bold disabled:opacity-60 transition">{loading ? 'Publishing…' : 'Publish'}</button>
+          <button onClick={() => { if (!title.trim()) return toast.error('Title required'); if (!desc.trim()) return toast.error('Description required'); setLoading(true); setTimeout(() => { toast.success(`Newsletter "${title}" published!`); setLoading(false); onClose() }, 800) }} disabled={loading} className="flex-1 py-2.5 rounded-full bg-[#1565C0] text-white text-sm font-bold disabled:opacity-60 transition">{loading ? 'Publishing…' : 'Publish'}</button>
         </div>
       </div>
     </div>
@@ -287,15 +287,15 @@ function PendingInvitations({ pending, onAccept, onIgnore }: { pending: any[]; o
                 </div>
               </button>
               <div className="flex gap-2">
-                <button onClick={() => onIgnore(req.id)} className="flex-1 py-1.5 rounded-full border border-[#005d8f] text-[#005d8f] text-xs font-bold hover:bg-[#005d8f]/5 transition">Ignore</button>
-                <button onClick={() => onAccept(req.id)} className="flex-1 py-1.5 rounded-full bg-[#005d8f] text-white text-xs font-bold shadow-sm transition active:scale-95">Accept</button>
+                <button onClick={() => onIgnore(req.id)} className="flex-1 py-1.5 rounded-full border border-[#1565C0] text-[#1565C0] text-xs font-bold hover:bg-[#1565C0]/5 transition">Ignore</button>
+                <button onClick={() => onAccept(req.id)} className="flex-1 py-1.5 rounded-full bg-[#1565C0] text-white text-xs font-bold shadow-sm transition active:scale-95">Accept</button>
               </div>
             </div>
           )
         })}
       </div>
       {pending.length > 3 && (
-        <button className="w-full py-3 text-sm font-bold text-[#005d8f] hover:bg-[#faf9f6] transition border-t border-[#efeeeb]">
+        <button className="w-full py-3 text-sm font-bold text-[#1565C0] hover:bg-[#faf9f6] transition border-t border-[#efeeeb]">
           Manage all ({pending.length})
         </button>
       )}
@@ -362,7 +362,7 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
           </div>
           <button
             onClick={() => setShowAllCompanies(v => !v)}
-            className="text-[#005d8f] font-bold text-sm flex items-center gap-1 hover:underline"
+            className="text-[#1565C0] font-bold text-sm flex items-center gap-1 hover:underline"
           >
             {showAllCompanies ? 'Show less' : 'See all'} <Icons.ArrowRight />
           </button>
@@ -378,8 +378,8 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
               const { name, title, image } = getUserInfo(co)
               const isFollowed = followed.has(co.id)
               const gradients = [
-                'from-[#cde5ff] to-[#0077b5]',
-                'from-[#c3e0fe] to-[#45617a]',
+                'from-[#cde5ff] to-[#1976D2]',
+                'from-[#BBDEFB] to-[#45617a]',
                 'from-[#ffdcc0] to-[#a85f00]',
               ]
               return (
@@ -390,19 +390,19 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                       {image ? (
                         <img src={image} alt={name} className="w-full h-full object-cover" />
                       ) : (
-                        <span className="text-xl font-black text-[#005d8f]">{name[0]}</span>
+                        <span className="text-xl font-black text-[#1565C0]">{name[0]}</span>
                       )}
                     </div>
                   </div>
                   <div className="p-6 pt-9">
-                    <h3 className="font-[Manrope] font-bold text-lg group-hover:text-[#005d8f] transition-colors leading-tight">{name}</h3>
+                    <h3 className="font-[Manrope] font-bold text-lg group-hover:text-[#1565C0] transition-colors leading-tight">{name}</h3>
                     <p className="text-xs text-[#404850] mb-1">{title || 'Company'}</p>
                     <p className="text-sm text-[#707881] line-clamp-2 mb-4 leading-relaxed">
                       {co.companyProfile?.description || `${name} is a company on Xwite. Connect and collaborate.`}
                     </p>
                     <button
                       onClick={(e) => { e.stopPropagation(); handleFollow(co.id) }}
-                      className={`w-full flex items-center justify-center gap-2 py-2 rounded-full border-2 font-bold text-sm transition active:scale-95 ${isFollowed ? 'border-[#e3e2df] bg-[#e3e2df] text-[#404850]' : 'border-[#005d8f] text-[#005d8f] hover:bg-[#005d8f]/5'}`}
+                      className={`w-full flex items-center justify-center gap-2 py-2 rounded-full border-2 font-bold text-sm transition active:scale-95 ${isFollowed ? 'border-[#e3e2df] bg-[#e3e2df] text-[#404850]' : 'border-[#1565C0] text-[#1565C0] hover:bg-[#1565C0]/5'}`}
                     >
                       {isFollowed ? '✓ Following' : <><Icons.Plus /> Follow</>}
                     </button>
@@ -425,7 +425,7 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
 
         {peopleSuggestions.length === 0 ? (
           <div className="bg-white rounded-xl border border-[#e3e2df] shadow-sm p-10 text-center">
-            <div className="w-14 h-14 rounded-full bg-[#c3e0fe]/40 flex items-center justify-center mx-auto mb-3">
+            <div className="w-14 h-14 rounded-full bg-[#BBDEFB]/40 flex items-center justify-center mx-auto mb-3">
               <Icons.PersonAdd />
             </div>
             <p className="text-sm font-semibold text-[#404850]">No suggestions at the moment</p>
@@ -466,7 +466,7 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                         className="w-24 h-24 rounded-xl object-cover border-4 border-white shadow-sm hover:opacity-90 transition-opacity"
                       />
                     ) : (
-                      <div className="w-24 h-24 rounded-xl border-4 border-white shadow-sm bg-gradient-to-br from-[#c3e0fe] to-[#93ccff] flex items-center justify-center text-2xl font-black text-[#005d8f] hover:opacity-90 transition-opacity">
+                      <div className="w-24 h-24 rounded-xl border-4 border-white shadow-sm bg-gradient-to-br from-[#BBDEFB] to-[#93ccff] flex items-center justify-center text-2xl font-black text-[#1565C0] hover:opacity-90 transition-opacity">
                         {getInitials(name)}
                       </div>
                     )}
@@ -480,16 +480,16 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                       className="text-left w-full"
                       onClick={() => u.id && router.push(getProfilePath(u))}
                     >
-                      <h4 className="font-[Manrope] font-bold text-xl text-[#1b1c1a] leading-tight hover:text-[#005d8f] transition-colors">
+                      <h4 className="font-[Manrope] font-bold text-xl text-[#1b1c1a] leading-tight hover:text-[#1565C0] transition-colors">
                         {name}
                       </h4>
-                      <p className="text-sm font-medium text-[#005d8f]">{title}</p>
+                      <p className="text-sm font-medium text-[#1565C0]">{title}</p>
                     </button>
 
                     {/* Role / location row */}
                     <div className="flex items-center gap-2 text-xs text-[#404850]">
                       <div className="flex items-center gap-1.5">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#c3e0fe]/50 text-[#005d8f] font-semibold text-[10px] uppercase tracking-wide">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#BBDEFB]/50 text-[#1565C0] font-semibold text-[10px] uppercase tracking-wide">
                           {roleLabel}
                         </span>
                         {country && (
@@ -517,7 +517,7 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                         className={`flex items-center gap-2 px-6 py-2 rounded-full font-bold text-sm transition-all active:scale-95 ${
                           isConnected
                             ? 'bg-[#efeeeb] text-[#707881] cursor-default'
-                            : 'bg-[#005d8f] text-white shadow-[0_4px_12px_rgba(0,93,143,0.2)]'
+                            : 'bg-[#1565C0] text-white shadow-[0_4px_12px_rgba(21,101,192,0.2)]'
                         }`}
                       >
                         <Icons.PersonAdd />
@@ -536,7 +536,7 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
           <div className="flex justify-center mt-4">
             <button
               onClick={() => setShowAllPeople(v => !v)}
-              className="px-6 py-2 rounded-full border-2 border-[#005d8f] text-[#005d8f] font-bold text-sm hover:bg-[#005d8f]/5 transition active:scale-95"
+              className="px-6 py-2 rounded-full border-2 border-[#1565C0] text-[#1565C0] font-bold text-sm hover:bg-[#1565C0]/5 transition active:scale-95"
             >
               {showAllPeople ? 'Show less' : `View more (${allPeopleSuggestions.length - 4} more)`}
             </button>
@@ -545,11 +545,11 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
       </section>
 
       {/* Network growth banner */}
-      <section className="bg-gradient-to-br from-[#005d8f] to-[#0077b5] rounded-xl p-6 text-white shadow-lg">
+      <section className="bg-gradient-to-br from-[#1565C0] to-[#1976D2] rounded-xl p-6 text-white shadow-lg">
         <h3 className="font-[Manrope] font-bold text-lg mb-1">Grow your professional network</h3>
         <p className="text-white/80 text-sm mb-4">Connect with professionals, collaborate on projects, and build lasting relationships.</p>
         <div className="flex flex-wrap gap-3">
-          <button onClick={() => router.push('/network?section=connections')} className="px-4 py-2 rounded-full bg-white text-[#005d8f] font-bold text-sm hover:bg-white/90 transition active:scale-95">View Connections</button>
+          <button onClick={() => router.push('/network?section=connections')} className="px-4 py-2 rounded-full bg-white text-[#1565C0] font-bold text-sm hover:bg-white/90 transition active:scale-95">View Connections</button>
           <button onClick={() => router.push('/network?section=following')} className="px-4 py-2 rounded-full border-2 border-white/40 text-white font-bold text-sm hover:bg-white/10 transition active:scale-95">Following & Followers</button>
         </div>
       </section>
@@ -582,11 +582,11 @@ function ConnectionsSection({ pending, connections, onAccept, onIgnore, onRemove
         <h2 className="font-[Manrope] font-extrabold text-2xl text-[#1b1c1a]">Connections <span className="text-[#707881] font-medium text-lg">({connections.length})</span></h2>
       </div>
 
-      <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search your connections…" className="w-full rounded-full bg-[#efeeeb] border-none px-4 py-2.5 text-sm text-[#1b1c1a] outline-none focus:ring-2 focus:ring-[#005d8f]/30 mb-5" />
+      <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search your connections…" className="w-full rounded-full bg-[#efeeeb] border-none px-4 py-2.5 text-sm text-[#1b1c1a] outline-none focus:ring-2 focus:ring-[#1565C0]/30 mb-5" />
 
       {filtered.length === 0 ? (
         <div className="bg-white rounded-xl border border-[#e3e2df] shadow-sm p-10 text-center">
-          <div className="w-14 h-14 rounded-full bg-[#c3e0fe]/40 flex items-center justify-center mx-auto mb-3"><Icons.Connections /></div>
+          <div className="w-14 h-14 rounded-full bg-[#BBDEFB]/40 flex items-center justify-center mx-auto mb-3"><Icons.Connections /></div>
           <p className="text-sm font-semibold text-[#404850]">{search ? 'No results found' : 'No connections yet'}</p>
           <p className="text-xs text-[#707881] mt-1">{search ? 'Try a different name' : 'Start connecting with people in your field'}</p>
         </div>
@@ -608,7 +608,7 @@ function ConnectionsSection({ pending, connections, onAccept, onIgnore, onRemove
                   </div>
                 </button>
                 <div className="flex gap-2 shrink-0">
-                  <button onClick={() => handleOpenChat(c.user?.id)} className="flex items-center gap-1 px-2 py-1 rounded-full border border-[#005d8f] text-[#005d8f] text-xs font-bold hover:bg-[#005d8f]/5 transition"><Icons.Message /> Msg</button>
+                  <button onClick={() => handleOpenChat(c.user?.id)} className="flex items-center gap-1 px-2 py-1 rounded-full border border-[#1565C0] text-[#1565C0] text-xs font-bold hover:bg-[#1565C0]/5 transition"><Icons.Message /> Msg</button>
                   <button onClick={() => onRemove(c.connectionId)} className="px-3 py-1.5 rounded-full border border-[#bfc7d1] text-[#707881] text-xs font-bold hover:bg-[#efeeeb] transition">Remove</button>
                 </div>
               </div>
@@ -688,7 +688,7 @@ function FollowSection({ pending, following, followers, onAccept, onIgnore, onUn
                   <button
                     onClick={async () => { if (isConnected) return; setConnected((prev) => new Set(prev).add(f.follower.id)); try { await onConnect(f.follower.id) } catch { setConnected((prev) => { const s = new Set(prev); s.delete(f.follower.id); return s }) } }}
                     disabled={isConnected}
-                    className={`px-3 py-1.5 rounded-full border text-xs font-bold transition shrink-0 ${isConnected ? 'border-[#bfc7d1] text-[#707881]' : 'border-[#005d8f] text-[#005d8f] hover:bg-[#005d8f]/5'}`}
+                    className={`px-3 py-1.5 rounded-full border text-xs font-bold transition shrink-0 ${isConnected ? 'border-[#bfc7d1] text-[#707881]' : 'border-[#1565C0] text-[#1565C0] hover:bg-[#1565C0]/5'}`}
                   >
                     {isConnected ? '✓ Sent' : '+ Connect'}
                   </button>
@@ -712,8 +712,8 @@ function GroupsSection({ pending, onAccept, onIgnore }: any) {
       <div className="flex items-center justify-between mb-5">
         <h2 className="font-[Manrope] font-extrabold text-2xl text-[#1b1c1a]">Groups</h2>
         <div className="flex gap-2">
-          <button className="flex items-center gap-1.5 border border-[#005d8f] text-[#005d8f] px-4 py-2 rounded-full text-sm font-bold hover:bg-[#005d8f]/5 transition">Discover</button>
-          <button onClick={() => setShowCreate(true)} className="flex items-center gap-1.5 bg-[#005d8f] text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-[#004e7a] transition active:scale-95"><Icons.Plus /> Create</button>
+          <button className="flex items-center gap-1.5 border border-[#1565C0] text-[#1565C0] px-4 py-2 rounded-full text-sm font-bold hover:bg-[#1565C0]/5 transition">Discover</button>
+          <button onClick={() => setShowCreate(true)} className="flex items-center gap-1.5 bg-[#1565C0] text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-[#0D47A1] transition active:scale-95"><Icons.Plus /> Create</button>
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -722,7 +722,7 @@ function GroupsSection({ pending, onAccept, onIgnore }: any) {
             <div className={`h-12 bg-gradient-to-br ${CARD_GRADIENTS[i % CARD_GRADIENTS.length]}`} />
             <div className="p-5">
               <div className="flex items-start gap-3 mb-3">
-                <div className="w-12 h-12 rounded-xl bg-[#c3e0fe]/40 flex items-center justify-center text-xl shrink-0 border border-[#e3e2df] -mt-8 bg-white shadow-sm">
+                <div className="w-12 h-12 rounded-xl bg-[#BBDEFB]/40 flex items-center justify-center text-xl shrink-0 border border-[#e3e2df] -mt-8 bg-white shadow-sm">
                   <Icons.Groups />
                 </div>
                 <div className="flex-1 min-w-0 pt-1">
@@ -738,7 +738,7 @@ function GroupsSection({ pending, onAccept, onIgnore }: any) {
                   <p className="text-[10px] text-[#707881]">{g.creator.title}</p>
                 </div>
               </div>
-              <button className="w-full py-2 rounded-full border border-[#005d8f] text-[#005d8f] text-sm font-bold hover:bg-[#005d8f]/5 transition active:scale-95">View Group</button>
+              <button className="w-full py-2 rounded-full border border-[#1565C0] text-[#1565C0] text-sm font-bold hover:bg-[#1565C0]/5 transition active:scale-95">View Group</button>
             </div>
           </div>
         ))}
@@ -757,7 +757,7 @@ function EventsSection({ pending, onAccept, onIgnore }: any) {
       <PendingInvitations pending={pending} onAccept={onAccept} onIgnore={onIgnore} />
       <div className="flex items-center justify-between mb-5">
         <h2 className="font-[Manrope] font-extrabold text-2xl text-[#1b1c1a]">Events</h2>
-        <button onClick={() => setShowCreate(true)} className="flex items-center gap-1.5 bg-[#005d8f] text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-[#004e7a] transition active:scale-95"><Icons.Plus /> Create Event</button>
+        <button onClick={() => setShowCreate(true)} className="flex items-center gap-1.5 bg-[#1565C0] text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-[#0D47A1] transition active:scale-95"><Icons.Plus /> Create Event</button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {MOCK_EVENTS.map((ev, i) => {
@@ -787,7 +787,7 @@ function EventsSection({ pending, onAccept, onIgnore }: any) {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => setRegistered((prev) => { const n = new Set(prev); n.has(ev.id) ? n.delete(ev.id) : n.add(ev.id); return n })} className={`flex-1 py-2 rounded-full text-sm font-bold transition active:scale-95 ${isReg ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-[#005d8f] text-white hover:bg-[#004e7a]'}`}>{isReg ? '✓ Registered' : 'Register'}</button>
+                  <button onClick={() => setRegistered((prev) => { const n = new Set(prev); n.has(ev.id) ? n.delete(ev.id) : n.add(ev.id); return n })} className={`flex-1 py-2 rounded-full text-sm font-bold transition active:scale-95 ${isReg ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-[#1565C0] text-white hover:bg-[#0D47A1]'}`}>{isReg ? '✓ Registered' : 'Register'}</button>
                   <button className="flex-1 py-2 rounded-full border border-[#bfc7d1] text-[#404850] text-sm font-bold hover:bg-[#efeeeb] transition active:scale-95">Details</button>
                 </div>
               </div>
@@ -810,9 +810,9 @@ function NewslettersSection({ pending, onAccept, onIgnore, userRole }: any) {
       <div className="flex items-center justify-between mb-5">
         <h2 className="font-[Manrope] font-extrabold text-2xl text-[#1b1c1a]">Newsletters <span className="text-[#707881] font-medium text-lg">({subscribed.size})</span></h2>
         <div className="flex gap-2">
-          <button className="flex items-center gap-1.5 border border-[#005d8f] text-[#005d8f] px-4 py-2 rounded-full text-sm font-bold hover:bg-[#005d8f]/5 transition">Discover</button>
+          <button className="flex items-center gap-1.5 border border-[#1565C0] text-[#1565C0] px-4 py-2 rounded-full text-sm font-bold hover:bg-[#1565C0]/5 transition">Discover</button>
           {userRole === 'COMPANY' && (
-            <button onClick={() => setShowCreate(true)} className="flex items-center gap-1.5 bg-[#005d8f] text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-[#004e7a] transition active:scale-95"><Icons.Plus /> Create</button>
+            <button onClick={() => setShowCreate(true)} className="flex items-center gap-1.5 bg-[#1565C0] text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-[#0D47A1] transition active:scale-95"><Icons.Plus /> Create</button>
           )}
         </div>
       </div>
@@ -825,7 +825,7 @@ function NewslettersSection({ pending, onAccept, onIgnore, userRole }: any) {
                 <Avatar name={n.author} image={n.authorImage} size="md" />
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-[#1b1c1a] leading-tight">{n.title}</p>
-                  <p className="text-sm text-[#005d8f] font-medium">by {n.author}</p>
+                  <p className="text-sm text-[#1565C0] font-medium">by {n.author}</p>
                   <p className="text-xs text-[#707881]">{n.authorTitle}</p>
                 </div>
               </div>
@@ -833,7 +833,7 @@ function NewslettersSection({ pending, onAccept, onIgnore, userRole }: any) {
               <p className="text-xs text-[#707881] mb-4">{n.subs} subscribers · {n.freq}</p>
               <button
                 onClick={() => setSubscribed((prev) => { const nx = new Set(prev); nx.has(n.id) ? nx.delete(n.id) : nx.add(n.id); return nx })}
-                className={`w-full py-2 rounded-full text-sm font-bold transition active:scale-95 ${isSub ? 'bg-[#005d8f] text-white hover:bg-[#004e7a]' : 'border border-[#005d8f] text-[#005d8f] hover:bg-[#005d8f]/5'}`}
+                className={`w-full py-2 rounded-full text-sm font-bold transition active:scale-95 ${isSub ? 'bg-[#1565C0] text-white hover:bg-[#0D47A1]' : 'border border-[#1565C0] text-[#1565C0] hover:bg-[#1565C0]/5'}`}
               >
                 {isSub ? 'Unsubscribe' : 'Subscribe'}
               </button>
@@ -960,7 +960,7 @@ function NetworkPageInner() {
             <button
               key={item.id}
               onClick={() => navigate(item.id)}
-              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all ${activeSection === item.id ? 'bg-[#005d8f] text-white shadow-sm' : 'bg-white border border-[#e3e2df] text-[#404850] hover:border-[#005d8f] hover:text-[#005d8f]'}`}
+              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all ${activeSection === item.id ? 'bg-[#1565C0] text-white shadow-sm' : 'bg-white border border-[#e3e2df] text-[#404850] hover:border-[#1565C0] hover:text-[#1565C0]'}`}
             >
               {item.label}
               {item.count !== undefined && item.count > 0 && (
@@ -981,14 +981,14 @@ function NetworkPageInner() {
                   <button
                     key={item.id}
                     onClick={() => navigate(item.id)}
-                    className={`flex items-center justify-between w-full p-3 rounded-lg transition-colors text-left group ${activeSection === item.id ? 'bg-[#c3e0fe]/30 text-[#005d8f]' : 'hover:bg-[#f4f3f0] text-[#404850]'}`}
+                    className={`flex items-center justify-between w-full p-3 rounded-lg transition-colors text-left group ${activeSection === item.id ? 'bg-[#BBDEFB]/30 text-[#1565C0]' : 'hover:bg-[#f4f3f0] text-[#404850]'}`}
                   >
                     <div className="flex items-center gap-3">
-                      <span className={`transition-colors ${activeSection === item.id ? 'text-[#005d8f]' : 'text-[#707881] group-hover:text-[#005d8f]'}`}>{item.icon}</span>
+                      <span className={`transition-colors ${activeSection === item.id ? 'text-[#1565C0]' : 'text-[#707881] group-hover:text-[#1565C0]'}`}>{item.icon}</span>
                       <span className="font-medium text-sm">{item.label}</span>
                     </div>
                     {item.count !== undefined && item.count > 0 && (
-                      <span className={`text-xs font-bold ${activeSection === item.id ? 'text-[#005d8f]' : 'text-[#005d8f]'}`}>{item.count.toLocaleString()}</span>
+                      <span className={`text-xs font-bold ${activeSection === item.id ? 'text-[#1565C0]' : 'text-[#1565C0]'}`}>{item.count.toLocaleString()}</span>
                     )}
                   </button>
                 ))}
@@ -996,7 +996,7 @@ function NetworkPageInner() {
             </div>
 
             {/* Quick stats */}
-            <div className="bg-gradient-to-br from-[#005d8f] to-[#0077b5] rounded-xl p-5 text-white shadow-sm">
+            <div className="bg-gradient-to-br from-[#1565C0] to-[#1976D2] rounded-xl p-5 text-white shadow-sm">
               <p className="font-[Manrope] font-bold text-sm mb-3 opacity-90">Your Network</p>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -1019,7 +1019,7 @@ function NetworkPageInner() {
               <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-[#e3e2df]">
                 <div className="px-4 py-3 border-b border-[#efeeeb] flex items-center justify-between">
                   <h3 className="text-sm font-bold text-[#1b1c1a]">Pending Invitations</h3>
-                  <span className="text-xs font-semibold text-[#005d8f] bg-[#c3e0fe]/40 px-2 py-0.5 rounded-full">{pending.length}</span>
+                  <span className="text-xs font-semibold text-[#1565C0] bg-[#BBDEFB]/40 px-2 py-0.5 rounded-full">{pending.length}</span>
                 </div>
                 <div className="divide-y divide-[#efeeeb]">
                   {pending.slice(0, 2).map((req: any) => {
@@ -1042,7 +1042,7 @@ function NetworkPageInner() {
                           </button>
                           <button
                             onClick={() => handleAccept(req.id)}
-                            className="flex-1 py-1.5 rounded-full bg-[#005d8f] text-white text-xs font-bold hover:bg-[#004e7a] transition active:scale-95"
+                            className="flex-1 py-1.5 rounded-full bg-[#1565C0] text-white text-xs font-bold hover:bg-[#0D47A1] transition active:scale-95"
                           >
                             Accept
                           </button>
@@ -1054,7 +1054,7 @@ function NetworkPageInner() {
                 {pending.length > 2 && (
                   <button
                     onClick={() => navigate('connections')}
-                    className="w-full py-2.5 text-xs font-bold text-[#005d8f] hover:bg-[#faf9f6] transition border-t border-[#efeeeb]"
+                    className="w-full py-2.5 text-xs font-bold text-[#1565C0] hover:bg-[#faf9f6] transition border-t border-[#efeeeb]"
                   >
                     View all ({pending.length} invitations)
                   </button>

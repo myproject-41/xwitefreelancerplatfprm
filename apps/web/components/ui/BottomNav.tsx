@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
@@ -121,11 +121,11 @@ export default function BottomNav() {
               key={item.path}
               href={resolvedPath}
               className={`relative flex flex-1 flex-col items-center justify-center gap-0.5 py-2.5 transition-all duration-150 active:scale-95 ${
-                isPost ? '' : isActive ? 'text-[#005d8f]' : 'text-[#9ca3af] hover:text-[#005d8f]'
+                isPost ? '' : isActive ? 'text-[#1565C0]' : 'text-[#9ca3af] hover:text-[#1565C0]'
               }`}
             >
               {isPost ? (
-                <div className="-mt-4 flex h-11 w-11 items-center justify-center rounded-full bg-[#005d8f] text-white shadow-[0_4px_14px_rgba(0,93,143,0.4)] transition-transform duration-150 active:scale-90">
+                <div className="-mt-4 flex h-11 w-11 items-center justify-center rounded-full bg-[#1565C0] text-white shadow-[0_4px_14px_rgba(21,101,192,0.4)] transition-transform duration-150 active:scale-90">
                   <NavIcon name={item.icon} />
                 </div>
               ) : (
@@ -138,7 +138,7 @@ export default function BottomNav() {
                       </span>
                     )}
                   </div>
-                  <span className={`text-[9px] font-semibold tracking-wide ${isActive ? 'text-[#005d8f]' : 'text-[#9ca3af]'}`}>
+                  <span className={`text-[9px] font-semibold tracking-wide ${isActive ? 'text-[#1565C0]' : 'text-[#9ca3af]'}`}>
                     {item.label}
                   </span>
                 </>

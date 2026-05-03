@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -121,17 +121,17 @@ export default function MainHeader() {
                 key={item.href}
                 href={item.href}
                 className={`relative pb-1 text-sm transition ${
-                  isActive ? 'font-bold text-[#005d8f]' : 'font-medium text-[#6b7280] hover:text-[#005d8f]'
+                  isActive ? 'font-bold text-[#1565C0]' : 'font-medium text-[#6b7280] hover:text-[#1565C0]'
                 }`}
               >
                 {item.label}
                 {getBadgeCount(item.href) ? (
-                  <span className="ml-2 rounded-full bg-[#0077b5] px-2 py-0.5 text-[10px] font-bold text-white">
+                  <span className="ml-2 rounded-full bg-[#1976D2] px-2 py-0.5 text-[10px] font-bold text-white">
                     {getBadgeCount(item.href)}
                   </span>
                 ) : null}
                 {isActive ? (
-                  <span className="absolute inset-x-0 -bottom-1 h-0.5 rounded-full bg-[#005d8f]" />
+                  <span className="absolute inset-x-0 -bottom-1 h-0.5 rounded-full bg-[#1565C0]" />
                 ) : null}
               </Link>
             )
@@ -148,7 +148,7 @@ export default function MainHeader() {
               value={search}
               onChange={(event) => handleSearchChange(event.target.value)}
               placeholder="Search home"
-              className="w-36 rounded-full bg-[#e9e8e5] py-2 pl-9 pr-4 text-sm text-[#1b1c1a] outline-none transition placeholder:text-[#707881] focus:bg-white focus:ring-2 focus:ring-[#005d8f]/20"
+              className="w-36 rounded-full bg-[#e9e8e5] py-2 pl-9 pr-4 text-sm text-[#1b1c1a] outline-none transition placeholder:text-[#707881] focus:bg-white focus:ring-2 focus:ring-[#1565C0]/20"
             />
           </label>
 
@@ -161,13 +161,13 @@ export default function MainHeader() {
               value={search}
               onChange={(event) => handleSearchChange(event.target.value)}
               placeholder="Search home, skills, people..."
-              className="w-56 rounded-full bg-[#e9e8e5] py-2 pl-9 pr-4 text-sm text-[#1b1c1a] outline-none transition placeholder:text-[#707881] focus:bg-white focus:ring-2 focus:ring-[#005d8f]/20"
+              className="w-56 rounded-full bg-[#e9e8e5] py-2 pl-9 pr-4 text-sm text-[#1b1c1a] outline-none transition placeholder:text-[#707881] focus:bg-white focus:ring-2 focus:ring-[#1565C0]/20"
             />
           </label>
 
           <Link
             href="/agent"
-            className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#005d8f_0%,#0077b5_100%)] px-4 py-2 text-sm font-medium text-white shadow-sm transition-all duration-150 hover:opacity-90 active:scale-95"
+            className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#1565C0_0%,#1976D2_100%)] px-4 py-2 text-sm font-medium text-white shadow-sm transition-all duration-150 hover:opacity-90 active:scale-95"
           >
             <SparkIcon />
             <span className="hidden sm:inline">AI Agent</span>
@@ -176,11 +176,11 @@ export default function MainHeader() {
           <Link
             href="/messages"
             aria-label="Messages"
-            className="relative flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#005d8f]/20 bg-white text-[#005d8f] transition-all duration-150 hover:bg-[#edf5fb] active:scale-95"
+            className="relative flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#1565C0]/20 bg-white text-[#1565C0] transition-all duration-150 hover:bg-[#E3F2FD] active:scale-95"
           >
             <MessageIcon />
             {messageUnreadCount > 0 ? (
-              <span className="absolute -right-1 -top-1 min-w-[18px] rounded-full bg-[#0077b5] px-1.5 py-0.5 text-center text-[10px] font-bold leading-none text-white">
+              <span className="absolute -right-1 -top-1 min-w-[18px] rounded-full bg-[#1976D2] px-1.5 py-0.5 text-center text-[10px] font-bold leading-none text-white">
                 {messageUnreadCount}
               </span>
             ) : null}

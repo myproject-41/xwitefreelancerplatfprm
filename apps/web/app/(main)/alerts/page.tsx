@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
@@ -50,9 +50,9 @@ const TYPE_ICON: Record<string, string> = {
 }
 
 const TYPE_COLOR: Record<string, string> = {
-  NEW_PROPOSAL: '#0077b5', PROPOSAL_ACCEPTED: '#16a34a', PROPOSAL_REJECTED: '#dc2626',
+  NEW_PROPOSAL: '#1976D2', PROPOSAL_ACCEPTED: '#16a34a', PROPOSAL_REJECTED: '#dc2626',
   ESCROW_FUNDED: '#16a34a', TASK_COMPLETED: '#d97706', PAYMENT_RECEIVED: '#16a34a',
-  PAYMENT_RELEASED: '#16a34a', NEW_MESSAGE: '#0077b5', CONNECTION_REQUEST: '#7c3aed',
+  PAYMENT_RELEASED: '#16a34a', NEW_MESSAGE: '#1976D2', CONNECTION_REQUEST: '#7c3aed',
   DISPUTE_OPENED: '#dc2626', DISPUTE_RESOLVED: '#16a34a',
 }
 
@@ -168,7 +168,7 @@ function ProposalCard({
     <div className="mt-3 rounded-2xl border border-[#e2e8f0] bg-[#f8fafc] p-4">
       {/* Freelancer info */}
       <div className="mb-3 flex items-center gap-3">
-        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#edf5fb] text-sm font-bold text-[#005d8f]">
+        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E3F2FD] text-sm font-bold text-[#1565C0]">
           {p.freelancerImage
             ? <img src={p.freelancerImage} alt="" className="h-full w-full object-cover" />
             : getInitials(p.freelancerName)}
@@ -187,7 +187,7 @@ function ProposalCard({
       {/* Post title */}
       {p.postTitle && (
         <p className="mb-2 text-xs font-semibold text-[#6b7280]">
-          Proposal for: <span className="text-[#0077b5]">"{p.postTitle}"</span>
+          Proposal for: <span className="text-[#1976D2]">"{p.postTitle}"</span>
         </p>
       )}
 
@@ -199,7 +199,7 @@ function ProposalCard({
           </p>
           {isLong && (
             <button type="button" onClick={() => setExpanded(e => !e)}
-              className="mt-1 text-xs font-semibold text-[#0077b5]">
+              className="mt-1 text-xs font-semibold text-[#1976D2]">
               {expanded ? 'Show less' : 'Read more'}
             </button>
           )}
@@ -210,7 +210,7 @@ function ProposalCard({
       {p.freelancerId && (
         <div className="mb-2">
           <Link href={`/profile/${p.freelancerId}`} target="_blank"
-            className="inline-block rounded-xl border border-[#bdd8f0] bg-[#edf5fb] px-4 py-2 text-sm font-bold text-[#005d8f]">
+            className="inline-block rounded-xl border border-[#90CAF9] bg-[#E3F2FD] px-4 py-2 text-sm font-bold text-[#1565C0]">
             View Profile →
           </Link>
         </div>
@@ -222,7 +222,7 @@ function ProposalCard({
       ) : done === null ? (
         <div className="flex flex-wrap gap-2">
           <button type="button" onClick={accept} disabled={accepting || rejecting}
-            className="flex-1 min-w-[90px] rounded-xl bg-[linear-gradient(135deg,#005d8f,#0077b5)] py-2.5 px-3.5 text-sm font-bold text-white disabled:opacity-60">
+            className="flex-1 min-w-[90px] rounded-xl bg-[linear-gradient(135deg,#1565C0,#1976D2)] py-2.5 px-3.5 text-sm font-bold text-white disabled:opacity-60">
             {accepting ? 'Accepting…' : '✓ Accept'}
           </button>
           <button type="button" onClick={reject} disabled={accepting || rejecting}
@@ -236,7 +236,7 @@ function ProposalCard({
             ✓ Accepted
           </div>
           <Link href="/payment/escrow"
-            className="rounded-xl bg-[#0077b5] py-2.5 px-3.5 text-sm font-bold text-white">
+            className="rounded-xl bg-[#1976D2] py-2.5 px-3.5 text-sm font-bold text-white">
             View Escrow →
           </Link>
         </div>
@@ -320,14 +320,14 @@ function NotifRow({
 
           {!isProposal && !isAgent && notif.link && (
             <Link href={notif.link} onClick={e => e.stopPropagation()}
-              className="mt-1.5 inline-block text-xs font-semibold text-[#0077b5]">
+              className="mt-1.5 inline-block text-xs font-semibold text-[#1976D2]">
               View →
             </Link>
           )}
         </div>
 
         {!notif.isRead && (
-          <div className={`mt-1.5 h-2.5 w-2.5 flex-shrink-0 rounded-full ${isAgent ? 'bg-purple-500' : 'bg-[#0077b5]'}`} />
+          <div className={`mt-1.5 h-2.5 w-2.5 flex-shrink-0 rounded-full ${isAgent ? 'bg-purple-500' : 'bg-[#1976D2]'}`} />
         )}
       </div>
     </div>
@@ -409,7 +409,7 @@ export default function AlertsPage() {
             <button
               type="button"
               onClick={markAllRead}
-              className="mt-1 flex-shrink-0 rounded-full border border-[#d6dce3] bg-white px-3 py-1.5 text-xs font-bold text-[#005d8f] transition hover:bg-[#edf5fb]"
+              className="mt-1 flex-shrink-0 rounded-full border border-[#d6dce3] bg-white px-3 py-1.5 text-xs font-bold text-[#1565C0] transition hover:bg-[#E3F2FD]"
             >
               Mark all read
             </button>
@@ -424,8 +424,8 @@ export default function AlertsPage() {
               onClick={() => setFilter(f)}
               className={`rounded-full px-4 py-1.5 text-sm font-bold transition ${
                 filter === f
-                  ? 'bg-[#005d8f] text-white shadow-sm'
-                  : 'border border-[#d6dce3] bg-white text-[#6b7280] hover:border-[#005d8f] hover:text-[#005d8f]'
+                  ? 'bg-[#1565C0] text-white shadow-sm'
+                  : 'border border-[#d6dce3] bg-white text-[#6b7280] hover:border-[#1565C0] hover:text-[#1565C0]'
               }`}
             >
               {f === 'all'

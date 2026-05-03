@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -415,7 +415,7 @@ export default function PostCard({
               else router.push(`/profile/${targetUserId}`)
             }}
           >
-            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[#edf5fb] text-sm font-bold text-[#005d8f]">
+            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-[#E3F2FD] text-sm font-bold text-[#1565C0]">
               {author.image ? (
                 <img src={author.image} alt={author.name} className="h-full w-full object-cover" />
               ) : (
@@ -465,14 +465,14 @@ export default function PostCard({
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-2">
             {budget ? (
-              <span className="text-sm font-extrabold text-[#005d8f]">{budget}</span>
+              <span className="text-sm font-extrabold text-[#1565C0]">{budget}</span>
             ) : null}
           </div>
 
           <button
             type="button"
             onClick={detailMode ? undefined : openPost}
-            className={`text-left font-[Manrope] text-xl font-extrabold leading-[1.35] tracking-[-0.015em] text-[#005d8f] ${
+            className={`text-left font-[Manrope] text-xl font-extrabold leading-[1.35] tracking-[-0.015em] text-[#1565C0] ${
               detailMode ? 'cursor-default' : 'hover:underline'
             }`}
           >
@@ -486,7 +486,7 @@ export default function PostCard({
           {post.description?.length > 180 && !detailMode ? (
             <button
               onClick={() => setExpanded((value) => !value)}
-              className="-mt-1 w-fit text-xs font-bold text-[#005d8f] hover:underline"
+              className="-mt-1 w-fit text-xs font-bold text-[#1565C0] hover:underline"
             >
               {expanded ? 'Show less' : 'Read more'}
             </button>
@@ -497,7 +497,7 @@ export default function PostCard({
               {post.skills.slice(0, 6).map((skill: string) => (
                 <span
                   key={skill}
-                  className="rounded-full bg-[#e9e8e5] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.06em] text-[#005d8f]"
+                  className="rounded-full bg-[#e9e8e5] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.06em] text-[#1565C0]"
                 >
                   {skill}
                 </span>
@@ -509,7 +509,7 @@ export default function PostCard({
             <button
               type="button"
               onClick={openPost}
-              className="w-fit text-xs font-bold uppercase tracking-[0.18em] text-[#707881] transition hover:text-[#005d8f]"
+              className="w-fit text-xs font-bold uppercase tracking-[0.18em] text-[#707881] transition hover:text-[#1565C0]"
             >
               View post
             </button>
@@ -522,7 +522,7 @@ export default function PostCard({
               onClick={() => void handleLike()}
               disabled={!viewerId}
               className={`inline-flex items-center gap-1.5 transition ${
-                liked ? 'text-[#005d8f]' : 'hover:text-[#005d8f]'
+                liked ? 'text-[#1565C0]' : 'hover:text-[#1565C0]'
               } ${!viewerId ? 'cursor-not-allowed opacity-70' : ''}`}
             >
               <HeartIcon filled={liked} />
@@ -531,7 +531,7 @@ export default function PostCard({
             {likesCount > 3 ? (
               <button
                 onClick={() => void openLikersModal()}
-                className="ml-1 text-[11px] font-semibold text-[#005d8f] hover:underline"
+                className="ml-1 text-[11px] font-semibold text-[#1565C0] hover:underline"
               >
                 View
               </button>
@@ -540,7 +540,7 @@ export default function PostCard({
 
           <button
             onClick={() => void handleShare()}
-            className="inline-flex items-center gap-1.5 transition hover:text-[#005d8f]"
+            className="inline-flex items-center gap-1.5 transition hover:text-[#1565C0]"
           >
             <ShareIcon />
             <span>Share</span>
@@ -552,7 +552,7 @@ export default function PostCard({
               setBookmarked(next)
               toast.success(next ? 'Post saved!' : 'Removed from saved')
             }}
-            className={`ml-auto inline-flex items-center gap-1.5 transition ${bookmarked ? 'text-[#005d8f]' : 'hover:text-[#005d8f]'}`}
+            className={`ml-auto inline-flex items-center gap-1.5 transition ${bookmarked ? 'text-[#1565C0]' : 'hover:text-[#1565C0]'}`}
           >
             <BookmarkIcon filled={bookmarked} />
             <span>{bookmarked ? 'Saved' : 'Save'}</span>
@@ -586,10 +586,10 @@ export default function PostCard({
                 disabled={!isOwner && isActionCompleted}
                 className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-bold transition ${
                   isOwner
-                    ? 'border border-[#d7dde4] bg-white text-[#005d8f] shadow-none hover:bg-[#f8fafc]'
+                    ? 'border border-[#d7dde4] bg-white text-[#1565C0] shadow-none hover:bg-[#f8fafc]'
                     : isActionCompleted
                       ? 'cursor-not-allowed border border-[#d7dde4] bg-white text-[#6b7280] shadow-none'
-                    : 'bg-[linear-gradient(to_right,#005d8f,#0077b5)] text-white shadow-[0_2px_8px_rgba(0,93,143,0.3)] hover:opacity-95 active:scale-[0.97]'
+                    : 'bg-[linear-gradient(to_right,#1565C0,#1976D2)] text-white shadow-[0_2px_8px_rgba(21,101,192,0.3)] hover:opacity-95 active:scale-[0.97]'
                 }`}
               >
                 {isOwner
@@ -616,7 +616,7 @@ export default function PostCard({
                 value={coverLetter}
                 onChange={(e) => setCoverLetter(e.target.value)}
                 rows={4}
-                className="mt-2 w-full resize-none rounded-2xl border-none bg-[#efeeeb] p-3 text-sm text-[#1b1c1a] outline-none ring-0 placeholder:text-[#8b949e] focus:ring-2 focus:ring-[#005d8f]"
+                className="mt-2 w-full resize-none rounded-2xl border-none bg-[#efeeeb] p-3 text-sm text-[#1b1c1a] outline-none ring-0 placeholder:text-[#8b949e] focus:ring-2 focus:ring-[#1565C0]"
                 placeholder={proposalPlaceholder}
               />
               <p className={`mt-1 text-xs ${coverLetter.length < 50 ? 'text-red-500' : 'text-emerald-600'}`}>
@@ -633,7 +633,7 @@ export default function PostCard({
                   type="number"
                   value={proposedRate}
                   onChange={(e) => setProposedRate(e.target.value)}
-                  className="mt-2 w-full rounded-2xl border-none bg-[#efeeeb] p-3 text-sm text-[#1b1c1a] outline-none placeholder:text-[#8b949e] focus:ring-2 focus:ring-[#005d8f]"
+                  className="mt-2 w-full rounded-2xl border-none bg-[#efeeeb] p-3 text-sm text-[#1b1c1a] outline-none placeholder:text-[#8b949e] focus:ring-2 focus:ring-[#1565C0]"
                   placeholder="Your proposed rate in INR"
                 />
               </div>
@@ -650,7 +650,7 @@ export default function PostCard({
                   max={365}
                   value={estimatedDays}
                   onChange={(e) => setEstimatedDays(e.target.value)}
-                  className="w-full rounded-2xl border-none bg-[#efeeeb] p-3 pr-14 text-sm text-[#1b1c1a] outline-none placeholder:text-[#8b949e] focus:ring-2 focus:ring-[#005d8f]"
+                  className="w-full rounded-2xl border-none bg-[#efeeeb] p-3 pr-14 text-sm text-[#1b1c1a] outline-none placeholder:text-[#8b949e] focus:ring-2 focus:ring-[#1565C0]"
                   placeholder="e.g. 7"
                 />
                 <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-[#707881]">days</span>
@@ -661,7 +661,7 @@ export default function PostCard({
             <button
               onClick={handleProposal}
               disabled={loading}
-              className="mt-4 w-full rounded-full bg-[linear-gradient(135deg,#005d8f_0%,#0077b5_100%)] py-3 text-sm font-bold text-white shadow-[0_12px_28px_rgba(0,93,143,0.22)] transition hover:opacity-95 disabled:opacity-60"
+              className="mt-4 w-full rounded-full bg-[linear-gradient(135deg,#1565C0_0%,#1976D2_100%)] py-3 text-sm font-bold text-white shadow-[0_12px_28px_rgba(21,101,192,0.22)] transition hover:opacity-95 disabled:opacity-60"
             >
               {actionLabel}
             </button>
@@ -716,7 +716,7 @@ export default function PostCard({
                       onClick={() => { setShowLikersModal(false); router.push(`/users/${u.id}`) }}
                       className="flex w-full items-center gap-3 rounded-lg bg-[#f4f3f0] p-3 text-left transition hover:bg-[#ece9e2]"
                     >
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#c3e0fe] text-sm font-bold text-[#005d8f]">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#BBDEFB] text-sm font-bold text-[#1565C0]">
                         {image ? (
                           <img src={image} alt={name} className="h-full w-full object-cover" />
                         ) : (

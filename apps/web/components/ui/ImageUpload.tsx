@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -149,7 +149,7 @@ export default function ImageUpload({
   return (
     <div className={`flex flex-col items-center gap-2 ${outerClassName}`}>
       <div className="relative cursor-pointer group" onClick={() => inputRef.current?.click()}>
-        <div className={`${sizes[size]} ${radius} overflow-hidden bg-[#c3e0fe] border-4 border-white shadow-md flex items-center justify-center shrink-0`}>
+        <div className={`${sizes[size]} ${radius} overflow-hidden bg-[#BBDEFB] border-4 border-white shadow-md flex items-center justify-center shrink-0`}>
           {preview ? (
             <img
               src={preview}
@@ -175,7 +175,7 @@ export default function ImageUpload({
         )}
 
         {showActionBadge && (
-          <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-[#005d8f] rounded-full flex items-center justify-center shadow-md border-2 border-white">
+          <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-[#1565C0] rounded-full flex items-center justify-center shadow-md border-2 border-white">
             <span className="text-white text-xs">+</span>
           </div>
         )}

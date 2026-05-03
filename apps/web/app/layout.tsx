@@ -1,9 +1,9 @@
-import './globals.css'
+﻿import './globals.css'
 import type { Metadata, Viewport } from 'next'
 import PwaRegister from '../components/PwaRegister'
 
 export const viewport: Viewport = {
-  themeColor: '#005d8f',
+  themeColor: '#1565C0',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,

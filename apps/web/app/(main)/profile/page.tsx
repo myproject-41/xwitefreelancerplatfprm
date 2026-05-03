@@ -283,7 +283,7 @@ export default function ClientProfile() {
         description: 'Add funds to wallet',
         order_id: order.orderId,
         prefill: { email: user?.email ?? '' },
-        theme: { color: '#0077b5' },
+        theme: { color: '#1976D2' },
         handler: async (response: any) => {
           try {
             await walletService.verifyPayment({
@@ -378,7 +378,7 @@ export default function ClientProfile() {
         ══════════════════════════ */}
         <aside className="cp-sidebar-left">
           <button className="cp-sidebar-brand" onClick={() => router.push('/')}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="#0077b5"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="#1976D2"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
             <span className="cp-brand">Xwite</span>
           </button>
           <nav className="cp-sidebar-nav">
@@ -435,7 +435,7 @@ export default function ClientProfile() {
                   className="cp-btn-cover"
                   onClick={e => { e.stopPropagation(); coverInputRef.current?.click() }}
                 >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="#0077b5">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="#1976D2">
                     <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                   </svg>
                   Edit Cover
@@ -481,7 +481,7 @@ export default function ClientProfile() {
                   onClick={() => { setNameDraft(name); setBioDraft(bio); setShowBioModal(true) }}
                   aria-label="Edit profile"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#0077b5">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#1976D2">
                     <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                   </svg>
                 </button>
@@ -496,7 +496,7 @@ export default function ClientProfile() {
                   <>
                     {/* Connections — always visible below avatar */}
                     <p className="cp-conn-count">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="#0077b5" style={{flexShrink:0}}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="#1976D2" style={{flexShrink:0}}>
                         <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
                       </svg>
                       connection. {connections.toLocaleString()}
@@ -708,7 +708,7 @@ export default function ClientProfile() {
               AI Agent
             </button>
             <button className="cp-msg-btn" onClick={() => router.push('/messages')}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0077b5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1976D2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
             </button>
@@ -719,7 +719,7 @@ export default function ClientProfile() {
             <div className="cp-wallet-head">
               <p className="cp-wallet-lbl">Available Balance</p>
               <button className="cp-wallet-icon" onClick={() => togglePanel('addFunds')}>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="#005d8f">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="#1565C0">
                   <path d="M21 18v1c0 1.1-.9 2-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14c1.1 0 2 .9 2 2v1h-9a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h9zm-9-2h10V8H12v8zm4-2.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
                 </svg>
               </button>
@@ -897,7 +897,7 @@ export default function ClientProfile() {
 
           {/* Switch Account */}
           <button className="cp-switch" onClick={() => togglePanel('switch')}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="#0077b5"><path d="M6.99 11 3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#1976D2"><path d="M6.99 11 3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg>
             <div>
               <p className="cp-switch-title">Switch Account</p>
               <p className="cp-switch-sub">Switch to Freelancer</p>
@@ -915,7 +915,7 @@ export default function ClientProfile() {
    SVG NAV ICONS — no font dependency, no flash
 ═══════════════════════════════════════════ */
 function NavIcon({ name, active = false, size = 22 }: { name: string; active?: boolean; size?: number }) {
-  const col = active ? '#0077b5' : 'currentColor'
+  const col = active ? '#1976D2' : 'currentColor'
   const paths: Record<string, string> = {
     home:          active
       ? 'M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'
@@ -951,7 +951,7 @@ function Spin({ light = false }: { light?: boolean }) {
     <div style={{
       width:20, height:20, borderRadius:'50%',
       border:`3px solid ${light ? 'rgba(255,255,255,0.25)' : 'rgba(0,119,181,0.18)'}`,
-      borderTopColor: light ? '#fff' : '#0077b5',
+      borderTopColor: light ? '#fff' : '#1976D2',
       animation:'cp-spin .7s linear infinite', flexShrink:0,
     }} />
   )
@@ -1597,7 +1597,7 @@ function Slider({ label, icon, value, min, max, step, display, onChange }: {
         <span style={{fontSize:12,fontWeight:700,color:'#475569',fontFamily:'Manrope,sans-serif',display:'flex',alignItems:'center',gap:5}}>
           {icon} {label}
         </span>
-        <span style={{fontSize:12,fontWeight:700,color:'#0077b5',fontFamily:'Manrope,sans-serif',minWidth:40,textAlign:'right'}}>
+        <span style={{fontSize:12,fontWeight:700,color:'#1976D2',fontFamily:'Manrope,sans-serif',minWidth:40,textAlign:'right'}}>
           {display}
         </span>
       </div>
@@ -1609,7 +1609,7 @@ function Slider({ label, icon, value, min, max, step, display, onChange }: {
         style={{
           width:'100%', height:4, borderRadius:999,
           appearance:'none', WebkitAppearance:'none',
-          background:`linear-gradient(to right, #0077b5 ${((value-min)/(max-min))*100}%, #e2e8f0 ${((value-min)/(max-min))*100}%)`,
+          background:`linear-gradient(to right, #1976D2 ${((value-min)/(max-min))*100}%, #e2e8f0 ${((value-min)/(max-min))*100}%)`,
           cursor:'pointer', outline:'none',
         }}
       />
@@ -1654,7 +1654,7 @@ const STYLES = `
 /* ── AGENT BUTTON ── */
 .cp-agent-btn{
   display:flex;align-items:center;gap:6px;
-  background:linear-gradient(135deg,#0077b5,#005d8f);
+  background:linear-gradient(135deg,#1976D2,#1565C0);
   color:#fff;border:none;border-radius:999px;
   padding:8px 14px;font-size:13px;font-weight:700;
   cursor:pointer;font-family:'Manrope',sans-serif;
@@ -1698,8 +1698,8 @@ const STYLES = `
   cursor:pointer;font-family:'Manrope',sans-serif;text-align:left;width:100%;
   transition:background .15s,color .15s;
 }
-.cp-nav-item:hover{background:#f0f9ff;color:#0077b5;}
-.cp-nav-item.active{background:linear-gradient(135deg,#e8f4fd,#dbeffe);color:#0077b5;font-weight:700;box-shadow:inset 0 0 0 1px rgba(0,119,181,0.15);}
+.cp-nav-item:hover{background:#f0f9ff;color:#1976D2;}
+.cp-nav-item.active{background:linear-gradient(135deg,#e8f4fd,#dbeffe);color:#1976D2;font-weight:700;box-shadow:inset 0 0 0 1px rgba(0,119,181,0.15);}
 .cp-nav-label{flex:1;}
 .cp-sidebar-bottom{display:flex;flex-direction:column;gap:3px;border-top:1px solid #f1f5f9;padding-top:10px;}
 .cp-nav-danger{color:#dc2626!important;}
@@ -1727,7 +1727,7 @@ const STYLES = `
 .cp-cover:hover .cp-cover-img{transform:scale(1.03);}
 .cp-cover-ph{
   width:100%;height:100%;
-  background:linear-gradient(135deg,#0f4c75 0%,#1b6ca8 30%,#0077b5 55%,#2196c4 80%,#4db8d9 100%);
+  background:linear-gradient(135deg,#0f4c75 0%,#1b6ca8 30%,#1976D2 55%,#2196c4 80%,#4db8d9 100%);
 }
 .cp-cover-ph::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(255,255,255,0.15) 0%,transparent 55%),radial-gradient(ellipse at 80% 30%,rgba(255,255,255,0.08) 0%,transparent 45%);pointer-events:none;}
 .cp-cover::after{
@@ -1746,7 +1746,7 @@ const STYLES = `
 .cp-btn-cover{
   position:absolute;bottom:12px;right:12px;z-index:30;
   background:rgba(255,255,255,0.92);
-  color:#0077b5;border:none;
+  color:#1976D2;border:none;
   padding:7px 14px;border-radius:999px;
   font-size:12px;font-weight:700;
   display:flex;align-items:center;gap:6px;
@@ -1813,7 +1813,7 @@ const STYLES = `
 
 /* ── EDIT PROFILE BUTTON ── */
 .cp-btn-edit-profile{
-  background:linear-gradient(135deg,#0284c7,#0077b5);color:#fff;border:none;
+  background:linear-gradient(135deg,#0284c7,#1976D2);color:#fff;border:none;
   padding:11px 20px;border-radius:999px;
   font-size:13px;font-weight:800;
   display:flex;align-items:center;gap:7px;
@@ -1830,7 +1830,7 @@ const STYLES = `
 @media(min-width:900px){.cp-profile-info{padding:2px 22px 22px 24px;}}
 
 .cp-conn-count{
-  font-size:12px;font-weight:700;color:#0077b5;
+  font-size:12px;font-weight:700;color:#1976D2;
   display:flex;align-items:center;gap:4px;
   opacity:0.85;
 }
@@ -1844,7 +1844,7 @@ const STYLES = `
   font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;border:1px solid #bae6fd;
 }
 .cp-btn-edit-bio{
-  width:100%;background:linear-gradient(135deg,#0284c7,#0077b5);color:#fff;border:none;
+  width:100%;background:linear-gradient(135deg,#0284c7,#1976D2);color:#fff;border:none;
   padding:13px;border-radius:14px;font-size:14px;font-weight:800;
   cursor:pointer;font-family:'Manrope',sans-serif;
   box-shadow:0 4px 16px rgba(0,119,181,0.35);
@@ -1856,7 +1856,7 @@ const STYLES = `
 
 /* ── INLINE PANELS ── */
 .cp-panel{background:#fff;border-radius:18px;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 8px 24px rgba(0,0,0,0.09);overflow:hidden;border:1px solid rgba(0,0,0,0.04);}
-.cp-panel-hdr{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 18px 12px;border-bottom:1px solid #f1f5f9;border-left:3px solid #0077b5;}
+.cp-panel-hdr{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 18px 12px;border-bottom:1px solid #f1f5f9;border-left:3px solid #1976D2;}
 .cp-panel-h{font-size:15px;font-weight:800;color:#0f172a;}
 .cp-panel-x{background:none;border:none;cursor:pointer;padding:3px;display:flex;transition:opacity .15s;}
 .cp-panel-x:hover{opacity:.7;}
@@ -1869,7 +1869,7 @@ const STYLES = `
 .cp-input{width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:11px 13px;
   font-size:14px;font-family:'Manrope',sans-serif;color:#0D1B2A;outline:none;
   background:#f8fafc;transition:border-color .15s;}
-.cp-input:focus{border-color:#0077b5;background:#fff;box-shadow:0 0 0 3px rgba(0,119,181,0.1);}
+.cp-input:focus{border-color:#1976D2;background:#fff;box-shadow:0 0 0 3px rgba(0,119,181,0.1);}
 .cp-bal-row{display:flex;justify-content:space-between;align-items:center;
   background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:11px 14px;
   font-size:14px;color:#0369a1;font-weight:600;}
@@ -1881,12 +1881,12 @@ const STYLES = `
 .cp-quick{background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:999px;padding:7px 13px;
   font-size:13px;font-weight:700;color:#0369a1;cursor:pointer;
   font-family:'Manrope',sans-serif;transition:all .15s;}
-.cp-quick.active,.cp-quick:hover{background:#0077b5;border-color:#0077b5;color:#fff;}
+.cp-quick.active,.cp-quick:hover{background:#1976D2;border-color:#1976D2;color:#fff;}
 .cp-row{display:flex;gap:10px;}
 .cp-row>*{flex:1;}
 .cp-divider{height:1px;background:#f1f5f9;}
 .cp-btn-p{
-  background:linear-gradient(135deg,#0284c7,#0077b5);color:#fff;border:none;border-radius:12px;
+  background:linear-gradient(135deg,#0284c7,#1976D2);color:#fff;border:none;border-radius:12px;
   padding:12px 16px;font-size:14px;font-weight:800;
   cursor:pointer;font-family:'Manrope',sans-serif;width:100%;
   display:flex;align-items:center;justify-content:center;gap:7px;
@@ -1948,7 +1948,7 @@ const STYLES = `
   font-family:'Manrope',sans-serif;box-shadow:0 3px 12px rgba(34,197,94,0.35);transition:transform .15s,box-shadow .15s;}
 .cp-btn-withdraw:active{transform:scale(.97);}
 .cp-btn-withdraw:hover{box-shadow:0 5px 18px rgba(34,197,94,0.45);}
-.cp-btn-add{width:100%;background:linear-gradient(135deg,#0077b5,#005d8f);color:#fff;border:none;
+.cp-btn-add{width:100%;background:linear-gradient(135deg,#1976D2,#1565C0);color:#fff;border:none;
   font-weight:800;font-size:13px;padding:10px;border-radius:12px;cursor:pointer;margin-top:8px;
   font-family:'Manrope',sans-serif;box-shadow:0 2px 10px rgba(0,119,181,0.3);transition:all .15s;}
 .cp-btn-add:hover{box-shadow:0 4px 16px rgba(0,119,181,0.4);}
@@ -1962,9 +1962,9 @@ const STYLES = `
 .cp-ov-btn{width:100%;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:4px 0;text-align:left;font-family:'Manrope',sans-serif;border-radius:12px;transition:background .15s;}
 .cp-ov-btn:hover{background:#f8fafc;}
 .cp-ov-row{display:flex;align-items:center;flex-shrink:0;}
-.cp-ov-av{position:relative;width:40px;height:40px;border-radius:50%;overflow:hidden;border:2.5px solid #fff;background:#c3e0fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cp-ov-av{position:relative;width:40px;height:40px;border-radius:50%;overflow:hidden;border:2.5px solid #fff;background:#BBDEFB;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .cp-ov-av img{width:100%;height:100%;object-fit:cover;}
-.cp-ov-av span{font-size:13px;font-weight:700;color:#005d8f;}
+.cp-ov-av span{font-size:13px;font-weight:700;color:#1565C0;}
 .cp-ov-more{position:relative;width:40px;height:40px;border-radius:50%;border:2.5px solid #fff;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#64748b;flex-shrink:0;}
 .cp-ov-info{flex:1;min-width:0;}
 .cp-ov-count{font-size:13px;font-weight:700;color:#0f172a;}
@@ -1978,11 +1978,11 @@ const STYLES = `
 .cp-modal-list{display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto;}
 .cp-modal-item{display:flex;align-items:center;gap:12px;background:#f8fafc;border:none;border-radius:12px;padding:10px 12px;cursor:pointer;width:100%;text-align:left;font-family:'Manrope',sans-serif;transition:background .15s;}
 .cp-modal-item:hover{background:#f0f9ff;}
-.cp-modal-av{width:40px;height:40px;border-radius:50%;overflow:hidden;background:#c3e0fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cp-modal-av{width:40px;height:40px;border-radius:50%;overflow:hidden;background:#BBDEFB;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .cp-modal-av img{width:100%;height:100%;object-fit:cover;}
-.cp-modal-av span{font-size:13px;font-weight:700;color:#005d8f;}
+.cp-modal-av span{font-size:13px;font-weight:700;color:#1565C0;}
 .cp-modal-name{font-size:13px;font-weight:700;color:#0f172a;text-align:left;}
-.cp-modal-viewall{width:100%;background:none;border:none;border-top:1px solid #f1f5f9;padding:12px 0 0;margin-top:10px;cursor:pointer;font-size:12px;font-weight:700;color:#0077b5;font-family:'Manrope',sans-serif;text-align:center;display:block;}
+.cp-modal-viewall{width:100%;background:none;border:none;border-top:1px solid #f1f5f9;padding:12px 0 0;margin-top:10px;cursor:pointer;font-size:12px;font-weight:700;color:#1976D2;font-family:'Manrope',sans-serif;text-align:center;display:block;}
 .cp-modal-viewall:hover{opacity:.75;}
 .cp-switch{background:linear-gradient(135deg,#f8fafc,#f0f9ff);border-radius:16px;padding:12px 14px;border:1px solid #e2e8f0;cursor:pointer;
   display:flex;align-items:center;gap:10px;font-family:'Manrope',sans-serif;
@@ -2012,7 +2012,7 @@ const STYLES = `
   .cp-mobile-wallet-actions{display:flex;flex-direction:row;gap:8px;flex-shrink:0;}
   .cp-mobile-action-btn{display:flex;align-items:center;gap:5px;border:none;border-radius:10px;padding:9px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif;transition:filter .15s;white-space:nowrap;}
   .cp-mobile-action-btn:active{filter:brightness(.88);}
-  .cp-mobile-add{background:linear-gradient(135deg,#0077b5,#005d8f);color:#fff;box-shadow:0 2px 8px rgba(0,119,181,0.28);}
+  .cp-mobile-add{background:linear-gradient(135deg,#1976D2,#1565C0);color:#fff;box-shadow:0 2px 8px rgba(0,119,181,0.28);}
   .cp-mobile-withdraw{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;box-shadow:0 2px 8px rgba(34,197,94,0.28);}
 }
 
@@ -2038,7 +2038,7 @@ const STYLES = `
   padding:12px 14px;font-size:14px;font-family:'Manrope',sans-serif;
   color:#0D1B2A;resize:none;outline:none;line-height:1.65;
   background:#f8fafc;transition:border-color .15s;}
-.cp-modal-ta:focus{border-color:#0077b5;background:#fff;}
+.cp-modal-ta:focus{border-color:#1976D2;background:#fff;}
 .cp-modal-count{text-align:right;font-size:11px;color:#94a3b8;margin-top:4px;margin-bottom:12px;}
 
 /* ── EDIT ICON BUTTON ── */
@@ -2063,9 +2063,9 @@ const STYLES = `
 .cp-posts-title{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;}
 .cp-posts-arrows{display:flex;align-items:center;gap:4px;margin-left:auto;}
 .cp-posts-arrow{width:28px;height:28px;border-radius:50%;border:1.5px solid #e2e8f0;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#64748b;transition:all .15s;flex-shrink:0;}
-.cp-posts-arrow:hover{background:#f0f9ff;border-color:#bae6fd;color:#0077b5;}
+.cp-posts-arrow:hover{background:#f0f9ff;border-color:#bae6fd;color:#1976D2;}
 .cp-posts-new{
-  background:linear-gradient(135deg,#0284c7,#0077b5);color:#fff;border:none;
+  background:linear-gradient(135deg,#0284c7,#1976D2);color:#fff;border:none;
   border-radius:999px;padding:7px 14px;font-size:12px;font-weight:700;
   cursor:pointer;font-family:'Manrope',sans-serif;
   box-shadow:0 2px 8px rgba(0,119,181,0.3);transition:transform .15s;
@@ -2123,7 +2123,7 @@ const STYLES = `
   border:1px solid #bae6fd;border-radius:999px;padding:1px 7px;
 }
 .cp-accord-badge.inprog{background:#fffbeb;color:#d97706;border-color:#fde68a;}
-.cp-accord-badge.req{background:#eff6ff;color:#0077b5;border-color:#bfdbfe;}
+.cp-accord-badge.req{background:#eff6ff;color:#1976D2;border-color:#bfdbfe;}
 .cp-accord-chev{transition:transform .2s;flex-shrink:0;}
 .cp-accord-chev.open{transform:rotate(180deg);}
 .cp-accord-body{
@@ -2180,7 +2180,7 @@ const STYLES = `
     width:36px;height:36px;border-radius:10px;
     background:#f0f9ff;border:1px solid #bae6fd;
     display:flex;align-items:center;justify-content:center;
-    flex-shrink:0;color:#0077b5;
+    flex-shrink:0;color:#1976D2;
   }
   .cp-mobile-set-logout-icon{background:#fef2f2;border-color:#fca5a5;color:#dc2626;}
   .cp-mobile-set-text{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;}
