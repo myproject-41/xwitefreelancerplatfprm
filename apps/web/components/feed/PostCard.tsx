@@ -201,9 +201,11 @@ export default function PostCard({
       ? post.viewerConnectionStatus === 'ACCEPTED'
         ? 'Connected'
         : 'Request Sent'
-      : actionKind === 'collaborate'
-        ? 'Task In Progress'
-        : 'Applied'
+      : (post.status === 'COMPLETED' || post.status === 'CLOSED')
+        ? '✓ Done'
+        : post.status === 'IN_PROGRESS'
+          ? 'Task In Progress'
+          : 'Applied'
   const hasExistingConnection =
     actionKind === 'connect' &&
     (post.viewerConnectionStatus === 'ACCEPTED' ||
@@ -385,7 +387,7 @@ export default function PostCard({
   const isNotOpen    = postStatus !== 'OPEN'
   const showViewerTaskStatus = !isOwner && isActionCompleted && actionKind === 'collaborate'
   const showClosedStatus = !isOwner && isNotOpen && !showViewerTaskStatus && (isCompleted || hasExistingProposal)
-  const showInProgressBadge = isInProgress && (isOwner || isActionCompleted)
+  const showInProgressBadge = isInProgress
 
   return (
     <article className="relative overflow-hidden rounded-xl border border-[rgba(228,228,231,0.1)] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)] transition hover:shadow-[0_8px_24px_rgba(27,28,26,0.08)]">
