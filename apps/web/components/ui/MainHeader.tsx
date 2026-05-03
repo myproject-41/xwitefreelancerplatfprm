@@ -108,11 +108,8 @@ export default function MainHeader() {
   return (
     <header className="fixed top-0 z-50 w-full border-b border-zinc-200/30 bg-white/90 shadow-sm backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-screen-2xl items-center justify-between gap-4 px-4 md:px-6">
-        <Link href="/" className="flex items-center gap-2 text-[#005d8f]">
-          <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#e8f1f8]">
-            <BoltIcon />
-          </span>
-          <span className="hidden text-xl font-extrabold sm:inline">Xwite</span>
+        <Link href="/" className="flex items-center">
+          <img src="/logo.png" alt="Xwite" className="h-9 w-auto object-contain" />
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
