@@ -5,41 +5,40 @@ import { Role } from '../auth/roles'
 
 const router: Router = Router()
 
-// Public — no auth required to view a user's posts
+// ── PUBLIC (no auth required) ──────────────────────────────────────────
 router.get('/user/:userId', (req: Request, res: Response) =>
   postController.getUserPosts(req, res))
 
-// Get single post — public but enriched for logged-in viewers
+// ── AUTH-REQUIRED named routes must come BEFORE /:id wildcard ──────────
+// (Express matches routes in order; /:id would swallow /feed, /my, etc.)
+router.get('/feed', authenticate, (req: Request, res: Response) =>
+  postController.getFeed(req, res))
+
+router.get('/my', authenticate, (req: Request, res: Response) =>
+  postController.getMyPosts(req, res))
+
+router.get('/my-proposals', authenticate, (req: Request, res: Response) =>
+  postController.getMyProposals(req, res))
+
+router.get('/received-proposals', authenticate, (req: Request, res: Response) =>
+  postController.getReceivedProposals(req, res))
+
+router.get('/my-likers', authenticate, (req: Request, res: Response) =>
+  postController.getMyPostLikers(req, res))
+
+// ── Single post — public but enriched for logged-in viewers ────────────
+// Must come AFTER all named GET routes and BEFORE router.use(authenticate)
 router.get('/:id', optionalAuthenticate, (req: Request, res: Response) =>
   postController.getPost(req, res))
 
+// ── All routes below require authentication ────────────────────────────
 router.use(authenticate)
-
-// Feed - all roles
-router.get('/feed', (req: Request, res: Response) =>
-  postController.getFeed(req, res))
-
-// My posts
-router.get('/my', (req: Request, res: Response) =>
-  postController.getMyPosts(req, res))
-
-// My sent proposals (freelancer)
-router.get('/my-proposals', (req: Request, res: Response) =>
-  postController.getMyProposals(req, res))
-
-// Proposals received on my posts (client / company)
-router.get('/received-proposals', (req: Request, res: Response) =>
-  postController.getReceivedProposals(req, res))
-
-// My post likers (people who liked my posts)
-router.get('/my-likers', (req: Request, res: Response) =>
-  postController.getMyPostLikers(req, res))
 
 // Get a single proposal by ID (for chat proposal cards)
 router.get('/proposals/:proposalId', (req: Request, res: Response) =>
   postController.getProposal(req, res))
 
-// Create post - supported for all current product roles
+// Create post
 router.post('/',
   authorize(Role.COMPANY, Role.CLIENT, Role.FREELANCER),
   (req: Request, res: Response) => postController.createPost(req, res))
@@ -50,23 +49,18 @@ router.post('/:id/like', (req: Request, res: Response) =>
 router.delete('/:id/like', (req: Request, res: Response) =>
   postController.unlikePost(req, res))
 
-// Get users who liked a post
 router.get('/:id/likers', (req: Request, res: Response) =>
   postController.getPostLikers(req, res))
 
-// Update post
 router.put('/:id', (req: Request, res: Response) =>
   postController.updatePost(req, res))
 
-// Delete post
 router.delete('/:id', (req: Request, res: Response) =>
   postController.deletePost(req, res))
 
-// Close post
 router.patch('/:id/close', (req: Request, res: Response) =>
   postController.closePost(req, res))
 
-// Proposal-style actions for the current feed UX
 router.post('/:id/proposals',
   authorize(Role.FREELANCER, Role.COMPANY, Role.CLIENT),
   (req: Request, res: Response) => postController.sendProposal(req, res))
