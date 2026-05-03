@@ -139,7 +139,7 @@ export default function FreelancerProfile() {
   const [availability,    setAvailability]    = useState(_p.availability    ?? true)
   const [experience,      setExperience]      = useState<Experience[]>((_p.experience ?? []).map((e: any) => ({ title: e.title ?? e.role ?? '', company: e.company ?? '', from: e.from ?? e.startDate ?? '', to: e.to ?? e.endDate ?? '', current: e.current ?? false, description: e.description ?? '' })))
   const [qualifications,  setQualifications]  = useState<Qualification[]>(_p.qualifications ?? [])
-  const [connections,     setConnections]     = useState(user?.connectionsCount ?? 0)
+  const [connections,     setConnections]     = useState((user as any)?.connectionsCount ?? 0)
   const [connectedUsers,  setConnectedUsers]  = useState<ConnectedUser[]>([])
   const [showConnModal,   setShowConnModal]   = useState(false)
   const [coverSrc,        setCoverSrc]        = useState<string | null>(_p.coverImage   ?? null)
