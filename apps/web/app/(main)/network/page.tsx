@@ -870,13 +870,7 @@ function NetworkPageInner() {
   }, [searchParams])
 
   const loadAll = async () => {
-    setLoading(connections.length === 0 && pending.length === 0)
     try {
-      if (!user) {
-        const { authService: auth } = await import('../../../services/auth.service')
-        const me = await auth.getMe()
-        setUser(me.data)
-      }
       const results = await Promise.allSettled([
         networkService.getPendingRequests(),
         networkService.getSuggestions(),

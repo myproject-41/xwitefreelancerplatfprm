@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
 interface Post {
   id: string
@@ -33,21 +34,29 @@ interface FeedState {
   reset: () => void
 }
 
-export const useFeedStore = create<FeedState>((set) => ({
-  posts: [],
-  loading: false,
-  page: 1,
-  hasMore: true,
-  total: 0,
-  filter: 'ALL',
-  search: '',
-  setPosts: (posts) => set({ posts }),
-  appendPosts: (posts) => set((s) => ({ posts: [...s.posts, ...posts] })),
-  setLoading: (loading) => set({ loading }),
-  setPage: (page) => set({ page }),
-  setHasMore: (hasMore) => set({ hasMore }),
-  setTotal: (total) => set({ total }),
-  setFilter: (filter) => set({ filter }),
-  setSearch: (search) => set({ search }),
-  reset: () => set({ posts: [], page: 1, hasMore: true }),
-}))
+export const useFeedStore = create<FeedState>()(
+  persist(
+    (set) => ({
+      posts: [],
+      loading: false,
+      page: 1,
+      hasMore: true,
+      total: 0,
+      filter: 'ALL',
+      search: '',
+      setPosts: (posts) => set({ posts }),
+      appendPosts: (posts) => set((s) => ({ posts: [...s.posts, ...posts] })),
+      setLoading: (loading) => set({ loading }),
+      setPage: (page) => set({ page }),
+      setHasMore: (hasMore) => set({ hasMore }),
+      setTotal: (total) => set({ total }),
+      setFilter: (filter) => set({ filter }),
+      setSearch: (search) => set({ search }),
+      reset: () => set({ posts: [], page: 1, hasMore: true }),
+    }),
+    {
+      name: 'xwite-feed',
+      partialize: (state) => ({ posts: state.posts }),
+    }
+  )
+)

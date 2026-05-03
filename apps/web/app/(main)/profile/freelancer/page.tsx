@@ -209,11 +209,19 @@ export default function FreelancerProfile() {
   useEffect(() => { loadProfile(); loadWallet() }, [])
 
   async function loadProfile() {
-    try {
-      const res = await authService.getMe()
-      const d   = res.data
+    // Fire posts/tasks immediately with cached user id — don't wait for getMe
+    if (user?.id) loadPostsAndTasks(user.id)
+
+    // Run getMe + connections in parallel
+    const [meRes, connRes] = await Promise.allSettled([
+      authService.getMe(),
+      apiClient.get('/api/network/connections'),
+    ])
+
+    if (meRes.status === 'fulfilled') {
+      const d = meRes.value.data
       setUser(d)
-      const p   = d.freelancerProfile ?? {}
+      const p = d.freelancerProfile ?? {}
       setFullName(p.fullName        ?? d.email ?? '')
       setTitle(p.title              ?? '')
       setBio(p.bio                  ?? '')
@@ -240,26 +248,28 @@ export default function FreelancerProfile() {
       })))
       setQualifications(p.qualifications ?? [])
       setAvatarSrc(p.profileImage ?? null)
-      setCoverSrc(p.coverImage       ?? null)
-      setConnections(d.connectionsCount ?? 0)
-      try {
-        const cRes = await apiClient.get('/api/network/connections')
-        const raw: any[] = Array.isArray(cRes.data) ? cRes.data : (cRes.data?.data ?? [])
-        const list = raw.map((item: any) => {
-          const u = item.user ?? item
-          return {
-            id:           u.id,
-            email:        u.email,
-            fullName:     u.freelancerProfile?.fullName ?? u.companyProfile?.companyName ?? u.clientProfile?.fullName ?? u.email ?? 'User',
-            profileImage: u.freelancerProfile?.profileImage ?? u.companyProfile?.profileImage ?? u.clientProfile?.profileImage ?? null,
-          }
-        })
-        setConnections(raw.length)
-        setConnectedUsers(list.slice(0, 6))
-      } catch {}
-      loadPostsAndTasks(d.id)
-    } catch { toast.error('Could not load profile') }
-    finally { setPageLoading(false) }
+      setCoverSrc(p.coverImage    ?? null)
+      setConnections((d as any).connectionsCount ?? 0)
+    } else {
+      toast.error('Could not load profile')
+    }
+
+    if (connRes.status === 'fulfilled') {
+      const raw: any[] = Array.isArray(connRes.value.data) ? connRes.value.data : (connRes.value.data?.data ?? [])
+      const list = raw.map((item: any) => {
+        const u = item.user ?? item
+        return {
+          id:           u.id,
+          email:        u.email,
+          fullName:     u.freelancerProfile?.fullName ?? u.companyProfile?.companyName ?? u.clientProfile?.fullName ?? u.email ?? 'User',
+          profileImage: u.freelancerProfile?.profileImage ?? u.companyProfile?.profileImage ?? u.clientProfile?.profileImage ?? null,
+        }
+      })
+      setConnections(raw.length)
+      setConnectedUsers(list.slice(0, 6))
+    }
+
+    setPageLoading(false)
   }
 
   const loadWallet = useCallback(async () => {
