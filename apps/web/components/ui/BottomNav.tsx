@@ -17,44 +17,45 @@ const NAV_ITEMS = [
 
 function HomeIcon({ active = false }: { active?: boolean }) {
   return (
-    <svg viewBox="0 0 24 24" fill={active ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" className="h-5 w-5">
-      <path d="M3 10.5 12 4l9 6.5V20H3v-9.5Z" />
-      <path d="M9 20v-6h6v6" />
+    <svg viewBox="0 0 24 24" fill={active ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+      <path d="M19 12L12 5L5 12V20H9V14H15V20H19V12Z" />
     </svg>
   )
 }
 
 function NetworkIcon({ active = false }: { active?: boolean }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5">
-      <circle cx="8" cy="8" r="3" fill={active ? 'currentColor' : 'none'} />
-      <circle cx="16" cy="8" r="3" fill={active ? 'currentColor' : 'none'} />
-      <path d="M4.5 19c0-2.5 2.2-4.5 5-4.5S14.5 16.5 14.5 19" />
-      <path d="M9.5 19c0-2.2 1.9-4 4.2-4 2.4 0 4.3 1.8 4.3 4" />
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+      <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21" />
+      <circle cx="9" cy="7" r="4" fill={active ? 'currentColor' : 'none'} />
+      <path d="M23 21V19C22.9993 18.1137 22.7044 17.2522 22.1614 16.5523C21.6184 15.8524 20.8581 15.3516 20 15.13" />
+      <path d="M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11768 19.0078 7.005C19.0078 7.89232 18.7122 8.75608 18.1676 9.45768C17.623 10.1593 16.8604 10.6597 16 10.88" />
     </svg>
   )
 }
 
 function BellIcon({ active = false }: { active?: boolean }) {
   return (
-    <svg viewBox="0 0 24 24" fill={active ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" className="h-5 w-5">
-      <path d="M6 17h12l-1.3-1.7a4 4 0 0 1-.7-2.3V10a4 4 0 1 0-8 0v3a4 4 0 0 1-.7 2.3L6 17Z" />
-      <path d="M10 19a2 2 0 0 0 4 0" />
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+      <path fill={active ? 'currentColor' : 'none'} d="M18 8C18 6.4087 17.3679 4.88258 16.2426 3.75736C15.1174 2.63214 13.5913 2 12 2C10.4087 2 8.88258 2.63214 7.75736 3.75736C6.63214 4.88258 6 6.4087 6 8C6 15 3 17 3 17H21C21 17 18 15 18 8Z" />
+      <path d="M13.73 21C13.5542 21.3031 13.3019 21.5547 12.9982 21.7295C12.6946 21.9044 12.3504 21.9965 12 21.9965C11.6496 21.9965 11.3054 21.9044 11.0018 21.7295C10.6981 21.5547 10.4458 21.3031 10.27 21" />
     </svg>
   )
 }
 
-function MessageIcon({ active = false }: { active?: boolean }) {
+function PostIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill={active ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" className="h-5 w-5">
-      <path d="M5 6.5h14v9H9l-4 3v-12Z" />
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <line x1="12" y1="8" x2="12" y2="16" />
+      <line x1="8" y1="12" x2="16" y2="12" />
     </svg>
   )
 }
 
 function ProfileIcon({ active = false }: { active?: boolean }) {
   return (
-    <svg viewBox="0 0 24 24" fill={active ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.8" className="h-5 w-5">
+    <svg viewBox="0 0 24 24" fill={active ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
       <circle cx="12" cy="8" r="3.5" />
       <path d="M5 19c1.8-3 4.2-4.5 7-4.5S17.2 16 19 19" />
     </svg>
@@ -66,8 +67,8 @@ function NavIcon({ name, active = false }: { name: string; active?: boolean }) {
   if (name === 'Network') return <NetworkIcon active={active} />
   if (name === 'Alerts') return <BellIcon active={active} />
   if (name === 'Profile') return <ProfileIcon active={active} />
-  if (name === 'Messages') return <MessageIcon active={active} />
-  return <span className="text-2xl font-bold leading-none">+</span>
+  if (name === 'Post') return <PostIcon />
+  return <PostIcon />
 }
 
 export default function BottomNav() {
