@@ -350,6 +350,10 @@ export default function HomePage() {
     }))
   }
 
+  const handleDeletePost = (postId: string) => {
+    setPosts(prev => prev.filter(p => p.id !== postId))
+  }
+
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#faf9f6_0%,#f4f3f0_48%,#efeeeb_100%)] text-[#1b1c1a]">
       <MainHeader />
@@ -457,6 +461,7 @@ export default function HomePage() {
                   viewerId={user.id}
                   hasCompletedAction={Boolean(sentActions[post.id])}
                   onActionComplete={handlePostActionComplete}
+                  onDelete={handleDeletePost}
                 />
               ))}
             </div>

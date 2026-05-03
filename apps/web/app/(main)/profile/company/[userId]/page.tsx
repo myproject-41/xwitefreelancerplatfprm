@@ -8,6 +8,7 @@ import { chatService } from '../../../../../services/chat.service'
 import { networkService } from '../../../../../services/network.service'
 import { useAuthStore } from '../../../../../store/authStore'
 import { authService } from '../../../../../services/auth.service'
+import MainHeader from '../../../../../components/ui/MainHeader'
 
 const NAV_ITEMS = [
   { label: 'Home',    icon: 'home',          href: '/'        },
@@ -174,21 +175,11 @@ export default function CompanyPublicProfilePage() {
       <style>{STYLES}</style>
       <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" />
 
+      <div className="cp-pub-mob-hdr">
+        <MainHeader />
+      </div>
+
       <div className="cp-pub-root">
-        {/* ── MOBILE HEADER ── */}
-        <header className="cp-pub-header">
-          <div className="cp-pub-hdr-left">
-            <button className="cp-pub-back-btn" onClick={() => router.back()}>
-              <MaterialIcon name="arrow_back" size={20} />
-            </button>
-            <span className="cp-pub-brand">Xwite</span>
-          </div>
-          <div className="cp-pub-hdr-right">
-            <button className="cp-pub-hdr-msg-btn" onClick={handleMessage} disabled={msgLoading}>
-              <MaterialIcon name="chat" size={20} color="#0077b5" />
-            </button>
-          </div>
-        </header>
 
         {/* ── LEFT SIDEBAR ── */}
         <aside className="cp-pub-sidebar-left">
@@ -461,11 +452,12 @@ const STYLES = `
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 @keyframes cp-pub-spin{to{transform:rotate(360deg);}}
 
-.cp-pub-root{display:grid;grid-template-areas:"header""main";grid-template-rows:60px 1fr;grid-template-columns:1fr;background:#f1f5f9;min-height:100dvh;font-family:'Inter',sans-serif;color:#0f172a;}
-@media(min-width:900px){.cp-pub-root{grid-template-areas:"left-sidebar main right-sidebar";grid-template-columns:230px 1fr 260px;grid-template-rows:1fr;}}
+.cp-pub-mob-hdr{display:block;}
+@media(min-width:900px){.cp-pub-mob-hdr{display:none;}}
+.cp-pub-root{display:grid;grid-template-areas:"main";grid-template-rows:1fr;grid-template-columns:1fr;background:#f1f5f9;min-height:100dvh;font-family:'Inter',sans-serif;color:#0f172a;}
+@media(max-width:899px){.cp-pub-root{padding-top:64px;}}
+@media(min-width:900px){.cp-pub-root{grid-template-areas:"left-sidebar main";grid-template-columns:230px 1fr;grid-template-rows:1fr;}}
 
-.cp-pub-header{grid-area:header;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,0.05);position:sticky;top:0;z-index:100;}
-@media(min-width:900px){.cp-pub-header{display:none;}}
 .cp-pub-hdr-left{display:flex;align-items:center;gap:8px;}
 .cp-pub-brand{font-size:19px;font-weight:800;color:#0077b5;letter-spacing:-0.03em;font-family:'Inter',sans-serif;}
 .cp-pub-back-btn{background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background .15s;color:#475569;}
@@ -566,7 +558,4 @@ const STYLES = `
 .cp-pub-detail-row:last-child{border-bottom:none;}
 
 .cp-pub-hdr-right{display:flex;align-items:center;gap:8px;}
-.cp-pub-hdr-msg-btn{width:38px;height:38px;border-radius:50%;border:1.5px solid #e2e8f0;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .15s;}
-.cp-pub-hdr-msg-btn:active{transform:scale(.93);}
-.cp-pub-hdr-msg-btn:disabled{opacity:.6;cursor:not-allowed;}
 `

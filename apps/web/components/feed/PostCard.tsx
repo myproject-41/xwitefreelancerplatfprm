@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { postService } from '../../services/post.service'
@@ -12,6 +12,7 @@ interface PostCardProps {
   viewerId?: string
   hasCompletedAction?: boolean
   onActionComplete?: (postId: string) => void
+  onDelete?: (postId: string) => void
   detailMode?: boolean
 }
 
@@ -47,6 +48,14 @@ function MoreIcon() {
       <circle cx="6.5" cy="12" r="1.5" />
       <circle cx="12" cy="12" r="1.5" />
       <circle cx="17.5" cy="12" r="1.5" />
+    </svg>
+  )
+}
+
+function TrashIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
+      <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
     </svg>
   )
 }
@@ -134,10 +143,13 @@ export default function PostCard({
   viewerId,
   hasCompletedAction = false,
   onActionComplete,
+  onDelete,
   detailMode = false,
 }: PostCardProps) {
   const router = useRouter()
   const [showProposal, setShowProposal] = useState(false)
+  const [showMenu, setShowMenu] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
   const [expanded, setExpanded] = useState(false)
   const [coverLetter, setCoverLetter] = useState('')
   const [proposedRate, setProposedRate] = useState('')
@@ -214,6 +226,27 @@ export default function PostCard({
     setLiked(Boolean(post.viewerHasLiked))
     setLikesCount(Number(post.likesCount ?? 0))
   }, [post.id, post.viewerHasLiked, post.likesCount])
+
+  useEffect(() => {
+    if (!showMenu) return
+    function handleOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setShowMenu(false)
+    }
+    document.addEventListener('mousedown', handleOutside)
+    return () => document.removeEventListener('mousedown', handleOutside)
+  }, [showMenu])
+
+  const handleDelete = async () => {
+    setShowMenu(false)
+    if (!window.confirm('Delete this post? This cannot be undone.')) return
+    try {
+      await postService.deletePost(post.id)
+      toast.success('Post deleted')
+      onDelete?.(post.id)
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message || 'Failed to delete post')
+    }
+  }
 
   const openPost = () => {
     router.push(postHref)
@@ -401,14 +434,30 @@ export default function PostCard({
             </div>
           </button>
 
-          <button
-            type="button"
-            onClick={() => toast('More actions coming soon!')}
-            className="rounded-full p-1 text-[#404850] transition hover:bg-[#f4f3f0]"
-            aria-label="Post actions"
-          >
-            <MoreIcon />
-          </button>
+          {isOwner && (
+            <div className="relative" ref={menuRef}>
+              <button
+                type="button"
+                onClick={() => setShowMenu(v => !v)}
+                className="rounded-full p-1 text-[#404850] transition hover:bg-[#f4f3f0]"
+                aria-label="Post actions"
+              >
+                <MoreIcon />
+              </button>
+              {showMenu && (
+                <div className="absolute right-0 top-full z-20 mt-1 min-w-[140px] overflow-hidden rounded-xl border border-[#e9e8e5] bg-white shadow-lg">
+                  <button
+                    type="button"
+                    onClick={() => void handleDelete()}
+                    className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm font-semibold text-red-600 transition hover:bg-red-50"
+                  >
+                    <TrashIcon />
+                    Delete post
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col gap-3">
