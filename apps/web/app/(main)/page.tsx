@@ -434,8 +434,24 @@ export default function HomePage() {
 
         <section className="space-y-5 lg:col-span-6">
           {loading ? (
-            <div className="rounded-xl border border-[#e2e8f0] bg-white p-10 text-center text-sm text-[#404850] shadow-sm">
-              Loading home...
+            <div className="space-y-5">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="rounded-xl border border-[#e2e8f0] bg-white p-5 shadow-sm">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="h-10 w-10 rounded-full bg-[#e9eef3] animate-pulse" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-3 w-32 rounded-full bg-[#e9eef3] animate-pulse" />
+                      <div className="h-2.5 w-24 rounded-full bg-[#e9eef3] animate-pulse" />
+                    </div>
+                  </div>
+                  <div className="space-y-2 mb-4">
+                    <div className="h-3 w-3/4 rounded-full bg-[#e9eef3] animate-pulse" />
+                    <div className="h-3 w-full rounded-full bg-[#e9eef3] animate-pulse" />
+                    <div className="h-3 w-2/3 rounded-full bg-[#e9eef3] animate-pulse" />
+                  </div>
+                  <div className="h-10 w-full rounded-xl bg-[#e9eef3] animate-pulse" />
+                </div>
+              ))}
             </div>
           ) : error ? (
             <div className="rounded-xl border border-[#e2e8f0] bg-white p-10 text-center shadow-sm">

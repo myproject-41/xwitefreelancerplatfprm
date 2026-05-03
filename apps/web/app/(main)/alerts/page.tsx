@@ -340,7 +340,7 @@ export default function AlertsPage() {
   const { user } = useAuthStore()
   const router = useRouter()
   const [notifications, setNotifications] = useState<Notification[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [filter, setFilter] = useState<'all' | 'unread'>('all')
 
   const unreadCount = notifications.filter(n => !n.isRead).length

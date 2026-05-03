@@ -32,29 +32,24 @@ export default function CreatePostPage() {
     if (budgetNum !== undefined && isNaN(budgetNum)) return toast.error('Budget must be a valid number')
     if (budgetNum !== undefined && budgetNum <= 0) return toast.error('Budget must be greater than 0')
 
-    setLoading(true)
-    try {
-      await postService.createPost({
-        type: isFreelancer ? 'SKILL_EXCHANGE' : isCompany ? 'COLLAB' : 'TASK',
-        title: title.trim(),
-        description,
-        budget: (isCompany || isClient) && budgetNum ? budgetNum : undefined,
-        skills: isClient ? skills : [],
-      })
-      toast.success(
-        isFreelancer ? 'Post published!' : isCompany ? 'Company post published!' : 'Task published!'
-      )
-      router.push('/')
-    } catch (error: any) {
+    router.push('/')
+    toast.success(
+      isFreelancer ? 'Post published!' : isCompany ? 'Company post published!' : 'Task published!'
+    )
+    postService.createPost({
+      type: isFreelancer ? 'SKILL_EXCHANGE' : isCompany ? 'COLLAB' : 'TASK',
+      title: title.trim(),
+      description,
+      budget: (isCompany || isClient) && budgetNum ? budgetNum : undefined,
+      skills: isClient ? skills : [],
+    }).catch((error: any) => {
       const fieldErrors = error.response?.data?.errors
       if (fieldErrors?.length) {
         toast.error(fieldErrors[0].message)
       } else {
         toast.error(error.response?.data?.message || 'Failed to create post')
       }
-    } finally {
-      setLoading(false)
-    }
+    })
   }
 
   const inputCls = 'mt-1 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm text-[#1b1c1a] outline-none placeholder:text-[#9ca3af] focus:ring-2 focus:ring-[#005d8f]/25'

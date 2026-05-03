@@ -1065,17 +1065,11 @@ function NetworkPageInner() {
 
           {/* ── Main Content ──────────────────────────────────────────────────── */}
           <div className="lg:col-span-9">
-            {loading ? (
-              <div className="flex justify-center py-20">
-                <div className="w-9 h-9 border-4 border-[#005d8f] border-t-transparent rounded-full animate-spin" />
-              </div>
-            ) : (
-              <>
-                {activeSection === 'overview' && <OverviewSection {...commonProps} suggestions={suggestions} following={following} onConnect={handleConnect} />}
-                {activeSection === 'connections' && <ConnectionsSection {...commonProps} connections={connections} onRemove={handleRemove} />}
-                {activeSection === 'following' && <FollowSection {...commonProps} following={following} followers={followers} onUnfollow={handleUnfollow} onConnect={handleConnect} />}
-              </>
-            )}
+            <>
+              {activeSection === 'overview' && <OverviewSection {...commonProps} suggestions={suggestions} following={following} onConnect={handleConnect} />}
+              {activeSection === 'connections' && <ConnectionsSection {...commonProps} connections={connections} onRemove={handleRemove} />}
+              {activeSection === 'following' && <FollowSection {...commonProps} following={following} followers={followers} onUnfollow={handleUnfollow} onConnect={handleConnect} />}
+            </>
           </div>
         </div>
       </div>

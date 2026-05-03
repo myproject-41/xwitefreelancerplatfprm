@@ -119,33 +119,34 @@ export default function FreelancerProfile() {
     if (user.role === 'CLIENT')  { router.replace('/profile');         return }
   }, [user])
 
-  /* ── Profile fields ── */
-  const [fullName,        setFullName]        = useState('')
-  const [title,           setTitle]           = useState('')
-  const [bio,             setBio]             = useState('')
-  const [country,         setCountry]         = useState('')
-  const [city,            setCity]            = useState('')
-  const [timezone,        setTimezone]        = useState('Asia/Kolkata')
-  const [currency,        setCurrency]        = useState('INR')
-  const [experienceLevel, setExperienceLevel] = useState('Intermediate')
-  const [noticePeriod,    setNoticePeriod]    = useState('IMMEDIATELY')
-  const [skills,          setSkills]          = useState<string[]>([])
-  const [languages,       setLanguages]       = useState<Language[]>([{ language:'English', proficiency:'FLUENT' }])
-  const [portfolioUrls,   setPortfolioUrls]   = useState<PortfolioUrl[]>([{ label:'GitHub', url:'' }])
-  const [hourlyRate,      setHourlyRate]      = useState<number>(0)
-  const [minBudget,       setMinBudget]       = useState<number>(0)
-  const [fixedPrice,      setFixedPrice]      = useState(false)
-  const [availability,    setAvailability]    = useState(true)
-  const [experience,      setExperience]      = useState<Experience[]>([])
-  const [qualifications,  setQualifications]  = useState<Qualification[]>([])
-  const [connections,     setConnections]     = useState(0)
+  /* ── Profile fields — seeded from cache so page shows instantly ── */
+  const _p = user?.freelancerProfile ?? {} as any
+  const [fullName,        setFullName]        = useState(_p.fullName        ?? user?.email ?? '')
+  const [title,           setTitle]           = useState(_p.title           ?? '')
+  const [bio,             setBio]             = useState(_p.bio             ?? '')
+  const [country,         setCountry]         = useState(_p.country         ?? '')
+  const [city,            setCity]            = useState(_p.city            ?? '')
+  const [timezone,        setTimezone]        = useState(_p.timezone        ?? 'Asia/Kolkata')
+  const [currency,        setCurrency]        = useState(_p.currency        ?? 'INR')
+  const [experienceLevel, setExperienceLevel] = useState(_p.experienceLevel ?? 'Intermediate')
+  const [noticePeriod,    setNoticePeriod]    = useState(_p.noticePeriod    ?? 'IMMEDIATELY')
+  const [skills,          setSkills]          = useState<string[]>(_p.skills ?? [])
+  const [languages,       setLanguages]       = useState<Language[]>(_p.languages?.length ? _p.languages : [{ language:'English', proficiency:'FLUENT' }])
+  const [portfolioUrls,   setPortfolioUrls]   = useState<PortfolioUrl[]>(_p.portfolioUrls?.length ? _p.portfolioUrls : [{ label:'GitHub', url:'' }])
+  const [hourlyRate,      setHourlyRate]      = useState<number>(_p.hourlyRate ?? 0)
+  const [minBudget,       setMinBudget]       = useState<number>(_p.minBudget  ?? 0)
+  const [fixedPrice,      setFixedPrice]      = useState(_p.fixedPrice      ?? false)
+  const [availability,    setAvailability]    = useState(_p.availability    ?? true)
+  const [experience,      setExperience]      = useState<Experience[]>((_p.experience ?? []).map((e: any) => ({ title: e.title ?? e.role ?? '', company: e.company ?? '', from: e.from ?? e.startDate ?? '', to: e.to ?? e.endDate ?? '', current: e.current ?? false, description: e.description ?? '' })))
+  const [qualifications,  setQualifications]  = useState<Qualification[]>(_p.qualifications ?? [])
+  const [connections,     setConnections]     = useState(user?.connectionsCount ?? 0)
   const [connectedUsers,  setConnectedUsers]  = useState<ConnectedUser[]>([])
   const [showConnModal,   setShowConnModal]   = useState(false)
-  const [coverSrc,        setCoverSrc]        = useState<string | null>(null)
-  const [avatarSrc,       setAvatarSrc]       = useState<string | null>(null)
+  const [coverSrc,        setCoverSrc]        = useState<string | null>(_p.coverImage   ?? null)
+  const [avatarSrc,       setAvatarSrc]       = useState<string | null>(_p.profileImage ?? null)
 
   /* ── UI state ── */
-  const [pageLoading,     setPageLoading]     = useState(true)
+  const [pageLoading,     setPageLoading]     = useState(!user?.freelancerProfile)
   const [coverUploading,  setCoverUploading]  = useState(false)
   const [avatarUploading, setAvatarUploading] = useState(false)
   const [saving,          setSaving]          = useState(false)
@@ -208,7 +209,6 @@ export default function FreelancerProfile() {
   useEffect(() => { loadProfile(); loadWallet() }, [])
 
   async function loadProfile() {
-    setPageLoading(true)
     try {
       const res = await authService.getMe()
       const d   = res.data
