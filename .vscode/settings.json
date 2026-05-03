@@ -1,3 +1,11 @@
 {
-  "json.schemaStore.enabled": false
+  "json.schemaStore.enabled": false,
+  "json.schemas": [
+    {
+      "fileMatch": ["package.json"],
+      "schema": {
+        "type": "object"
+      }
+    }
+  ]
 }
