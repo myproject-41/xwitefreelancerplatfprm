@@ -15,6 +15,23 @@ declare global {
   }
 }
 
+export const optionalAuthenticate = (
+  req: Request,
+  _res: Response,
+  next: NextFunction
+): void => {
+  try {
+    const authHeader = req.headers.authorization
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1]
+      req.user = authService.verifyToken(token)
+    }
+  } catch {
+    // invalid token — treat as unauthenticated
+  }
+  next()
+}
+
 export const authenticate = (
   req: Request,
   res: Response,

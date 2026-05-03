@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express'
 import { postController } from './post.controller'
-import { authenticate, authorize } from '../../middlewares/auth.middleware'
+import { authenticate, authorize, optionalAuthenticate } from '../../middlewares/auth.middleware'
 import { Role } from '../auth/roles'
 
 const router: Router = Router()
@@ -8,6 +8,10 @@ const router: Router = Router()
 // Public — no auth required to view a user's posts
 router.get('/user/:userId', (req: Request, res: Response) =>
   postController.getUserPosts(req, res))
+
+// Get single post — public but enriched for logged-in viewers
+router.get('/:id', optionalAuthenticate, (req: Request, res: Response) =>
+  postController.getPost(req, res))
 
 router.use(authenticate)
 
@@ -39,10 +43,6 @@ router.get('/proposals/:proposalId', (req: Request, res: Response) =>
 router.post('/',
   authorize(Role.COMPANY, Role.CLIENT, Role.FREELANCER),
   (req: Request, res: Response) => postController.createPost(req, res))
-
-// Get single post
-router.get('/:id', (req: Request, res: Response) =>
-  postController.getPost(req, res))
 
 router.post('/:id/like', (req: Request, res: Response) =>
   postController.likePost(req, res))
