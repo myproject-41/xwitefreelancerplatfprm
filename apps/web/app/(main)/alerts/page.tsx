@@ -8,6 +8,7 @@ import { notificationService } from '../../../services/notification.service'
 import { postService } from '../../../services/post.service'
 import { useAuthStore } from '../../../store/authStore'
 import { getSocketClient } from '../../../utils/socketClient'
+import MainHeader from '../../../components/ui/MainHeader'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -55,7 +56,7 @@ const TYPE_COLOR: Record<string, string> = {
   DISPUTE_OPENED: '#dc2626', DISPUTE_RESOLVED: '#16a34a',
 }
 
-// ─── Proposal card (embedded in NEW_PROPOSAL notification) ────────────────────
+// ─── Proposal card ────────────────────────────────────────────────────────────
 
 interface ProposalData {
   freelancerName: string | null
@@ -86,7 +87,6 @@ function ProposalCard({
   const [statusChecked, setStatusChecked] = useState(false)
   const [proposal, setProposal] = useState<ProposalData | null>(null)
 
-  // Fetch full proposal data on mount — handles old notifications with incomplete metadata
   useEffect(() => {
     if (!m.proposalId) { setStatusChecked(true); return }
     postService.getProposal(m.proposalId).then(res => {
@@ -110,7 +110,6 @@ function ProposalCard({
       if (status === 'ACCEPTED') setDone('accepted')
       else if (status === 'REJECTED' || status === 'WITHDRAWN') setDone('rejected')
     }).catch(() => {
-      // Fallback to metadata if API fails
       setProposal({
         freelancerName: m.freelancerName ?? null,
         freelancerTitle: m.freelancerTitle ?? null,
@@ -166,109 +165,83 @@ function ProposalCard({
   }
 
   return (
-    <div style={{ background: '#f8fafc', border: '1.5px solid #e0e7ef', borderRadius: 14, padding: '14px 16px', marginTop: 10 }}>
-      {/* Freelancer info row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-        <div style={{
-          width: 42, height: 42, borderRadius: '50%', flexShrink: 0,
-          background: '#e8f4fd', display: 'flex', alignItems: 'center',
-          justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#005d8f', overflow: 'hidden',
-        }}>
+    <div className="mt-3 rounded-2xl border border-[#e2e8f0] bg-[#f8fafc] p-4">
+      {/* Freelancer info */}
+      <div className="mb-3 flex items-center gap-3">
+        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#edf5fb] text-sm font-bold text-[#005d8f]">
           {p.freelancerImage
-            ? <img src={p.freelancerImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ? <img src={p.freelancerImage} alt="" className="h-full w-full object-cover" />
             : getInitials(p.freelancerName)}
         </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: '#1b1c1a' }}>{p.freelancerName || 'Freelancer'}</p>
-          {p.freelancerTitle && <p style={{ margin: 0, fontSize: 12, color: '#707881' }}>{p.freelancerTitle}</p>}
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-bold text-[#1b1c1a]">{p.freelancerName || 'Freelancer'}</p>
+          {p.freelancerTitle && <p className="truncate text-xs text-[#6b7280]">{p.freelancerTitle}</p>}
         </div>
         {p.proposedRate != null && (
-          <span style={{
-            fontSize: 13, fontWeight: 700, color: '#16a34a',
-            background: '#f0fdf4', padding: '3px 10px', borderRadius: 8, flexShrink: 0,
-          }}>
+          <span className="flex-shrink-0 rounded-lg bg-green-50 px-2.5 py-1 text-sm font-bold text-green-600">
             ₹{Number(p.proposedRate).toLocaleString('en-IN')}
           </span>
         )}
       </div>
 
-      {/* Post */}
+      {/* Post title */}
       {p.postTitle && (
-        <p style={{ margin: '0 0 8px', fontSize: 12, fontWeight: 600, color: '#707881' }}>
-          Proposal for: <span style={{ color: '#0077b5' }}>&ldquo;{p.postTitle}&rdquo;</span>
+        <p className="mb-2 text-xs font-semibold text-[#6b7280]">
+          Proposal for: <span className="text-[#0077b5]">"{p.postTitle}"</span>
         </p>
       )}
 
       {/* Cover letter */}
       {cl && (
-        <div style={{ background: '#fff', borderRadius: 10, padding: '10px 12px', marginBottom: 12, border: '1px solid #e5e7eb' }}>
-          <p style={{ margin: 0, fontSize: 13, color: '#374151', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>
+        <div className="mb-3 rounded-xl border border-[#e2e8f0] bg-white p-3">
+          <p className="text-sm leading-relaxed whitespace-pre-wrap text-[#374151]">
             {isLong && !expanded ? `${cl.slice(0, 180)}…` : cl}
           </p>
           {isLong && (
             <button type="button" onClick={() => setExpanded(e => !e)}
-              style={{ fontSize: 12, color: '#0077b5', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0 0', display: 'block' }}>
+              className="mt-1 text-xs font-semibold text-[#0077b5]">
               {expanded ? 'Show less' : 'Read more'}
             </button>
           )}
         </div>
       )}
 
-      {/* Action buttons */}
-      {/* View Profile is always visible */}
+      {/* View Profile */}
       {p.freelancerId && (
-        <div style={{ marginBottom: 8 }}>
+        <div className="mb-2">
           <Link href={`/profile/${p.freelancerId}`} target="_blank"
-            style={{
-              display: 'inline-block', padding: '8px 16px',
-              background: '#f0f7ff', color: '#005d8f',
-              border: '1.5px solid #bdd8f0', borderRadius: 10,
-              fontSize: 13, fontWeight: 700, textDecoration: 'none',
-            }}>
+            className="inline-block rounded-xl border border-[#bdd8f0] bg-[#edf5fb] px-4 py-2 text-sm font-bold text-[#005d8f]">
             View Profile →
           </Link>
         </div>
       )}
 
+      {/* Actions */}
       {!statusChecked ? (
-        <div style={{ height: 38, borderRadius: 10, background: '#f0f3f6', animation: 'pulse 1.4s ease infinite' }} />
+        <div className="h-10 animate-pulse rounded-xl bg-[#f0f3f6]" />
       ) : done === null ? (
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div className="flex flex-wrap gap-2">
           <button type="button" onClick={accept} disabled={accepting || rejecting}
-            style={{
-              flex: 1, minWidth: 90, padding: '9px 14px',
-              background: 'linear-gradient(135deg,#005d8f,#0077b5)',
-              color: '#fff', border: 'none', borderRadius: 10,
-              fontSize: 13, fontWeight: 700, cursor: 'pointer',
-              opacity: accepting || rejecting ? .65 : 1,
-            }}>
+            className="flex-1 min-w-[90px] rounded-xl bg-[linear-gradient(135deg,#005d8f,#0077b5)] py-2.5 px-3.5 text-sm font-bold text-white disabled:opacity-60">
             {accepting ? 'Accepting…' : '✓ Accept'}
           </button>
           <button type="button" onClick={reject} disabled={accepting || rejecting}
-            style={{
-              flex: 1, minWidth: 90, padding: '9px 14px',
-              background: '#fff0f0', color: '#dc2626',
-              border: '1.5px solid #fca5a5', borderRadius: 10,
-              fontSize: 13, fontWeight: 700, cursor: 'pointer',
-              opacity: accepting || rejecting ? .65 : 1,
-            }}>
+            className="flex-1 min-w-[90px] rounded-xl border border-red-200 bg-red-50 py-2.5 px-3.5 text-sm font-bold text-red-600 disabled:opacity-60">
             {rejecting ? '…' : '✕ Decline'}
           </button>
         </div>
       ) : done === 'accepted' ? (
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-          <div style={{ flex: 1, padding: '10px 14px', background: '#f0fdf4', borderRadius: 10, fontSize: 13, fontWeight: 700, color: '#16a34a' }}>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex-1 rounded-xl bg-green-50 py-2.5 px-3.5 text-sm font-bold text-green-600">
             ✓ Accepted
           </div>
-          <Link href="/payment/escrow" style={{
-            padding: '10px 14px', background: '#0077b5', color: '#fff',
-            borderRadius: 10, fontSize: 13, fontWeight: 700, textDecoration: 'none',
-          }}>
+          <Link href="/payment/escrow"
+            className="rounded-xl bg-[#0077b5] py-2.5 px-3.5 text-sm font-bold text-white">
             View Escrow →
           </Link>
         </div>
       ) : (
-        <div style={{ padding: '10px 14px', background: '#fff1f2', borderRadius: 10, fontSize: 13, fontWeight: 700, color: '#dc2626' }}>
+        <div className="rounded-xl bg-red-50 py-2.5 px-3.5 text-sm font-bold text-red-600">
           ✕ Proposal declined
         </div>
       )}
@@ -300,51 +273,45 @@ function NotifRow({
     if (!isProposal && !isAgent && notif.link) router.push(notif.link)
   }
 
+  const bgCls = notif.isRead
+    ? 'bg-white'
+    : isAgent
+      ? 'bg-purple-50'
+      : 'bg-[#f0f7ff]'
+
   return (
     <div
       onClick={handleClick}
-      style={{
-        padding: '16px 18px',
-        background: notif.isRead ? '#fff' : isAgent ? '#f5f0ff' : '#f0f7ff',
-        borderBottom: '1px solid #f0f3f6',
-        cursor: isProposal || isAgent ? 'default' : notif.link ? 'pointer' : 'default',
-        transition: 'background .15s',
-      }}
+      className={`${bgCls} border-b border-[#f0f3f6] px-5 py-4 transition-colors last:border-b-0 ${!isProposal && !isAgent && notif.link ? 'cursor-pointer hover:bg-[#f8fafc]' : ''}`}
     >
-      <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+      <div className="flex items-start gap-3">
         {/* Icon */}
-        <div style={{
-          width: 40, height: 40, borderRadius: '50%', flexShrink: 0,
-          background: isAgent ? '#ede9fe' : `${color}18`,
-          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18,
-        }}>
+        <div
+          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-lg"
+          style={{ background: isAgent ? '#ede9fe' : `${color}18` }}
+        >
           {icon}
         </div>
 
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'flex-start' }}>
-            <p style={{ margin: 0, fontSize: 14, fontWeight: notif.isRead ? 600 : 700, color: '#1b1c1a', lineHeight: 1.4 }}>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <p className={`text-sm leading-snug text-[#1b1c1a] ${notif.isRead ? 'font-semibold' : 'font-bold'}`}>
               {notif.title}
             </p>
-            <span style={{ fontSize: 11, color: '#94a3b8', flexShrink: 0, marginTop: 1 }}>{timeAgo(notif.createdAt)}</span>
+            <span className="mt-0.5 flex-shrink-0 text-xs text-[#94a3b8]">{timeAgo(notif.createdAt)}</span>
           </div>
-          <p style={{ margin: '4px 0 0', fontSize: 13, color: '#5a6470', lineHeight: 1.55 }}>{notif.message}</p>
+          <p className="mt-1 text-xs leading-snug text-[#5a6470]">{notif.message}</p>
 
           {isProposal && notif.metadata && (
             <ProposalCard notif={notif} onAccepted={onAccepted} onRejected={onRejected} />
           )}
 
           {isAgent && (
-            <div style={{ marginTop: 10 }}>
+            <div className="mt-2.5">
               <Link
                 href="/agent"
                 onClick={e => { e.stopPropagation(); if (!notif.isRead) onRead(notif.id) }}
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 6,
-                  padding: '8px 16px', borderRadius: 20,
-                  background: 'linear-gradient(135deg,#7c3aed,#9333ea)',
-                  color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none',
-                }}
+                className="inline-flex items-center gap-1.5 rounded-full bg-[linear-gradient(135deg,#7c3aed,#9333ea)] px-4 py-2 text-sm font-bold text-white"
               >
                 🤖 AI Agent
               </Link>
@@ -353,14 +320,14 @@ function NotifRow({
 
           {!isProposal && !isAgent && notif.link && (
             <Link href={notif.link} onClick={e => e.stopPropagation()}
-              style={{ fontSize: 12, color: '#0077b5', fontWeight: 600, marginTop: 6, display: 'inline-block' }}>
+              className="mt-1.5 inline-block text-xs font-semibold text-[#0077b5]">
               View →
             </Link>
           )}
         </div>
 
         {!notif.isRead && (
-          <div style={{ width: 9, height: 9, borderRadius: '50%', background: isAgent ? '#7c3aed' : '#0077b5', flexShrink: 0, marginTop: 6 }} />
+          <div className={`mt-1.5 h-2.5 w-2.5 flex-shrink-0 rounded-full ${isAgent ? 'bg-purple-500' : 'bg-[#0077b5]'}`} />
         )}
       </div>
     </div>
@@ -378,7 +345,6 @@ export default function AlertsPage() {
 
   const unreadCount = notifications.filter(n => !n.isRead).length
 
-  // Load
   useEffect(() => {
     let ignore = false
     async function load() {
@@ -392,7 +358,6 @@ export default function AlertsPage() {
     return () => { ignore = true }
   }, [])
 
-  // Real-time socket
   useEffect(() => {
     if (!user?.id) return
     const socket = getSocketClient()
@@ -423,75 +388,64 @@ export default function AlertsPage() {
   const visible = filter === 'unread' ? notifications.filter(n => !n.isRead) : notifications
 
   return (
-    <main style={{ minHeight: '100vh', background: '#EDF1F7', paddingBottom: 80 }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        *,*::before,*::after{box-sizing:border-box;}
-        body{font-family:'Inter',sans-serif;}
-        .al-tab{padding:7px 16px;border-radius:20px;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;}
-        .al-active{background:#0077b5;color:#fff;box-shadow:0 4px 12px rgba(0,119,181,.3);}
-        .al-inactive{background:rgba(255,255,255,.25);color:rgba(255,255,255,.9);border:1.5px solid rgba(255,255,255,.3);}
-        .al-inactive:hover{background:rgba(255,255,255,.4);}
-      `}</style>
+    <div className="min-h-screen bg-[#f1f5f9]">
+      <MainHeader />
 
-      {/* Header */}
-      <div style={{
-        background: 'linear-gradient(135deg,#005d8f 0%,#0077b5 100%)',
-        padding: '52px 20px 22px', color: '#fff',
-      }}>
-        <div style={{ maxWidth: 640, margin: '0 auto' }}>
-          <p style={{ margin: 0, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.14em', opacity: .75 }}>
-            Activity
-          </p>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 6 }}>
-            <h1 style={{ margin: 0, fontSize: 26, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 10 }}>
+      <main className="mx-auto max-w-2xl px-4 pb-28 pt-24 md:px-6">
+        {/* Page title */}
+        <div className="mb-5 flex items-start justify-between gap-3">
+          <div>
+            <h1 className="flex items-center gap-2 text-xl font-extrabold text-[#1b1c1a]">
               Notifications
               {unreadCount > 0 && (
-                <span style={{
-                  fontSize: 12, fontWeight: 700, background: '#ff4d4f', color: '#fff',
-                  padding: '2px 9px', borderRadius: 20,
-                }}>
+                <span className="rounded-full bg-red-500 px-2 py-0.5 text-xs font-bold text-white">
                   {unreadCount}
                 </span>
               )}
             </h1>
-            {unreadCount > 0 && (
-              <button type="button" onClick={markAllRead}
-                style={{
-                  background: 'rgba(255,255,255,.2)', color: '#fff',
-                  border: '1px solid rgba(255,255,255,.35)', borderRadius: 20,
-                  padding: '6px 14px', fontSize: 12, fontWeight: 600, cursor: 'pointer',
-                  fontFamily: 'Inter,sans-serif',
-                }}>
-                Mark all read
-              </button>
-            )}
+            <p className="mt-0.5 text-xs text-[#6b7280]">Proposals, payments and activity updates</p>
           </div>
-          <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
-            <button className={`al-tab ${filter === 'all' ? 'al-active' : 'al-inactive'}`}
-              onClick={() => setFilter('all')}>
-              All {notifications.length > 0 && `(${notifications.length})`}
+          {unreadCount > 0 && (
+            <button
+              type="button"
+              onClick={markAllRead}
+              className="mt-1 flex-shrink-0 rounded-full border border-[#d6dce3] bg-white px-3 py-1.5 text-xs font-bold text-[#005d8f] transition hover:bg-[#edf5fb]"
+            >
+              Mark all read
             </button>
-            <button className={`al-tab ${filter === 'unread' ? 'al-active' : 'al-inactive'}`}
-              onClick={() => setFilter('unread')}>
-              Unread {unreadCount > 0 && `(${unreadCount})`}
-            </button>
-          </div>
+          )}
         </div>
-      </div>
 
-      {/* List */}
-      <div style={{ maxWidth: 640, margin: '16px auto 0', padding: '0 12px' }}>
-        <div style={{ background: '#fff', borderRadius: 20, boxShadow: '0 2px 16px rgba(0,0,0,0.07)', overflow: 'hidden' }}>
+        {/* Filter tabs */}
+        <div className="mb-4 flex gap-2">
+          {(['all', 'unread'] as const).map(f => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`rounded-full px-4 py-1.5 text-sm font-bold transition ${
+                filter === f
+                  ? 'bg-[#005d8f] text-white shadow-sm'
+                  : 'border border-[#d6dce3] bg-white text-[#6b7280] hover:border-[#005d8f] hover:text-[#005d8f]'
+              }`}
+            >
+              {f === 'all'
+                ? `All${notifications.length > 0 ? ` (${notifications.length})` : ''}`
+                : `Unread${unreadCount > 0 ? ` (${unreadCount})` : ''}`}
+            </button>
+          ))}
+        </div>
+
+        {/* Notifications list */}
+        <div className="overflow-hidden rounded-2xl border border-[#e2e8f0] bg-white shadow-sm">
           {loading ? (
-            <div style={{ padding: 40, textAlign: 'center', color: '#707881', fontSize: 14 }}>Loading…</div>
+            <div className="py-10 text-center text-sm text-[#6b7280]">Loading…</div>
           ) : visible.length === 0 ? (
-            <div style={{ padding: 60, textAlign: 'center' }}>
-              <div style={{ fontSize: 48, marginBottom: 12 }}>🔔</div>
-              <p style={{ margin: 0, fontWeight: 700, color: '#1b1c1a', fontSize: 16, fontFamily: 'Inter,sans-serif' }}>
+            <div className="py-16 text-center">
+              <p className="text-4xl">🔔</p>
+              <p className="mt-3 font-bold text-[#1b1c1a]">
                 {filter === 'unread' ? 'All caught up!' : 'No notifications yet'}
               </p>
-              <p style={{ margin: '6px 0 0', color: '#707881', fontSize: 14, fontFamily: 'Inter,sans-serif' }}>
+              <p className="mt-1 text-sm text-[#6b7280]">
                 Proposal alerts, payment updates and more will appear here.
               </p>
             </div>
@@ -507,7 +461,7 @@ export default function AlertsPage() {
             ))
           )}
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   )
 }

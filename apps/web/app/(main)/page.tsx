@@ -360,7 +360,7 @@ export default function HomePage() {
 
       <div className="mx-auto grid max-w-screen-xl grid-cols-1 gap-8 px-4 pb-24 pt-24 md:px-6 lg:grid-cols-12">
         <aside className="hidden space-y-4 lg:col-span-3 lg:block">
-          <div className="overflow-hidden rounded-xl border border-zinc-200/10 bg-white shadow-sm">
+          <div className="overflow-hidden rounded-xl border border-[#e2e8f0] bg-white shadow-sm">
             <div
               className="h-14 bg-[linear-gradient(90deg,rgba(0,93,143,0.2),rgba(69,97,122,0.2))]"
               style={coverImage ? { backgroundImage: `url(${coverImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
@@ -395,7 +395,7 @@ export default function HomePage() {
           </div>
 
           {isFreelancer ? (
-            <div className="rounded-xl border border-zinc-200/10 bg-white p-4 shadow-sm">
+            <div className="rounded-xl border border-[#e2e8f0] bg-white p-4 shadow-sm">
               <h3 className="text-sm font-bold">Skills to Offer</h3>
               <div className="mt-3 flex flex-wrap gap-2">
                 {skills.length ? (
@@ -412,7 +412,7 @@ export default function HomePage() {
           ) : null}
 
           {isClient ? (
-            <div className="rounded-xl border border-zinc-200/10 bg-white p-4 shadow-sm">
+            <div className="rounded-xl border border-[#e2e8f0] bg-white p-4 shadow-sm">
               <h3 className="mb-3 text-sm font-bold">Spend Overview</h3>
               <div className="space-y-2">
                 <div className="rounded-lg bg-[#f4f7fa] px-3 py-2.5">
@@ -434,16 +434,16 @@ export default function HomePage() {
 
         <section className="space-y-5 lg:col-span-6">
           {loading ? (
-            <div className="rounded-xl border border-zinc-200/10 bg-white p-10 text-center text-sm text-[#404850] shadow-sm">
+            <div className="rounded-xl border border-[#e2e8f0] bg-white p-10 text-center text-sm text-[#404850] shadow-sm">
               Loading home...
             </div>
           ) : error ? (
-            <div className="rounded-xl border border-zinc-200/10 bg-white p-10 text-center shadow-sm">
+            <div className="rounded-xl border border-[#e2e8f0] bg-white p-10 text-center shadow-sm">
               <p className="text-lg font-bold text-[#1b1c1a]">Unable to load home</p>
               <p className="mt-2 text-sm text-[#404850]">{error}</p>
             </div>
           ) : visiblePosts.length === 0 ? (
-            <div className="rounded-xl border border-zinc-200/10 bg-white p-10 text-center shadow-sm">
+            <div className="rounded-xl border border-[#e2e8f0] bg-white p-10 text-center shadow-sm">
               <p className="text-lg font-bold text-[#1b1c1a]">{deferredSearch ? 'No matching posts found' : 'No posts available'}</p>
               <p className="mt-2 text-sm text-[#404850]">
                 {deferredSearch
@@ -469,7 +469,7 @@ export default function HomePage() {
         </section>
 
         <aside className="hidden space-y-5 lg:col-span-3 lg:block">
-          <div className="rounded-xl border border-zinc-200/10 bg-white p-5 shadow-sm">
+          <div className="rounded-xl border border-[#e2e8f0] bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-1.5">
                 <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 text-orange-500">
@@ -508,7 +508,7 @@ export default function HomePage() {
             )}
           </div>
 
-          <div className="rounded-xl border border-zinc-200/10 bg-white p-5 shadow-sm">
+          <div className="rounded-xl border border-[#e2e8f0] bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between gap-3">
               <h3 className="text-sm font-bold">People Who Liked Your Posts</h3>
             </div>
@@ -604,7 +604,7 @@ export default function HomePage() {
             </div>
           ) : null}
 
-          <div className="rounded-xl border border-zinc-200/10 bg-white p-5 shadow-sm">
+          <div className="rounded-xl border border-[#e2e8f0] bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between gap-3">
               <h3 className="text-sm font-bold">May Also Know People</h3>
             </div>
