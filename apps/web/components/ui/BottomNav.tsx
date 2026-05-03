@@ -105,7 +105,7 @@ export default function BottomNav() {
     : '/profile'
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-zinc-200 bg-white md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-zinc-200/60 bg-white/95 backdrop-blur-md md:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
       <div className="mx-auto flex max-w-screen-sm">
         {NAV_ITEMS.map((item) => {
           const resolvedPath = item.label === 'Profile' ? profilePath : item.path
@@ -119,30 +119,27 @@ export default function BottomNav() {
             <Link
               key={item.path}
               href={resolvedPath}
-              className={`relative flex flex-1 flex-col items-center justify-center gap-0.5 py-3 transition-colors ${
-                isPost ? '' : isActive ? 'text-[#005d8f]' : 'text-[#707881] hover:text-[#005d8f]'
+              className={`relative flex flex-1 flex-col items-center justify-center gap-0.5 py-2.5 transition-all duration-150 active:scale-95 ${
+                isPost ? '' : isActive ? 'text-[#005d8f]' : 'text-[#9ca3af] hover:text-[#005d8f]'
               }`}
             >
               {isPost ? (
-                <div className="-mt-5 flex h-12 w-12 items-center justify-center rounded-full bg-[#005d8f] text-white shadow-lg">
+                <div className="-mt-4 flex h-11 w-11 items-center justify-center rounded-full bg-[#005d8f] text-white shadow-[0_4px_14px_rgba(0,93,143,0.4)] transition-transform duration-150 active:scale-90">
                   <NavIcon name={item.icon} />
                 </div>
               ) : (
                 <>
-                  <div className="relative">
+                  <div className={`relative flex items-center justify-center rounded-2xl transition-all duration-150 ${isActive ? 'bg-[#e8f4fd] px-3 py-1' : 'px-3 py-1'}`}>
                     <NavIcon name={item.icon} active={isActive} />
                     {isAlerts && unreadCount > 0 && (
-                      <span className="absolute -right-2 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#ff4d4f] px-1 text-[9px] font-bold text-white leading-none">
+                      <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#ff4d4f] px-1 text-[9px] font-bold leading-none text-white">
                         {unreadCount > 9 ? '9+' : unreadCount}
                       </span>
                     )}
                   </div>
-                  <span className={`text-[10px] font-medium uppercase ${isActive ? 'text-[#005d8f]' : 'text-[#707881]'}`}>
+                  <span className={`text-[9px] font-semibold tracking-wide ${isActive ? 'text-[#005d8f]' : 'text-[#9ca3af]'}`}>
                     {item.label}
                   </span>
-                  {isActive ? (
-                    <span className="absolute bottom-0 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-[#005d8f]" />
-                  ) : null}
                 </>
               )}
             </Link>

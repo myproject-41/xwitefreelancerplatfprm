@@ -170,7 +170,7 @@ export default function MainHeader() {
 
           <Link
             href="/agent"
-            className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#005d8f_0%,#0077b5_100%)] px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90"
+            className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#005d8f_0%,#0077b5_100%)] px-4 py-2 text-sm font-medium text-white shadow-sm transition-all duration-150 hover:opacity-90 active:scale-95"
           >
             <SparkIcon />
             <span className="hidden sm:inline">AI Agent</span>
@@ -179,7 +179,7 @@ export default function MainHeader() {
           <Link
             href="/messages"
             aria-label="Messages"
-            className="relative flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#005d8f]/20 bg-white text-[#005d8f] transition hover:bg-[#edf5fb]"
+            className="relative flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#005d8f]/20 bg-white text-[#005d8f] transition-all duration-150 hover:bg-[#edf5fb] active:scale-95"
           >
             <MessageIcon />
             {messageUnreadCount > 0 ? (
