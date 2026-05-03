@@ -5,17 +5,37 @@ import toast from 'react-hot-toast'
 import { useAuthStore } from '../../../store/authStore'
 import { authService } from '../../../services/auth.service'
 import apiClient from '../../../services/apiClient'
+import MainHeader from '../../../components/ui/MainHeader'
+
+type Page = 'menu' | 'security' | 'data-privacy' | 'privacy-policy' | 'accessibility' | 'user-agreement'
+
+function ChevronRight() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4 text-[#9ca3af]">
+      <path d="m9 18 6-6-6-6" />
+    </svg>
+  )
+}
+
+function BackArrow() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
+      <path d="m15 18-6-6 6-6" />
+    </svg>
+  )
+}
 
 export default function SettingsPage() {
   const router = useRouter()
   const { user, logout } = useAuthStore()
-  const [activeTab, setActiveTab] = useState<'account' | 'password' | 'danger'>('account')
+  const [page, setPage] = useState<Page>('menu')
 
   // Password change
   const [oldPassword, setOldPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [pwLoading, setPwLoading] = useState(false)
+  const [showPwForm, setShowPwForm] = useState(false)
 
   // Delete account
   const [deletePassword, setDeletePassword] = useState('')
@@ -33,17 +53,12 @@ export default function SettingsPage() {
     e.preventDefault()
     if (newPassword !== confirmPassword) return toast.error('Passwords do not match')
     if (newPassword.length < 8) return toast.error('Password must be at least 8 characters')
-
     setPwLoading(true)
     try {
-      await apiClient.put('/api/auth/change-password', {
-        oldPassword,
-        newPassword,
-      })
+      await apiClient.put('/api/auth/change-password', { oldPassword, newPassword })
       toast.success('Password changed successfully!')
-      setOldPassword('')
-      setNewPassword('')
-      setConfirmPassword('')
+      setOldPassword(''); setNewPassword(''); setConfirmPassword('')
+      setShowPwForm(false)
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Failed to change password')
     } finally {
@@ -55,9 +70,7 @@ export default function SettingsPage() {
     if (!deletePassword) return toast.error('Enter your password to confirm')
     setDeleteLoading(true)
     try {
-      await apiClient.delete('/api/auth/delete-account', {
-        data: { password: deletePassword },
-      })
+      await apiClient.delete('/api/auth/delete-account', { data: { password: deletePassword } })
       logout()
       authService.removeToken()
       toast.success('Account deleted')
@@ -69,232 +82,231 @@ export default function SettingsPage() {
     }
   }
 
-  const tabs = [
-    { id: 'account', label: '👤 Account', icon: '👤' },
-    { id: 'password', label: '🔒 Password', icon: '🔒' },
-    { id: 'danger', label: '⚠️ Danger Zone', icon: '⚠️' },
+  const pageTitles: Record<Page, string> = {
+    menu: 'Settings',
+    security: 'Sign & Security',
+    'data-privacy': 'Data Privacy',
+    'privacy-policy': 'Privacy Policy',
+    accessibility: 'Accessibility',
+    'user-agreement': 'User Agreement',
+  }
+
+  const MENU_SECTIONS = [
+    {
+      title: 'Account',
+      items: [
+        { id: 'security' as Page, label: 'Sign & Security', icon: '🔐', desc: 'Email, password, account deletion' },
+      ],
+    },
+    {
+      title: 'Legal & Privacy',
+      items: [
+        { id: 'data-privacy' as Page, label: 'Data Privacy', icon: '🛡️', desc: 'How we handle your data' },
+        { id: 'privacy-policy' as Page, label: 'Privacy Policy', icon: '📄', desc: 'Xwite privacy policy' },
+        { id: 'user-agreement' as Page, label: 'User Agreement', icon: '📋', desc: 'Terms of use' },
+      ],
+    },
+    {
+      title: 'More',
+      items: [
+        { id: 'accessibility' as Page, label: 'Accessibility', icon: '♿', desc: 'Accessibility features' },
+      ],
+    },
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-4 flex items-center gap-3 sticky top-0 z-40">
-        <button onClick={() => router.back()} className="text-gray-500 hover:text-gray-700 font-medium">
-          ← Back
-        </button>
-        <h1 className="font-extrabold text-lg text-gray-800">Settings</h1>
-      </header>
+    <div className="min-h-screen bg-[#f1f5f9]">
+      <MainHeader />
+      <div className="mx-auto max-w-2xl px-4 pb-28 pt-20">
 
-      <main className="max-w-2xl mx-auto px-4 py-6 space-y-4">
-        {/* User info card */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-5 flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-2xl font-extrabold text-blue-600">
-            {user?.email?.[0]?.toUpperCase() || 'U'}
-          </div>
-          <div>
-            <p className="font-extrabold text-gray-800">{user?.email}</p>
-            <span className="text-xs bg-blue-100 text-blue-700 px-2.5 py-1 rounded-full font-bold">
-              {user?.role}
-            </span>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="ml-auto bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-xl text-sm font-bold hover:bg-red-100 transition-colors"
-          >
-            Logout
-          </button>
-        </div>
-
-        {/* Tabs */}
-        <div className="flex gap-2 bg-white rounded-2xl border border-gray-200 p-1.5">
-          {tabs.map(tab => (
+        {/* Sub-page header (back button) */}
+        {page !== 'menu' && (
+          <div className="mb-4 flex items-center gap-3">
             <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`flex-1 py-2 rounded-xl text-sm font-bold transition-all ${
-                activeTab === tab.id
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
+              onClick={() => { setPage('menu'); setShowPwForm(false); setShowDeleteConfirm(false) }}
+              className="flex items-center gap-1.5 rounded-full border border-[#d6dce3] bg-white px-3 py-1.5 text-sm font-bold text-[#005d8f] transition hover:bg-[#f4f8fb]"
             >
-              {tab.label}
+              <BackArrow />
+              Back
             </button>
-          ))}
-        </div>
-
-        {/* Account Tab */}
-        {activeTab === 'account' && (
-          <div className="bg-white rounded-2xl border border-gray-200 p-5 space-y-4">
-            <h2 className="font-extrabold text-gray-800">Account Information</h2>
-
-            <div className="space-y-3">
-              <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                <div>
-                  <p className="text-sm font-bold text-gray-700">Email</p>
-                  <p className="text-sm text-gray-500">{user?.email}</p>
-                </div>
-                <span className="text-xs text-gray-400">Cannot change</span>
-              </div>
-
-              <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                <div>
-                  <p className="text-sm font-bold text-gray-700">Role</p>
-                  <p className="text-sm text-gray-500">{user?.role}</p>
-                </div>
-                <span className="text-xs text-gray-400">Cannot change</span>
-              </div>
-
-              <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                <div>
-                  <p className="text-sm font-bold text-gray-700">Profile Status</p>
-                  <p className="text-sm text-gray-500">
-                    {user?.isOnboarded ? '✅ Complete' : '⚠️ Incomplete'}
-                  </p>
-                </div>
-                {!user?.isOnboarded && (
-                  <button
-                    onClick={() => router.push(`/onboarding/${user?.role?.toLowerCase()}`)}
-                    className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-blue-700"
-                  >
-                    Complete
-                  </button>
-                )}
-              </div>
-
-              <div className="flex justify-between items-center py-3">
-                <div>
-                  <p className="text-sm font-bold text-gray-700">Edit Profile</p>
-                  <p className="text-sm text-gray-500">Update your profile information</p>
-                </div>
-                <button
-                  onClick={() => router.push('/profile')}
-                  className="text-xs bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg font-bold hover:bg-gray-200"
-                >
-                  Edit →
-                </button>
-              </div>
-            </div>
+            <h1 className="text-lg font-extrabold text-[#1b1c1a]">{pageTitles[page]}</h1>
           </div>
         )}
 
-        {/* Password Tab */}
-        {activeTab === 'password' && (
-          <div className="bg-white rounded-2xl border border-gray-200 p-5">
-            <h2 className="font-extrabold text-gray-800 mb-4">Change Password</h2>
-            <form onSubmit={handleChangePassword} className="space-y-4">
-              <div>
-                <label className="text-sm font-bold text-gray-700">Current Password</label>
-                <input
-                  type="password"
-                  value={oldPassword}
-                  onChange={e => setOldPassword(e.target.value)}
-                  className="mt-1 w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Your current password"
-                />
+        {/* ── MENU ── */}
+        {page === 'menu' && (
+          <div className="space-y-5">
+            <h1 className="text-2xl font-extrabold text-[#1b1c1a]">Settings</h1>
+
+            {/* User card */}
+            <div className="flex items-center gap-4 rounded-2xl border border-[#e2e8f0] bg-white p-4 shadow-sm">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#e8f4fd] text-xl font-extrabold text-[#005d8f]">
+                {user?.email?.[0]?.toUpperCase() ?? 'U'}
               </div>
-
-              <div>
-                <label className="text-sm font-bold text-gray-700">New Password</label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={e => setNewPassword(e.target.value)}
-                  className="mt-1 w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Min 8 characters"
-                />
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-bold text-[#1b1c1a]">{user?.email}</p>
+                <span className="mt-0.5 inline-block rounded-full bg-[#e8f4fd] px-2.5 py-0.5 text-[11px] font-bold text-[#0077b5]">
+                  {user?.role}
+                </span>
               </div>
-
-              <div>
-                <label className="text-sm font-bold text-gray-700">Confirm New Password</label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={e => setConfirmPassword(e.target.value)}
-                  className="mt-1 w-full border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Repeat new password"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={pwLoading}
-                className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 disabled:opacity-60"
-              >
-                {pwLoading ? 'Changing...' : 'Change Password'}
-              </button>
-            </form>
-          </div>
-        )}
-
-        {/* Danger Zone Tab */}
-        {activeTab === 'danger' && (
-          <div className="space-y-4">
-            {/* Logout */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-5">
-              <h2 className="font-extrabold text-gray-800 mb-1">Logout</h2>
-              <p className="text-sm text-gray-500 mb-4">
-                You will be signed out of your account on this device.
-              </p>
               <button
                 onClick={handleLogout}
-                className="w-full border-2 border-orange-400 text-orange-500 py-3 rounded-xl font-bold hover:bg-orange-50 transition-colors"
+                className="shrink-0 rounded-xl border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-bold text-red-600 transition hover:bg-red-100"
               >
-                Logout from Xwite
+                Logout
               </button>
             </div>
 
-            {/* Delete Account */}
-            <div className="bg-white rounded-2xl border-2 border-red-200 p-5">
-              <h2 className="font-extrabold text-red-600 mb-1">⚠️ Delete Account</h2>
-              <p className="text-sm text-gray-500 mb-4">
-                This will permanently delete your account, profile, posts, and all data.
-                <strong className="text-red-500"> This cannot be undone.</strong>
+            {/* Menu sections */}
+            {MENU_SECTIONS.map(section => (
+              <div key={section.title}>
+                <p className="mb-1.5 px-1 text-[11px] font-bold uppercase tracking-widest text-[#94a3b8]">
+                  {section.title}
+                </p>
+                <div className="overflow-hidden rounded-2xl border border-[#e2e8f0] bg-white shadow-sm">
+                  {section.items.map((item, i) => (
+                    <button
+                      key={item.id}
+                      onClick={() => setPage(item.id)}
+                      className={`flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-[#f8fafc] active:scale-[0.99] ${
+                        i > 0 ? 'border-t border-[#f1f5f9]' : ''
+                      }`}
+                    >
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#f1f5f9] text-lg">
+                        {item.icon}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-bold text-[#1b1c1a]">{item.label}</p>
+                        <p className="text-[11px] text-[#6b7280]">{item.desc}</p>
+                      </div>
+                      <ChevronRight />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ── SIGN & SECURITY ── */}
+        {page === 'security' && (
+          <div className="space-y-4">
+
+            {/* Email address */}
+            <div className="rounded-2xl border border-[#e2e8f0] bg-white p-5 shadow-sm">
+              <p className="mb-3 text-xs font-bold uppercase tracking-widest text-[#94a3b8]">Email Address</p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-bold text-[#1b1c1a]">{user?.email}</p>
+                  <p className="mt-0.5 text-xs text-[#6b7280]">Your account email — cannot be changed</p>
+                </div>
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e8f4fd] text-sm">✉️</span>
+              </div>
+            </div>
+
+            {/* Password */}
+            <div className="rounded-2xl border border-[#e2e8f0] bg-white p-5 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="mb-0.5 text-xs font-bold uppercase tracking-widest text-[#94a3b8]">Password</p>
+                  <p className="font-bold text-[#1b1c1a]">••••••••</p>
+                  <p className="mt-0.5 text-xs text-[#6b7280]">Keep your account secure with a strong password</p>
+                </div>
+                <button
+                  onClick={() => setShowPwForm(v => !v)}
+                  className="shrink-0 rounded-xl bg-[#005d8f] px-3 py-1.5 text-xs font-bold text-white transition hover:opacity-90"
+                >
+                  {showPwForm ? 'Cancel' : 'Change'}
+                </button>
+              </div>
+
+              {showPwForm && (
+                <form onSubmit={handleChangePassword} className="mt-5 space-y-3 border-t border-[#f1f5f9] pt-4">
+                  <div>
+                    <label className="text-xs font-bold text-[#374151]">Current Password</label>
+                    <input
+                      type="password"
+                      value={oldPassword}
+                      onChange={e => setOldPassword(e.target.value)}
+                      className="mt-1 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm outline-none focus:ring-2 focus:ring-[#005d8f]/30"
+                      placeholder="Your current password"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-[#374151]">New Password</label>
+                    <input
+                      type="password"
+                      value={newPassword}
+                      onChange={e => setNewPassword(e.target.value)}
+                      className="mt-1 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm outline-none focus:ring-2 focus:ring-[#005d8f]/30"
+                      placeholder="Min 8 characters"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-[#374151]">Confirm New Password</label>
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={e => setConfirmPassword(e.target.value)}
+                      className="mt-1 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm outline-none focus:ring-2 focus:ring-[#005d8f]/30"
+                      placeholder="Repeat new password"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={pwLoading}
+                    className="w-full rounded-xl bg-[linear-gradient(135deg,#005d8f,#0077b5)] py-3 text-sm font-bold text-white shadow-sm transition hover:opacity-95 disabled:opacity-60"
+                  >
+                    {pwLoading ? 'Changing…' : 'Change Password'}
+                  </button>
+                </form>
+              )}
+            </div>
+
+            {/* Delete account */}
+            <div className="rounded-2xl border-2 border-red-100 bg-white p-5 shadow-sm">
+              <p className="mb-1 text-xs font-bold uppercase tracking-widest text-red-400">Danger Zone</p>
+              <p className="font-bold text-[#1b1c1a]">Delete Account</p>
+              <p className="mt-1 text-xs text-[#6b7280]">
+                Permanently deletes your account, profile, posts, and all data.{' '}
+                <span className="font-bold text-red-500">This cannot be undone.</span>
               </p>
 
               {!showDeleteConfirm ? (
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="w-full border-2 border-red-400 text-red-500 py-3 rounded-xl font-bold hover:bg-red-50 transition-colors"
+                  className="mt-4 w-full rounded-xl border-2 border-red-300 py-2.5 text-sm font-bold text-red-600 transition hover:bg-red-50"
                 >
                   Delete My Account
                 </button>
               ) : (
-                <div className="space-y-3">
-                  <div className="bg-red-50 border border-red-200 rounded-xl p-3">
-                    <p className="text-sm text-red-700 font-bold">
-                      Are you absolutely sure? This cannot be reversed.
-                    </p>
+                <div className="mt-4 space-y-3">
+                  <div className="rounded-xl bg-red-50 p-3">
+                    <p className="text-sm font-bold text-red-700">Are you absolutely sure? This cannot be reversed.</p>
                   </div>
-
                   <div>
-                    <label className="text-sm font-bold text-gray-700">
-                      Enter your password to confirm
-                    </label>
+                    <label className="text-xs font-bold text-[#374151]">Enter your password to confirm</label>
                     <input
                       type="password"
                       value={deletePassword}
                       onChange={e => setDeletePassword(e.target.value)}
-                      className="mt-1 w-full border-2 border-red-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-400"
+                      className="mt-1 w-full rounded-xl border-2 border-red-200 bg-[#fff5f5] p-3 text-sm outline-none focus:ring-2 focus:ring-red-300"
                       placeholder="Your password"
                     />
                   </div>
-
                   <div className="flex gap-3">
                     <button
-                      onClick={() => {
-                        setShowDeleteConfirm(false)
-                        setDeletePassword('')
-                      }}
-                      className="flex-1 border border-gray-300 text-gray-600 py-3 rounded-xl font-bold hover:bg-gray-50"
+                      onClick={() => { setShowDeleteConfirm(false); setDeletePassword('') }}
+                      className="flex-1 rounded-xl border border-[#e2e8f0] py-2.5 text-sm font-bold text-[#374151] hover:bg-[#f8fafc]"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={handleDeleteAccount}
                       disabled={deleteLoading}
-                      className="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold hover:bg-red-700 disabled:opacity-60"
+                      className="flex-1 rounded-xl bg-red-600 py-2.5 text-sm font-bold text-white transition hover:bg-red-700 disabled:opacity-60"
                     >
-                      {deleteLoading ? 'Deleting...' : 'Yes, Delete'}
+                      {deleteLoading ? 'Deleting…' : 'Yes, Delete'}
                     </button>
                   </div>
                 </div>
@@ -302,7 +314,174 @@ export default function SettingsPage() {
             </div>
           </div>
         )}
-      </main>
+
+        {/* ── DATA PRIVACY ── */}
+        {page === 'data-privacy' && (
+          <div className="space-y-4">
+            <StaticCard title="What data we collect">
+              <p>We collect information you provide directly — such as your name, email, profile details, posts, and messages — as well as usage data to improve the platform.</p>
+            </StaticCard>
+            <StaticCard title="How we use your data">
+              <ul className="list-disc space-y-1.5 pl-4">
+                <li>To operate and improve the Xwite platform</li>
+                <li>To match freelancers with clients</li>
+                <li>To send important service notifications</li>
+                <li>To prevent fraud and ensure safety</li>
+              </ul>
+            </StaticCard>
+            <StaticCard title="Data sharing">
+              <p>We do not sell your personal data. We may share data with service providers who help us operate Xwite, always under strict confidentiality agreements.</p>
+            </StaticCard>
+            <StaticCard title="Your rights">
+              <ul className="list-disc space-y-1.5 pl-4">
+                <li>Access and download your data</li>
+                <li>Request correction of inaccurate data</li>
+                <li>Delete your account and associated data</li>
+                <li>Withdraw consent at any time</li>
+              </ul>
+            </StaticCard>
+            <StaticCard title="Contact">
+              <p>For data-related requests, contact us at <span className="font-semibold text-[#005d8f]">privacy@xwite.com</span></p>
+            </StaticCard>
+          </div>
+        )}
+
+        {/* ── PRIVACY POLICY ── */}
+        {page === 'privacy-policy' && (
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-[#e2e8f0] bg-[#e8f4fd] p-4">
+              <p className="text-xs font-bold text-[#0077b5]">Last updated: May 2026</p>
+              <p className="mt-1 text-sm font-bold text-[#005d8f]">Xwite Privacy Policy</p>
+            </div>
+            <StaticCard title="1. Introduction">
+              <p>Welcome to Xwite. We respect your privacy and are committed to protecting your personal data. This policy explains how Xwite ("we", "us", "our") collects, uses, and safeguards your information when you use our platform.</p>
+            </StaticCard>
+            <StaticCard title="2. Information We Collect">
+              <ul className="list-disc space-y-1.5 pl-4">
+                <li><span className="font-semibold">Account data:</span> name, email, role, profile details</li>
+                <li><span className="font-semibold">Content:</span> posts, proposals, messages, reviews</li>
+                <li><span className="font-semibold">Usage data:</span> pages visited, features used, device info</li>
+                <li><span className="font-semibold">Transaction data:</span> escrow and payment records</li>
+              </ul>
+            </StaticCard>
+            <StaticCard title="3. How We Use Information">
+              <ul className="list-disc space-y-1.5 pl-4">
+                <li>Provide and personalize the Xwite service</li>
+                <li>Process payments and manage escrow</li>
+                <li>Send transactional and service emails</li>
+                <li>Improve platform safety and prevent abuse</li>
+                <li>Comply with legal obligations</li>
+              </ul>
+            </StaticCard>
+            <StaticCard title="4. Data Retention">
+              <p>We retain your data for as long as your account is active. Upon account deletion, personal data is removed within 30 days except where retention is required by law.</p>
+            </StaticCard>
+            <StaticCard title="5. Security">
+              <p>We use industry-standard encryption and security practices to protect your data. However, no internet transmission is 100% secure and we cannot guarantee absolute security.</p>
+            </StaticCard>
+            <StaticCard title="6. Cookies">
+              <p>We use essential cookies for authentication and session management. We do not use third-party advertising cookies.</p>
+            </StaticCard>
+            <StaticCard title="7. Your Rights">
+              <p>Depending on your location, you may have rights including access, correction, deletion, and portability of your data. Contact us at <span className="font-semibold text-[#005d8f]">privacy@xwite.com</span> to exercise these rights.</p>
+            </StaticCard>
+            <StaticCard title="8. Changes to This Policy">
+              <p>We may update this policy from time to time. We will notify you of significant changes via email or an in-app notice.</p>
+            </StaticCard>
+            <StaticCard title="9. Contact Us">
+              <p>Xwite Inc. · <span className="font-semibold text-[#005d8f]">legal@xwite.com</span></p>
+            </StaticCard>
+          </div>
+        )}
+
+        {/* ── ACCESSIBILITY ── */}
+        {page === 'accessibility' && (
+          <div className="space-y-4">
+            <StaticCard title="Our Commitment">
+              <p>Xwite is committed to making our platform accessible to everyone, including people with disabilities. We follow WCAG 2.1 guidelines and continuously work to improve the experience.</p>
+            </StaticCard>
+            <StaticCard title="Features">
+              <ul className="list-disc space-y-1.5 pl-4">
+                <li>High-contrast color schemes for readability</li>
+                <li>Screen reader compatible markup and ARIA labels</li>
+                <li>Keyboard navigation support across the platform</li>
+                <li>Scalable text — respects your device font size settings</li>
+                <li>Focus indicators on interactive elements</li>
+              </ul>
+            </StaticCard>
+            <StaticCard title="Tips for a Better Experience">
+              <ul className="list-disc space-y-1.5 pl-4">
+                <li>Use your browser's built-in zoom (Ctrl/Cmd + scroll)</li>
+                <li>Enable dark mode in your device settings</li>
+                <li>Use a screen reader like VoiceOver or TalkBack</li>
+              </ul>
+            </StaticCard>
+            <StaticCard title="Feedback">
+              <p>If you encounter any accessibility barriers on Xwite, please let us know at <span className="font-semibold text-[#005d8f]">accessibility@xwite.com</span>. We aim to respond within 2 business days.</p>
+            </StaticCard>
+          </div>
+        )}
+
+        {/* ── USER AGREEMENT ── */}
+        {page === 'user-agreement' && (
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-[#e2e8f0] bg-[#e8f4fd] p-4">
+              <p className="text-xs font-bold text-[#0077b5]">Effective: May 2026</p>
+              <p className="mt-1 text-sm font-bold text-[#005d8f]">Xwite User Agreement</p>
+            </div>
+            <StaticCard title="1. Acceptance">
+              <p>By creating an account on Xwite, you agree to be bound by this User Agreement and our Privacy Policy. If you do not agree, do not use the platform.</p>
+            </StaticCard>
+            <StaticCard title="2. Eligibility">
+              <p>You must be at least 18 years old and capable of entering a legally binding agreement to use Xwite. Accounts must not be shared or transferred.</p>
+            </StaticCard>
+            <StaticCard title="3. Your Account">
+              <ul className="list-disc space-y-1.5 pl-4">
+                <li>You are responsible for keeping your credentials secure</li>
+                <li>You must provide accurate, up-to-date profile information</li>
+                <li>One account per person — no duplicate accounts</li>
+              </ul>
+            </StaticCard>
+            <StaticCard title="4. Acceptable Use">
+              <p>You agree not to:</p>
+              <ul className="mt-1.5 list-disc space-y-1.5 pl-4">
+                <li>Post false, misleading, or fraudulent content</li>
+                <li>Harass, threaten, or abuse other users</li>
+                <li>Attempt to reverse-engineer or scrape the platform</li>
+                <li>Use the platform for illegal activities</li>
+              </ul>
+            </StaticCard>
+            <StaticCard title="5. Payments & Escrow">
+              <p>All payments are processed through Xwite's escrow system. Funds are held securely and released only when work is accepted. Xwite charges a platform fee on completed transactions.</p>
+            </StaticCard>
+            <StaticCard title="6. Intellectual Property">
+              <p>You retain ownership of content you post. By posting on Xwite, you grant us a limited licence to display and distribute that content within the platform.</p>
+            </StaticCard>
+            <StaticCard title="7. Termination">
+              <p>We may suspend or terminate accounts that violate this agreement. You may delete your account at any time from Settings → Sign & Security.</p>
+            </StaticCard>
+            <StaticCard title="8. Limitation of Liability">
+              <p>Xwite is not liable for indirect, incidental, or consequential damages arising from your use of the platform. Our total liability is limited to amounts paid to us in the 12 months preceding a claim.</p>
+            </StaticCard>
+            <StaticCard title="9. Governing Law">
+              <p>This agreement is governed by the laws of India. Disputes shall be resolved by arbitration in accordance with applicable rules.</p>
+            </StaticCard>
+            <StaticCard title="10. Contact">
+              <p><span className="font-semibold text-[#005d8f]">legal@xwite.com</span></p>
+            </StaticCard>
+          </div>
+        )}
+
+      </div>
+    </div>
+  )
+}
+
+function StaticCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl border border-[#e2e8f0] bg-white p-5 shadow-sm">
+      <p className="mb-2.5 text-sm font-extrabold text-[#1b1c1a]">{title}</p>
+      <div className="text-sm leading-relaxed text-[#374151]">{children}</div>
     </div>
   )
 }
