@@ -397,7 +397,7 @@ export default function ClientProfile() {
             })}
           </nav>
           <div className="cp-sidebar-bottom">
-            <button className="cp-nav-item" onClick={() => togglePanel('settings')}>
+            <button className="cp-nav-item" onClick={() => router.push('/setting')}>
               <SettingsIcon /><span className="cp-nav-label">Settings</span>
             </button>
             <button className="cp-nav-item cp-nav-danger" onClick={handleLogout}>
@@ -671,7 +671,7 @@ export default function ClientProfile() {
 
           {/* ── MOBILE SETTINGS CARD (bottom of profile, mobile only) ── */}
           <div className="cp-mobile-settings-bottom">
-            <button className="cp-mobile-set-btn" onClick={() => togglePanel('settings')}>
+            <button className="cp-mobile-set-btn" onClick={() => router.push('/setting')}>
               <div className="cp-mobile-set-icon">
                 <SettingsIcon />
               </div>

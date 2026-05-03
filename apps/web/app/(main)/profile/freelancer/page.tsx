@@ -587,7 +587,7 @@ export default function FreelancerProfile() {
             })}
           </nav>
           <div className="fp-sidebar-bottom">
-            <button className="fp-nav-item" onClick={() => togglePanel('settings')}>
+            <button className="fp-nav-item" onClick={() => router.push('/setting')}>
               <SettingsIcon /><span className="fp-nav-label">Settings</span>
             </button>
             <button className="fp-nav-item fp-nav-danger" onClick={handleLogout}>
@@ -1352,7 +1352,7 @@ export default function FreelancerProfile() {
 
             {/* ── MOBILE SETTINGS CARD (bottom of profile, mobile only) ── */}
             <div className="fp-mobile-settings-bottom">
-              <button className="fp-mobile-set-btn" onClick={() => togglePanel('settings')}>
+              <button className="fp-mobile-set-btn" onClick={() => router.push('/setting')}>
                 <div className="fp-mobile-set-icon">
                   <SettingsIcon />
                 </div>
