@@ -6,7 +6,7 @@
  * all required fields, wallet, connections, switch account.
  */
 
-import { useEffect, useRef, useState, useCallback } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import toast from 'react-hot-toast'
 import apiClient        from '../../../../services/apiClient'
@@ -27,7 +27,7 @@ interface Wallet        { balance: number; heldBalance?: number }
 interface ConnectedUser { id: string; fullName?: string; profileImage?: string; email?: string }
 interface Follower      { id: string; fullName?: string; profileImage?: string; email?: string; isConnected?: boolean }
 type ImageField  = 'coverImage' | 'profileImage'
-type Panel       = 'none' | 'addFunds' | 'withdraw' | 'settings' | 'switch'
+type Panel       = 'none' | 'addFunds' | 'withdraw' | 'settings' | 'switch' | 'verify'
 type EditSection = 'none' | 'basic'
 
 /* ═══════════════════════════════════════════════
@@ -120,9 +120,13 @@ export default function CompanyProfile() {
   const [pwLoading,setPwLoading]= useState(false)
 
   /* ── GST Verification ── */
-  const [gstNumber,    setGstNumber]    = useState('')
-  const [gstSubmitting,setGstSubmitting]= useState(false)
-  const [gstVerified,  setGstVerified]  = useState(false)
+  const [gstNumber,      setGstNumber]      = useState('')
+  const [phoneNumber,    setPhoneNumber]    = useState('')
+  const [certFile,       setCertFile]       = useState<File | null>(null)
+  const [certUploading,  setCertUploading]  = useState(false)
+  const [gstSubmitting,  setGstSubmitting]  = useState(false)
+  const [gstVerified,    setGstVerified]    = useState(false)
+  const certRef = React.useRef<HTMLInputElement>(null)
 
   /* ── Refs ── */
   const coverRef           = useRef<HTMLInputElement>(null)
@@ -158,6 +162,7 @@ export default function CompanyProfile() {
       setLogoSrc(p.profileImage      ?? null)
       setConnections(d.connectionsCount ?? 0)
       setGstNumber(p.gstNumber ?? '')
+      setPhoneNumber(p.phoneNumber ?? '')
       setGstVerified(Boolean(p.gstVerified))
       try {
         const fRes = await apiClient.get(`/api/users/${d.id}/followers`)
@@ -368,12 +373,25 @@ export default function CompanyProfile() {
   async function handleGstSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!gstNumber.trim()) return toast.error('Please enter your GST number')
+    if (!phoneNumber.trim()) return toast.error('Please enter your phone number')
+    if (!certFile) return toast.error('Please upload your GST certificate')
     setGstSubmitting(true)
     try {
-      await apiClient.post('/api/users/gst', { gstNumber: gstNumber.trim() })
-      toast.success('GST number submitted! Awaiting admin approval for blue tick.')
+      // Upload certificate first
+      setCertUploading(true)
+      const { url: certUrl } = await uploadService.uploadFile(certFile)
+      setCertUploading(false)
+      // Submit for verification
+      await apiClient.post('/api/users/gst', {
+        gstNumber: gstNumber.trim(),
+        phoneNumber: phoneNumber.trim(),
+        gstCertificateUrl: certUrl,
+      })
+      toast.success('Submitted! Our team will review and approve your verification.')
+      togglePanel('none')
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'Failed to submit GST number')
+      setCertUploading(false)
+      toast.error(err?.response?.data?.message || 'Failed to submit. Please try again.')
     } finally {
       setGstSubmitting(false)
     }
@@ -558,6 +576,27 @@ export default function CompanyProfile() {
                       <span className="cp-btn-followers-count">{followerCount.toLocaleString()}</span>
                       Followers
                     </button>
+
+                    {/* Verification button */}
+                    {user?.isVerified || gstVerified ? (
+                      <div style={{display:'flex',alignItems:'center',gap:6,marginTop:6,padding:'7px 14px',borderRadius:10,background:'#e8f5e9',border:'1px solid #a5d6a7',width:'fit-content'}}>
+                        <VerifiedBadge size="sm" />
+                        <span style={{fontSize:12,fontWeight:700,color:'#2e7d32'}}>Verified Company</span>
+                      </div>
+                    ) : gstNumber ? (
+                      <div style={{display:'flex',alignItems:'center',gap:6,marginTop:6,padding:'7px 14px',borderRadius:10,background:'#fef3c7',border:'1px solid #fcd34d',width:'fit-content'}}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="#92400e"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                        <span style={{fontSize:12,fontWeight:700,color:'#92400e'}}>Verification pending review</span>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => togglePanel('verify')}
+                        style={{display:'flex',alignItems:'center',gap:6,marginTop:6,padding:'8px 16px',borderRadius:10,background:'linear-gradient(135deg,#1565C0,#1976D2)',border:'none',cursor:'pointer',width:'fit-content'}}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                        <span style={{fontSize:12,fontWeight:700,color:'#fff'}}>Get Verified</span>
+                      </button>
+                    )}
                   </>
                 )
               }
@@ -589,6 +628,74 @@ export default function CompanyProfile() {
               </div>
             </div>
           </div>
+
+          {/* ── VERIFY COMPANY ── */}
+          <input ref={certRef} type="file" accept=".pdf,.jpg,.jpeg,.png" style={{display:'none'}}
+            onChange={e => setCertFile(e.target.files?.[0] ?? null)} />
+
+          {activePanel === 'verify' && (
+            <EditCard title="Get Company Verified" onClose={() => togglePanel('none')}>
+              <div className="cp-form">
+                <p style={{fontSize:13,color:'#64748b',lineHeight:1.6,marginBottom:4}}>
+                  Submit your GST certificate and phone number. Our team will review and grant your blue tick within 24 hours.
+                </p>
+
+                <FormRow label="Phone Number *">
+                  <input
+                    className="cp-input"
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={e => setPhoneNumber(e.target.value)}
+                    placeholder="e.g. +91 98765 43210"
+                  />
+                </FormRow>
+
+                <FormRow label="GST Number *">
+                  <input
+                    className="cp-input"
+                    value={gstNumber}
+                    onChange={e => setGstNumber(e.target.value)}
+                    placeholder="e.g. 22ABCDE1234F1Z5"
+                  />
+                </FormRow>
+
+                <FormRow label="GST Certificate *">
+                  <div
+                    onClick={() => certRef.current?.click()}
+                    style={{
+                      border: '2px dashed #bfdbfe', borderRadius: 10, padding: '16px',
+                      textAlign: 'center', cursor: 'pointer', background: '#f0f7ff',
+                      transition: 'border-color .15s',
+                    }}
+                  >
+                    {certFile ? (
+                      <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8}}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#1565C0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                        <span style={{fontSize:13,fontWeight:600,color:'#1565C0'}}>{certFile.name}</span>
+                        <button type="button" onClick={e => {e.stopPropagation(); setCertFile(null)}}
+                          style={{fontSize:11,color:'#dc2626',background:'none',border:'none',cursor:'pointer',fontWeight:700}}>✕ Remove</button>
+                      </div>
+                    ) : (
+                      <>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#93c5fd" style={{margin:'0 auto 6px'}}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                        <p style={{fontSize:13,fontWeight:600,color:'#1565C0',margin:0}}>Click to upload certificate</p>
+                        <p style={{fontSize:11,color:'#94a3b8',margin:'4px 0 0'}}>PDF, JPG or PNG • Max 10MB</p>
+                      </>
+                    )}
+                  </div>
+                </FormRow>
+
+                <button
+                  className="cp-btn-primary"
+                  onClick={handleGstSubmit as any}
+                  disabled={gstSubmitting || certUploading}
+                  style={{marginTop:4}}
+                >
+                  {certUploading ? 'Uploading certificate…' : gstSubmitting ? 'Submitting…' : 'Submit for Verification'}
+                </button>
+              </div>
+            </EditCard>
+          )}
 
           {/* ── EDIT BASIC INFO ── */}
           {editSection === 'basic' && (
@@ -669,34 +776,6 @@ export default function CompanyProfile() {
                     {pwLoading ? 'Changing…' : 'Change Password'}
                   </button>
                 </form>
-                <div className="cp-divider" />
-
-                {/* Blue Tick Verification */}
-                <p className="cp-sec-lbl">Blue Tick Verification</p>
-                {user?.isVerified || gstVerified ? (
-                  <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 14px',borderRadius:10,background:'#e8f5e9',border:'1px solid #a5d6a7'}}>
-                    <VerifiedBadge size="md" />
-                    <span style={{fontSize:13,fontWeight:700,color:'#2e7d32'}}>Your company is verified!</span>
-                  </div>
-                ) : (
-                  <form onSubmit={handleGstSubmit} style={{display:'flex',flexDirection:'column',gap:10}}>
-                    <p style={{fontSize:12,color:'#64748b',lineHeight:1.5}}>
-                      Submit your GST number to get a blue verification tick. Our admin team will review and approve it.
-                    </p>
-                    <FormRow label="GST Number">
-                      <input
-                        className="cp-input"
-                        value={gstNumber}
-                        onChange={e => setGstNumber(e.target.value)}
-                        placeholder="e.g. 22ABCDE1234F1Z5"
-                      />
-                    </FormRow>
-                    <button className="cp-btn-primary" type="submit" disabled={gstSubmitting}>
-                      {gstSubmitting ? 'Submitting…' : 'Submit for Verification'}
-                    </button>
-                  </form>
-                )}
-
                 <div className="cp-divider" />
                 <button className="cp-btn-danger" onClick={handleLogout}>Log out</button>
               </div>

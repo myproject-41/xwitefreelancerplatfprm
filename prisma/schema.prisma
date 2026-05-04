@@ -255,6 +255,7 @@ model CompanyProfile {
   gstNumber         String?
   gstCertificateUrl String?
   gstVerified       Boolean  @default(false)
+  phoneNumber       String?
 
   // Stats
   avgRating     Float    @default(0)

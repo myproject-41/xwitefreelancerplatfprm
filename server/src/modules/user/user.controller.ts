@@ -91,9 +91,13 @@ export class UserController {
 
   async submitGst(req: Request, res: Response): Promise<void> {
     try {
-      const { gstNumber } = req.body
+      const { gstNumber, phoneNumber, gstCertificateUrl } = req.body
       if (!gstNumber?.trim()) {
         res.status(400).json({ success: false, message: 'GST number is required' })
+        return
+      }
+      if (!phoneNumber?.trim()) {
+        res.status(400).json({ success: false, message: 'Phone number is required' })
         return
       }
       const user = await prisma.user.findUnique({
@@ -106,9 +110,13 @@ export class UserController {
       }
       await prisma.companyProfile.update({
         where: { userId: req.user!.userId },
-        data: { gstNumber: gstNumber.trim() },
+        data: {
+          gstNumber: gstNumber.trim(),
+          phoneNumber: phoneNumber.trim(),
+          ...(gstCertificateUrl ? { gstCertificateUrl } : {}),
+        },
       })
-      res.json({ success: true, message: 'GST number submitted for review' })
+      res.json({ success: true, message: 'Submitted for review' })
     } catch (error: any) {
       res.status(400).json({ success: false, message: error.message })
     }

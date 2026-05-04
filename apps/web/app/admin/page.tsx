@@ -11,6 +11,7 @@ interface PendingCompany {
   userId: string
   companyName: string
   gstNumber: string
+  phoneNumber?: string
   gstCertificateUrl?: string
 }
 
@@ -133,10 +134,15 @@ export default function AdminPage() {
                   style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '14px 16px', borderRadius: 12, border: '1px solid #e2e8f0', background: '#f8fafc' }}
                 >
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: '#1b1c1a', marginBottom: 2 }}>{c.companyName}</p>
-                    <p style={{ fontSize: 12, color: '#64748b' }}>GST: <span style={{ fontWeight: 600, color: '#1565C0' }}>{c.gstNumber}</span></p>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: '#1b1c1a', marginBottom: 4 }}>{c.companyName}</p>
+                    <p style={{ fontSize: 12, color: '#64748b', marginBottom: 2 }}>GST: <span style={{ fontWeight: 600, color: '#1565C0' }}>{c.gstNumber}</span></p>
+                    {c.phoneNumber && (
+                      <p style={{ fontSize: 12, color: '#64748b', marginBottom: 2 }}>Phone: <span style={{ fontWeight: 600, color: '#374151' }}>{c.phoneNumber}</span></p>
+                    )}
                     {c.gstCertificateUrl && (
-                      <a href={c.gstCertificateUrl} target="_blank" rel="noreferrer" style={{ fontSize: 11, color: '#1565C0', textDecoration: 'underline' }}>
+                      <a href={c.gstCertificateUrl} target="_blank" rel="noreferrer"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#1565C0', fontWeight: 600, textDecoration: 'none', marginTop: 2 }}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
                         View Certificate
                       </a>
                     )}
