@@ -18,6 +18,7 @@ import { uploadService } from '../../../../services/upload.service'
 import { walletService } from '../../../../services/wallet.service'
 import { useAuthStore }  from '../../../../store/authStore'
 import MainHeader from '../../../../components/ui/MainHeader'
+import VerifiedBadge from '../../../../components/ui/VerifiedBadge'
 
 /* ═══════════════════════════════════════════════
    TYPES
@@ -118,6 +119,11 @@ export default function CompanyProfile() {
   const [confirmPw,setConfirmPw]= useState('')
   const [pwLoading,setPwLoading]= useState(false)
 
+  /* ── GST Verification ── */
+  const [gstNumber,    setGstNumber]    = useState('')
+  const [gstSubmitting,setGstSubmitting]= useState(false)
+  const [gstVerified,  setGstVerified]  = useState(false)
+
   /* ── Refs ── */
   const coverRef           = useRef<HTMLInputElement>(null)
   const logoRef            = useRef<HTMLInputElement>(null)
@@ -151,6 +157,8 @@ export default function CompanyProfile() {
       setCoverSrc(p.coverImage        ?? null)
       setLogoSrc(p.profileImage      ?? null)
       setConnections(d.connectionsCount ?? 0)
+      setGstNumber(p.gstNumber ?? '')
+      setGstVerified(Boolean(p.gstVerified))
       try {
         const fRes = await apiClient.get(`/api/users/${d.id}/followers`)
         const fList = Array.isArray(fRes.data?.data) ? fRes.data.data : (Array.isArray(fRes.data) ? fRes.data : [])
@@ -357,6 +365,20 @@ export default function CompanyProfile() {
   function handleLogout() { logout(); authService.removeToken(); router.push('/login') }
   function togglePanel(p: Panel) { setActivePanel(prev => prev === p ? 'none' : p) }
 
+  async function handleGstSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!gstNumber.trim()) return toast.error('Please enter your GST number')
+    setGstSubmitting(true)
+    try {
+      await apiClient.post('/api/users/gst', { gstNumber: gstNumber.trim() })
+      toast.success('GST number submitted! Awaiting admin approval for blue tick.')
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Failed to submit GST number')
+    } finally {
+      setGstSubmitting(false)
+    }
+  }
+
   const balanceLabel = fmtBalance(wallet?.balance ?? 0, currency)
   const escrowLabel = wallet?.heldBalance && wallet.heldBalance > 0
     ? `${fmtBalance(wallet.heldBalance, currency)} in escrow` : null
@@ -484,7 +506,10 @@ export default function CompanyProfile() {
                     {/* Name + edit button */}
                     <div className="cp-name-row">
                       <div>
-                        <h1 className="cp-company-name">{companyName || 'Your Company'}</h1>
+                        <h1 className="cp-company-name flex items-center gap-2">
+                          {user?.isVerified && <VerifiedBadge size="lg" />}
+                          {companyName || 'Your Company'}
+                        </h1>
                         {industry && (
                           <p className="cp-industry">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="#94a3b8"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>
@@ -646,6 +671,34 @@ export default function CompanyProfile() {
                     {pwLoading ? 'Changing…' : 'Change Password'}
                   </button>
                 </form>
+                <div className="cp-divider" />
+
+                {/* Blue Tick Verification */}
+                <p className="cp-sec-lbl">Blue Tick Verification</p>
+                {user?.isVerified || gstVerified ? (
+                  <div style={{display:'flex',alignItems:'center',gap:8,padding:'10px 14px',borderRadius:10,background:'#e8f5e9',border:'1px solid #a5d6a7'}}>
+                    <VerifiedBadge size="md" />
+                    <span style={{fontSize:13,fontWeight:700,color:'#2e7d32'}}>Your company is verified!</span>
+                  </div>
+                ) : (
+                  <form onSubmit={handleGstSubmit} style={{display:'flex',flexDirection:'column',gap:10}}>
+                    <p style={{fontSize:12,color:'#64748b',lineHeight:1.5}}>
+                      Submit your GST number to get a blue verification tick. Our admin team will review and approve it.
+                    </p>
+                    <FormRow label="GST Number">
+                      <input
+                        className="cp-input"
+                        value={gstNumber}
+                        onChange={e => setGstNumber(e.target.value)}
+                        placeholder="e.g. 22ABCDE1234F1Z5"
+                      />
+                    </FormRow>
+                    <button className="cp-btn-primary" type="submit" disabled={gstSubmitting}>
+                      {gstSubmitting ? 'Submitting…' : 'Submit for Verification'}
+                    </button>
+                  </form>
+                )}
+
                 <div className="cp-divider" />
                 <button className="cp-btn-danger" onClick={handleLogout}>Log out</button>
               </div>

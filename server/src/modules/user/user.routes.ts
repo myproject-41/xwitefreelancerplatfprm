@@ -51,6 +51,9 @@ router.put('/profile/client',
   (req: Request, res: Response) =>
     userController.updateClientProfile(req, res))
 
+router.post('/gst', (req: Request, res: Response) =>
+  userController.submitGst(req, res))
+
 router.post('/:userId/follow', async (req: Request, res: Response) => {
   try {
     await followService.follow(req.user!.userId, req.params.userId)

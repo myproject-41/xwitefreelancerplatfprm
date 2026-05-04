@@ -135,6 +135,7 @@ model User {
   isOnboarded   Boolean  @default(false)
   emailVerified Boolean  @default(false)
   isActive      Boolean  @default(true)
+  isVerified    Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -250,6 +251,11 @@ model CompanyProfile {
   workType      String[] // ["FULL_TIME", "PART_TIME", "PROJECT"]
   hiringSkills  String[] // skills they usually hire for
 
+  // GST Verification (for blue tick)
+  gstNumber         String?
+  gstCertificateUrl String?
+  gstVerified       Boolean  @default(false)
+
   // Stats
   avgRating     Float    @default(0)
   totalReviews  Int      @default(0)
@@ -278,8 +284,11 @@ model ClientProfile {
   timezone      String?
 
   // Preferences
-  taskCategories String[] // ["DESIGN", "DEVELOPMENT", "MARKETING", "WRITING", "OTHER"]
-  workPreference String?  // "FIXED", "HOURLY", "SKILL_EXCHANGE"
+  taskCategories      String[] // ["DESIGN", "DEVELOPMENT", "MARKETING", "WRITING", "OTHER"]
+  workPreference      String?  // "FIXED", "HOURLY", "SKILL_EXCHANGE"
+
+  // Verification stats
+  completedTasksCount Int      @default(0)
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

@@ -14,6 +14,8 @@ import chatRoutes from './modules/chat/chat.routes'
 import uploadRoutes from './modules/upload/upload.routes'
 import escrowRoutes from './modules/escrow/escrow.routes'
 import agentRoutes from './modules/agent/agent.routes'
+import reviewRoutes from './modules/reviews/review.routes'
+import adminRoutes from './modules/admin/admin.routes'
 
 const app: Application = express()
 app.set('trust proxy', 1)
@@ -70,7 +72,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 const uploadsPath = path.join(process.cwd(), 'uploads')
 app.use('/uploads', express.static(uploadsPath))
 
-app.get('/health', (req: Request, res: Response) => {
+app.get('/health', (_req: Request, res: Response) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
@@ -90,6 +92,8 @@ app.use('/api/chat', chatRoutes)
 app.use('/api/upload', uploadLimiter, uploadRoutes)
 app.use('/api/escrow', escrowRoutes)
 app.use('/api/agent', agentRoutes)
+app.use('/api/reviews', reviewRoutes)
+app.use('/api/admin', adminRoutes)
 
 app.use(errorMiddleware)
 

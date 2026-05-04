@@ -7,6 +7,7 @@ import { escrowService } from '@/services/escrow.service'
 import { walletService } from '@/services/wallet.service'
 import { uploadService } from '@/services/upload.service'
 import { useAuthStore } from '@/store/authStore'
+import ReviewModal from '@/components/ui/ReviewModal'
 
 /* ══════════════════════════════════════
    TYPES
@@ -367,6 +368,7 @@ export default function EscrowDetailPage() {
   const [disputeReason,  setDisputeReason]  = useState('')
   const [reviewOpen,     setReviewOpen]     = useState(false)
   const [reviewNotes,    setReviewNotes]    = useState('')
+  const [showRatingModal, setShowRatingModal] = useState(false)
 
   // Revision modal
   const [revisionOpen,   setRevisionOpen]   = useState(false)
@@ -509,6 +511,8 @@ export default function EscrowDetailPage() {
       setReviewOpen(false)
       setReviewNotes('')
       await refresh()
+      // Show star review modal for client
+      setShowRatingModal(true)
     } catch (e: any) {
       toast.error(e.response?.data?.message || 'Failed to release payment')
     } finally { setActionLoading(false) }
@@ -1193,6 +1197,18 @@ export default function EscrowDetailPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* ── Star Rating modal (shown after payment release) ── */}
+      {showRatingModal && escrow && (
+        <ReviewModal
+          escrowId={escrow.id}
+          reviewedId={escrow.freelancer.id}
+          freelancerName={freelancerName}
+          taskTitle={escrow.task.title}
+          onClose={() => setShowRatingModal(false)}
+          onDone={() => setShowRatingModal(false)}
+        />
       )}
     </div>
   )

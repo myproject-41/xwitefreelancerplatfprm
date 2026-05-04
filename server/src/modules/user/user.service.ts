@@ -50,6 +50,7 @@ export class UserService {
         email: true,
         role: true,
         isOnboarded: true,
+        isVerified: true,
         createdAt: true,
         freelancerProfile: true,
         companyProfile: true,
@@ -78,6 +79,7 @@ export class UserService {
       select: {
         id: true,
         role: true,
+        isVerified: true,
         freelancerProfile: {
           select: {
             fullName: true,
@@ -173,6 +175,7 @@ export class UserService {
         qualifications: fp.qualifications,
         avgRating: fp.avgRating,
         totalReviews: fp.totalReviews,
+        isVerified: user.isVerified,
         connectionsCount,
       }
     }
@@ -195,6 +198,7 @@ export class UserService {
         workType: user.companyProfile.workType,
         avgRating: user.companyProfile.avgRating,
         totalReviews: user.companyProfile.totalReviews,
+        isVerified: user.isVerified,
         connectionsCount,
       }
     }
@@ -213,6 +217,7 @@ export class UserService {
         country: user.clientProfile.country,
         city: user.clientProfile.city,
         workPreference: user.clientProfile.workPreference,
+        isVerified: user.isVerified,
         ...spendStats,
         connectionsCount,
       }

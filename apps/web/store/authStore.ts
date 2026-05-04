@@ -39,6 +39,8 @@ interface CompanyProfile {
   hiringSkills?: string[]
   avgRating?: number
   totalReviews?: number
+  gstNumber?: string
+  gstVerified?: boolean
 }
 
 interface ClientProfile {
@@ -62,6 +64,7 @@ interface User {
   email: string
   role: 'FREELANCER' | 'COMPANY' | 'CLIENT' | 'ADMIN'
   isOnboarded: boolean
+  isVerified?: boolean
   freelancerProfile?: FreelancerProfile
   companyProfile?: CompanyProfile
   clientProfile?: ClientProfile

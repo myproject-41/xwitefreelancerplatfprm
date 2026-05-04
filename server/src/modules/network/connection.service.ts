@@ -231,6 +231,7 @@ export class ConnectionService {
       id: true,
       email: true,
       role: true,
+      isVerified: true,
       freelancerProfile: {
         select: { fullName: true, title: true, profileImage: true, country: true, skills: true },
       },

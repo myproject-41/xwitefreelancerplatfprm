@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import toast from 'react-hot-toast'
 import MainHeader from '../../../components/ui/MainHeader'
+import VerifiedBadge from '../../../components/ui/VerifiedBadge'
 import { networkService } from '../../../services/network.service'
 import { chatService } from '../../../services/chat.service'
 import { authService } from '../../../services/auth.service'
@@ -31,7 +32,7 @@ function getUserInfo(u: any) {
     u?.freelancerProfile?.country ||
     u?.companyProfile?.country ||
     u?.clientProfile?.country || ''
-  return { name, title, image, country }
+  return { name, title, image, country, isVerified: Boolean(u?.isVerified) }
 }
 
 function getProfilePath(u: any) {
@@ -434,7 +435,7 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {peopleSuggestions.map((u: any) => {
-              const { name, title, image, country } = getUserInfo(u)
+              const { name, title, image, country, isVerified } = getUserInfo(u)
               const isConnected = connected.has(u.id)
               const roleLabel = u.role === 'FREELANCER' ? 'Freelancer' : u.role === 'CLIENT' ? 'Client' : u.role?.replace(/_/g, ' ')
 
@@ -480,7 +481,8 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                       className="text-left w-full"
                       onClick={() => u.id && router.push(getProfilePath(u))}
                     >
-                      <h4 className="font-[Manrope] font-bold text-xl text-[#1b1c1a] leading-tight hover:text-[#1565C0] transition-colors">
+                      <h4 className="font-[Manrope] font-bold text-xl text-[#1b1c1a] leading-tight hover:text-[#1565C0] transition-colors flex items-center gap-1.5">
+                        {isVerified && <VerifiedBadge size="md" />}
                         {name}
                       </h4>
                       <p className="text-sm font-medium text-[#1565C0]">{title}</p>

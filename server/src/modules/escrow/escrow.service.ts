@@ -277,6 +277,15 @@ export class EscrowService {
         where: { userId: escrow.freelancerId },
         data: { totalEarnings: { increment: freelancerPayout } },
       })
+
+      // Increment client's completed task count and auto-verify if first task
+      const updated = await tx.clientProfile.updateMany({
+        where: { userId: escrow.clientId },
+        data: { completedTasksCount: { increment: 1 } },
+      })
+      if (updated.count > 0) {
+        await tx.user.update({ where: { id: escrow.clientId }, data: { isVerified: true } })
+      }
     })
 
     await Promise.all([

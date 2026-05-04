@@ -88,6 +88,31 @@ export class UserController {
       res.status(404).json({ success: false, message: error.message })
     }
   }
+
+  async submitGst(req: Request, res: Response): Promise<void> {
+    try {
+      const { gstNumber } = req.body
+      if (!gstNumber?.trim()) {
+        res.status(400).json({ success: false, message: 'GST number is required' })
+        return
+      }
+      const user = await prisma.user.findUnique({
+        where: { id: req.user!.userId },
+        select: { role: true },
+      })
+      if (user?.role !== 'COMPANY') {
+        res.status(403).json({ success: false, message: 'Only companies can submit GST' })
+        return
+      }
+      await prisma.companyProfile.update({
+        where: { userId: req.user!.userId },
+        data: { gstNumber: gstNumber.trim() },
+      })
+      res.json({ success: true, message: 'GST number submitted for review' })
+    } catch (error: any) {
+      res.status(400).json({ success: false, message: error.message })
+    }
+  }
 }
 
 export const userController = new UserController()

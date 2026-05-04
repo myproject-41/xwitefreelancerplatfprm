@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { postService } from '../../services/post.service'
 import { networkService } from '../../services/network.service'
+import VerifiedBadge from '../ui/VerifiedBadge'
 
 interface PostCardProps {
   post: any
@@ -69,6 +70,7 @@ function getAuthor(post: any) {
 
   return {
     role: profile?.role,
+    isVerified: Boolean(profile?.isVerified),
     name:
       profile?.companyProfile?.companyName ||
       profile?.clientProfile?.fullName ||
@@ -424,7 +426,10 @@ export default function PostCard({
             </div>
 
             <div className="min-w-0">
-              <p className="truncate font-[Manrope] text-sm font-bold text-[#1b1c1a]">{author.name}</p>
+              <p className="flex items-center gap-1 truncate font-[Manrope] text-sm font-bold text-[#1b1c1a]">
+                {author.isVerified && <VerifiedBadge size="sm" />}
+                {author.name}
+              </p>
               <p className="truncate text-[11px] text-[#404850]">
                 {author.title}
                 {author.country ? ` - ${author.country}` : ''}

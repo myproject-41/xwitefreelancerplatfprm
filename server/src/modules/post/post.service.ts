@@ -217,6 +217,7 @@ export class PostService {
             select: {
               id: true,
               role: true,
+              isVerified: true,
               companyProfile: {
                 select: {
                   companyName: true,
@@ -331,6 +332,7 @@ export class PostService {
           select: {
             id: true,
             role: true,
+            isVerified: true,
             companyProfile: true,
             clientProfile: true,
             freelancerProfile: true,

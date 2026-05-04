@@ -9,6 +9,7 @@ import { networkService } from '../../../../../services/network.service'
 import { useAuthStore } from '../../../../../store/authStore'
 import { authService } from '../../../../../services/auth.service'
 import MainHeader from '../../../../../components/ui/MainHeader'
+import VerifiedBadge from '../../../../../components/ui/VerifiedBadge'
 
 const NAV_ITEMS = [
   { label: 'Home',    icon: 'home',          href: '/'        },
@@ -266,7 +267,10 @@ export default function CompanyPublicProfilePage() {
                     <span className="cp-pub-follower-count">{followerCount} followers</span>
                   </div>
 
-                  <h1 className="cp-pub-name">{profile.fullName || 'Company'}</h1>
+                  <h1 className="cp-pub-name flex items-center gap-1.5">
+                    {profile.isVerified && <VerifiedBadge size="lg" />}
+                    {profile.fullName || 'Company'}
+                  </h1>
 
                   {profile.industry && (
                     <p className="cp-pub-industry">
@@ -379,7 +383,10 @@ export default function CompanyPublicProfilePage() {
                     : <MaterialIcon name="business" size={28} color="#94a3b8" />
                   }
                 </div>
-                <p className="cp-pub-right-name">{profile.fullName ?? 'Company'}</p>
+                <p className="cp-pub-right-name flex items-center justify-center gap-1">
+                  {profile.isVerified && <VerifiedBadge size="sm" />}
+                  {profile.fullName ?? 'Company'}
+                </p>
                 {profile.industry && (
                   <p className="cp-pub-right-industry">{profile.industry}</p>
                 )}
