@@ -65,6 +65,7 @@ interface User {
   role: 'FREELANCER' | 'COMPANY' | 'CLIENT' | 'ADMIN'
   isOnboarded: boolean
   isVerified?: boolean
+  isAdmin?: boolean
   freelancerProfile?: FreelancerProfile
   companyProfile?: CompanyProfile
   clientProfile?: ClientProfile

@@ -1,11 +1,10 @@
 import { Router } from 'express'
 import { adminController } from './admin.controller'
-import { authenticate, authorize } from '../../middlewares/auth.middleware'
-import { Role } from '../auth/roles'
+import { authenticate, authorizeAdmin } from '../../middlewares/auth.middleware'
 
 const router = Router()
 
-router.use(authenticate, authorize(Role.ADMIN))
+router.use(authenticate, authorizeAdmin)
 
 router.get('/dashboard', adminController.getDashboard.bind(adminController))
 router.get('/gst/pending', adminController.getPendingGst.bind(adminController))

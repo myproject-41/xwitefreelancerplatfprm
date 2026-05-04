@@ -9,6 +9,7 @@ declare global {
         userId: string
         email: string
         role: Role
+        isAdmin?: boolean
       }
       rawBody?: string
     }
@@ -79,6 +80,18 @@ export const authorize = (...roles: Role[]) => {
 
     next()
   }
+}
+
+export const authorizeAdmin = (req: Request, res: Response, next: NextFunction): void => {
+  if (!req.user) {
+    res.status(401).json({ success: false, message: 'Not authenticated' })
+    return
+  }
+  if (!req.user.isAdmin && req.user.role !== 'ADMIN') {
+    res.status(403).json({ success: false, message: 'Admin access required' })
+    return
+  }
+  next()
 }
 
 export const requirePermission = (permission: string) => {

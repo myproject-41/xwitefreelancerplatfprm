@@ -32,7 +32,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (!user) { router.replace('/login'); return }
-    if (user.role !== 'ADMIN') { router.replace('/'); return }
+    if (!user.isAdmin && user.role !== 'ADMIN') { router.replace('/'); return }
     loadAll()
   }, [user])
 

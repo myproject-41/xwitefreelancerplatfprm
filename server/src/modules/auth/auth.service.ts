@@ -20,6 +20,7 @@ interface JwtPayload {
   userId: string
   email: string
   role: Role
+  isAdmin?: boolean
 }
 
 function normalizeEmail(email: string) {
@@ -85,6 +86,7 @@ export class AuthService {
         role: true,
         isOnboarded: true,
         isActive: true,
+        isAdmin: true,
         freelancerProfile: {
           select: {
             fullName: true,
@@ -134,6 +136,7 @@ export class AuthService {
       userId: user.id,
       email: user.email,
       role: user.role as Role,
+      isAdmin: user.isAdmin ?? false,
     })
 
     const { password: _, ...userWithoutPassword } = user
@@ -150,6 +153,7 @@ export class AuthService {
         role: true,
         isOnboarded: true,
         isVerified: true,
+        isAdmin: true,
         emailVerified: true,
         createdAt: true,
         freelancerProfile: {
