@@ -149,6 +149,7 @@ export class AuthService {
         email: true,
         role: true,
         isOnboarded: true,
+        isVerified: true,
         emailVerified: true,
         createdAt: true,
         freelancerProfile: {
@@ -194,6 +195,9 @@ export class AuthService {
             hiringSkills: true,
             avgRating: true,
             totalReviews: true,
+            gstNumber: true,
+            gstVerified: true,
+            phoneNumber: true,
           },
         },
         clientProfile: {
