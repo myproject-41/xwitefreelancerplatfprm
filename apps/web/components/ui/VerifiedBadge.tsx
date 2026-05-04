@@ -5,7 +5,6 @@ export default function VerifiedBadge({ size = 'md' }: { size?: 'sm' | 'md' | 'l
       viewBox="0 0 24 24"
       className={`${sz} shrink-0 text-[#1565C0]`}
       aria-label="Verified"
-      title="Verified"
     >
       <circle cx="12" cy="12" r="12" fill="currentColor" />
       <path
