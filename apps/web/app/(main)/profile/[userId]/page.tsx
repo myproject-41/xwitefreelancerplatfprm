@@ -350,12 +350,10 @@ export default function PublicProfilePage() {
                   </p>
                   <div className="pub-name-row">
                     <div>
-                      <h1 className="pub-name flex items-center gap-1.5">
-                        {profile.isVerified && <VerifiedBadge size="lg" />}
-                        {profile.fullName || 'Unnamed User'}
-                      </h1>
+                      <h1 className="pub-name">{profile.fullName || 'Unnamed User'}</h1>
                       {profile.title && (
-                        <p className="pub-title">
+                        <p className="pub-title flex items-center gap-1">
+                          {profile.isVerified && <VerifiedBadge size="sm" />}
                           {profile.experienceLevel && (
                             <span className="pub-title-level">{profile.experienceLevel} · </span>
                           )}
@@ -641,11 +639,13 @@ export default function PublicProfilePage() {
                     : <MaterialIcon name="person" size={28} color="#94a3b8" />
                   }
                 </div>
-                <p className="pub-right-name flex items-center justify-center gap-1">
-                  {profile.isVerified && <VerifiedBadge size="sm" />}
-                  {profile.fullName ?? 'User'}
-                </p>
-                {profile.title && <p className="pub-right-title">{profile.title}</p>}
+                <p className="pub-right-name">{profile.fullName ?? 'User'}</p>
+                {profile.title && (
+                  <p className="pub-right-title flex items-center justify-center gap-1">
+                    {profile.isVerified && <VerifiedBadge size="sm" />}
+                    {profile.title}
+                  </p>
+                )}
                 {profile?.role === 'COMPANY' && (
                   <button
                     type="button"

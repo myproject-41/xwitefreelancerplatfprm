@@ -481,11 +481,11 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                       className="text-left w-full"
                       onClick={() => u.id && router.push(getProfilePath(u))}
                     >
-                      <h4 className="font-[Manrope] font-bold text-xl text-[#1b1c1a] leading-tight hover:text-[#1565C0] transition-colors flex items-center gap-1.5">
-                        {isVerified && <VerifiedBadge size="md" />}
-                        {name}
-                      </h4>
-                      <p className="text-sm font-medium text-[#1565C0]">{title}</p>
+                      <h4 className="font-[Manrope] font-bold text-xl text-[#1b1c1a] leading-tight hover:text-[#1565C0] transition-colors">{name}</h4>
+                      <p className="text-sm font-medium text-[#1565C0] flex items-center gap-1">
+                        {isVerified && <VerifiedBadge size="sm" />}
+                        {title}
+                      </p>
                     </button>
 
                     {/* Role / location row */}

@@ -506,12 +506,10 @@ export default function CompanyProfile() {
                     {/* Name + edit button */}
                     <div className="cp-name-row">
                       <div>
-                        <h1 className="cp-company-name flex items-center gap-2">
-                          {user?.isVerified && <VerifiedBadge size="lg" />}
-                          {companyName || 'Your Company'}
-                        </h1>
+                        <h1 className="cp-company-name">{companyName || 'Your Company'}</h1>
                         {industry && (
-                          <p className="cp-industry">
+                          <p className="cp-industry flex items-center gap-1">
+                            {user?.isVerified && <VerifiedBadge size="sm" />}
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="#94a3b8"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>
                             {industry}
                           </p>

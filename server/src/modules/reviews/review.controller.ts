@@ -4,7 +4,7 @@ import { reviewService } from './review.service'
 export class ReviewController {
   async createReview(req: Request, res: Response) {
     try {
-      const reviewerId = (req as any).user?.id
+      const reviewerId = req.user?.userId
       const { reviewedId, rating, comment, escrowId } = req.body
       if (!reviewerId) return res.status(401).json({ message: 'Unauthorized' })
       if (!reviewedId || !rating || !escrowId) {
@@ -29,7 +29,7 @@ export class ReviewController {
 
   async checkReviewed(req: Request, res: Response) {
     try {
-      const reviewerId = (req as any).user?.id
+      const reviewerId = req.user?.userId
       const { escrowId } = req.query
       if (!reviewerId || !escrowId) return res.json({ reviewed: false })
       const reviewed = await reviewService.hasReviewed(reviewerId, String(escrowId))
