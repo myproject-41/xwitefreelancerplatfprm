@@ -31,8 +31,8 @@ export default function AdminPage() {
   const [approvingId, setApprovingId] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!user) { router.replace('/login'); return }
-    if (!user.isAdmin && user.role !== 'ADMIN') { router.replace('/'); return }
+    if (!user) { router.replace('/admin/login'); return }
+    if (!user.isAdmin && user.role !== 'ADMIN') { router.replace('/admin/login'); return }
     loadAll()
   }, [user])
 
