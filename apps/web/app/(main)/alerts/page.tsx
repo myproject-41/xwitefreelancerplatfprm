@@ -391,11 +391,12 @@ export default function AlertsPage() {
     <div className="min-h-screen bg-[#f1f5f9]">
       <MainHeader />
 
-      <main className="mx-auto max-w-2xl px-4 pb-28 pt-24 md:px-6">
-        {/* Page title */}
-        <div className="mb-5 flex items-start justify-between gap-3">
-          <div>
-            <h1 className="flex items-center gap-2 text-xl font-extrabold text-[#1b1c1a]">
+      <main className="mx-auto max-w-5xl px-4 pb-28 pt-24 md:px-6">
+        <div className="lg:grid lg:grid-cols-[260px_1fr] lg:items-start lg:gap-6">
+
+          {/* ── LEFT PANEL: Stats + Filters ── */}
+          <div className="mb-5 lg:mb-0 lg:sticky lg:top-24">
+            <h1 className="mb-1 flex items-center gap-2 text-xl font-extrabold text-[#1b1c1a]">
               Notifications
               {unreadCount > 0 && (
                 <span className="rounded-full bg-red-500 px-2 py-0.5 text-xs font-bold text-white">
@@ -403,63 +404,84 @@ export default function AlertsPage() {
                 </span>
               )}
             </h1>
-            <p className="mt-0.5 text-xs text-[#6b7280]">Proposals, payments and activity updates</p>
-          </div>
-          {unreadCount > 0 && (
-            <button
-              type="button"
-              onClick={markAllRead}
-              className="mt-1 flex-shrink-0 rounded-full border border-[#d6dce3] bg-white px-3 py-1.5 text-xs font-bold text-[#1565C0] transition hover:bg-[#E3F2FD]"
-            >
-              Mark all read
-            </button>
-          )}
-        </div>
+            <p className="mb-4 text-xs text-[#6b7280]">Proposals, payments and activity updates</p>
 
-        {/* Filter tabs */}
-        <div className="mb-4 flex gap-2">
-          {(['all', 'unread'] as const).map(f => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`rounded-full px-4 py-1.5 text-sm font-bold transition ${
-                filter === f
-                  ? 'bg-[#1565C0] text-white shadow-sm'
-                  : 'border border-[#d6dce3] bg-white text-[#6b7280] hover:border-[#1565C0] hover:text-[#1565C0]'
-              }`}
-            >
-              {f === 'all'
-                ? `All${notifications.length > 0 ? ` (${notifications.length})` : ''}`
-                : `Unread${unreadCount > 0 ? ` (${unreadCount})` : ''}`}
-            </button>
-          ))}
-        </div>
-
-        {/* Notifications list */}
-        <div className="overflow-hidden rounded-2xl border border-[#e2e8f0] bg-white shadow-sm">
-          {loading ? (
-            <div className="py-10 text-center text-sm text-[#6b7280]">Loading…</div>
-          ) : visible.length === 0 ? (
-            <div className="py-16 text-center">
-              <p className="text-4xl">🔔</p>
-              <p className="mt-3 font-bold text-[#1b1c1a]">
-                {filter === 'unread' ? 'All caught up!' : 'No notifications yet'}
-              </p>
-              <p className="mt-1 text-sm text-[#6b7280]">
-                Proposal alerts, payment updates and more will appear here.
-              </p>
+            {/* Stats cards */}
+            <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-1">
+              <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4 shadow-sm">
+                <p className="text-xs font-bold uppercase tracking-widest text-[#94a3b8]">Total</p>
+                <p className="mt-1 text-2xl font-extrabold text-[#1b1c1a]">{notifications.length}</p>
+                <p className="text-xs text-[#6b7280]">notifications</p>
+              </div>
+              <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4 shadow-sm">
+                <p className="text-xs font-bold uppercase tracking-widest text-[#94a3b8]">Unread</p>
+                <p className={`mt-1 text-2xl font-extrabold ${unreadCount > 0 ? 'text-[#1565C0]' : 'text-[#1b1c1a]'}`}>
+                  {unreadCount}
+                </p>
+                <p className="text-xs text-[#6b7280]">new alerts</p>
+              </div>
             </div>
-          ) : (
-            visible.map(notif => (
-              <NotifRow
-                key={notif.id}
-                notif={notif}
-                onAccepted={handleAccepted}
-                onRejected={() => markRead(notif.id)}
-                onRead={markRead}
-              />
-            ))
-          )}
+
+            {/* Filter buttons */}
+            <div className="flex gap-2 lg:flex-col">
+              {(['all', 'unread'] as const).map(f => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-bold transition lg:text-left ${
+                    filter === f
+                      ? 'bg-[#1565C0] text-white shadow-sm'
+                      : 'border border-[#d6dce3] bg-white text-[#6b7280] hover:border-[#1565C0] hover:text-[#1565C0]'
+                  }`}
+                >
+                  {f === 'all'
+                    ? `All${notifications.length > 0 ? ` (${notifications.length})` : ''}`
+                    : `Unread${unreadCount > 0 ? ` (${unreadCount})` : ''}`}
+                </button>
+              ))}
+            </div>
+
+            {/* Mark all read */}
+            {unreadCount > 0 && (
+              <button
+                type="button"
+                onClick={markAllRead}
+                className="mt-3 w-full rounded-xl border border-[#d6dce3] bg-white px-3 py-2 text-xs font-bold text-[#1565C0] transition hover:bg-[#E3F2FD]"
+              >
+                Mark all as read
+              </button>
+            )}
+          </div>
+
+          {/* ── RIGHT PANEL: Notifications list ── */}
+          <div>
+            <div className="overflow-hidden rounded-2xl border border-[#e2e8f0] bg-white shadow-sm">
+              {loading ? (
+                <div className="py-10 text-center text-sm text-[#6b7280]">Loading…</div>
+              ) : visible.length === 0 ? (
+                <div className="py-16 text-center">
+                  <p className="text-4xl">🔔</p>
+                  <p className="mt-3 font-bold text-[#1b1c1a]">
+                    {filter === 'unread' ? 'All caught up!' : 'No notifications yet'}
+                  </p>
+                  <p className="mt-1 text-sm text-[#6b7280]">
+                    Proposal alerts, payment updates and more will appear here.
+                  </p>
+                </div>
+              ) : (
+                visible.map(notif => (
+                  <NotifRow
+                    key={notif.id}
+                    notif={notif}
+                    onAccepted={handleAccepted}
+                    onRejected={() => markRead(notif.id)}
+                    onRead={markRead}
+                  />
+                ))
+              )}
+            </div>
+          </div>
+
         </div>
       </main>
     </div>
