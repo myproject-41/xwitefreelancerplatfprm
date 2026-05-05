@@ -17,6 +17,7 @@ import { escrowService } from '../../../../services/escrow.service'
 import { postService }   from '../../../../services/post.service'
 import { useAuthStore }  from '../../../../store/authStore'
 import MainHeader from '../../../../components/ui/MainHeader'
+import VerifiedBadge from '../../../../components/ui/VerifiedBadge'
 
 /* ═══════════════════════════════════════════════
    TYPES
@@ -659,7 +660,10 @@ export default function FreelancerProfile() {
 
                     <div className="fp-name-row">
                       <div>
-                        <h1 className="fp-name">{fullName || 'Your Name'}</h1>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'nowrap' }}>
+                          <h1 className="fp-name">{fullName || 'Your Name'}</h1>
+                          {user?.isVerified && <VerifiedBadge size="lg" />}
+                        </div>
                         {title && (
                           <p className="fp-title">
                             {experienceLevel && <span className="fp-title-level">{experienceLevel} · </span>}

@@ -11,6 +11,7 @@ import { postService }   from '../../../services/post.service'
 import { escrowService } from '../../../services/escrow.service'
 import { useAuthStore } from '../../../store/authStore'
 import MainHeader from '../../../components/ui/MainHeader'
+import VerifiedBadge from '../../../components/ui/VerifiedBadge'
 
 /* ═══════════════════════════════════════════
    TYPES
@@ -501,7 +502,10 @@ export default function ClientProfile() {
                       </svg>
                       connection. {connections.toLocaleString()}
                     </p>
-                    <h1 className="cp-name">{name || 'Your Name'}</h1>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'nowrap' }}>
+                      <h1 className="cp-name">{name || 'Your Name'}</h1>
+                      {user?.isVerified && <VerifiedBadge size="lg" />}
+                    </div>
 
                     {bio && <p className="cp-bio">{bio}</p>}
 

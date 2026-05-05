@@ -267,11 +267,13 @@ export default function CompanyPublicProfilePage() {
                     <span className="cp-pub-follower-count">{followerCount} followers</span>
                   </div>
 
-                  <h1 className="cp-pub-name">{profile.fullName || 'Company'}</h1>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'nowrap' }}>
+                    <h1 className="cp-pub-name">{profile.fullName || 'Company'}</h1>
+                    {profile.isVerified && <VerifiedBadge size="lg" />}
+                  </div>
 
                   {profile.industry && (
                     <p className="cp-pub-industry flex items-center gap-1">
-                      {profile.isVerified && <VerifiedBadge size="sm" />}
                       <MaterialIcon name="domain" size={14} color="#64748b" />
                       {profile.industry}
                       {profile.employeeCount ? ` · ${profile.employeeCount} employees` : ''}
@@ -381,12 +383,12 @@ export default function CompanyPublicProfilePage() {
                     : <MaterialIcon name="business" size={28} color="#94a3b8" />
                   }
                 </div>
-                <p className="cp-pub-right-name">{profile.fullName ?? 'Company'}</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'center' }}>
+                  <p className="cp-pub-right-name">{profile.fullName ?? 'Company'}</p>
+                  {profile.isVerified && <VerifiedBadge size="sm" />}
+                </div>
                 {profile.industry && (
-                  <p className="cp-pub-right-industry flex items-center justify-center gap-1">
-                    {profile.isVerified && <VerifiedBadge size="sm" />}
-                    {profile.industry}
-                  </p>
+                  <p className="cp-pub-right-industry">{profile.industry}</p>
                 )}
                 <p className="cp-pub-right-followers">{followerCount} followers</p>
                 <button
