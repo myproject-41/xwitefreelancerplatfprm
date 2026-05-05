@@ -105,11 +105,16 @@ export default function BottomNav() {
     : user?.role === 'COMPANY' ? '/profile/company'
     : '/profile'
 
+  // Auth-required tabs redirect to /login when no user (avoids 401 → forced redirect UX)
+  const AUTH_REQUIRED = new Set(['Post', 'Alerts', 'Profile'])
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-zinc-200/60 bg-white/95 backdrop-blur-md md:hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
       <div className="mx-auto flex max-w-screen-sm">
         {NAV_ITEMS.map((item) => {
-          const resolvedPath = item.label === 'Profile' ? profilePath : item.path
+          const requiresAuth = AUTH_REQUIRED.has(item.label)
+          const targetPath = item.label === 'Profile' ? profilePath : item.path
+          const resolvedPath = requiresAuth && !user ? '/login' : targetPath
           const isActive = item.label === 'Profile'
             ? pathname.startsWith('/profile')
             : pathname === item.path

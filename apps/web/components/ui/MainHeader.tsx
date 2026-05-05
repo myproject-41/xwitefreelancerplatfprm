@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { chatService } from '../../services/chat.service'
 import { notificationService } from '../../services/notification.service'
+import { useAuthStore } from '../../store/authStore'
 import { useFeedStore } from '../../store/feedStore'
 
 const NAV_ITEMS = [
@@ -51,12 +52,19 @@ function MessageIcon() {
 export default function MainHeader() {
   const pathname = usePathname()
   const router = useRouter()
+  const user = useAuthStore((s) => s.user)
   const [messageUnreadCount, setMessageUnreadCount] = useState(0)
   const [alertUnreadCount, setAlertUnreadCount] = useState(0)
   const search = useFeedStore((state) => state.search)
   const setSearch = useFeedStore((state) => state.setSearch)
 
   useEffect(() => {
+    if (!user) {
+      setMessageUnreadCount(0)
+      setAlertUnreadCount(0)
+      return
+    }
+
     let ignore = false
 
     async function loadCounts() {
@@ -90,7 +98,7 @@ export default function MainHeader() {
     return () => {
       ignore = true
     }
-  }, [pathname])
+  }, [pathname, user])
 
   const getBadgeCount = (href: string) => {
     if (href === '/alerts') return alertUnreadCount
@@ -115,17 +123,19 @@ export default function MainHeader() {
         <nav className="hidden items-center gap-8 md:flex">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname === item.href
+            const requiresAuth = item.label === 'Post' || item.label === 'Alerts' || item.label === 'Profile'
+            const href = requiresAuth && !user ? '/login' : item.href
 
             return (
               <Link
                 key={item.href}
-                href={item.href}
+                href={href}
                 className={`relative pb-1 text-sm transition ${
                   isActive ? 'font-bold text-[#1565C0]' : 'font-medium text-[#6b7280] hover:text-[#1565C0]'
                 }`}
               >
                 {item.label}
-                {getBadgeCount(item.href) ? (
+                {user && getBadgeCount(item.href) ? (
                   <span className="ml-2 rounded-full bg-[#1976D2] px-2 py-0.5 text-[10px] font-bold text-white">
                     {getBadgeCount(item.href)}
                   </span>
@@ -165,26 +175,45 @@ export default function MainHeader() {
             />
           </label>
 
-          <Link
-            href="/agent"
-            className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#1565C0_0%,#1976D2_100%)] px-4 py-2 text-sm font-medium text-white shadow-sm transition-all duration-150 hover:opacity-90 active:scale-95"
-          >
-            <SparkIcon />
-            <span className="hidden sm:inline">AI Agent</span>
-          </Link>
+          {user ? (
+            <>
+              <Link
+                href="/agent"
+                className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#1565C0_0%,#1976D2_100%)] px-4 py-2 text-sm font-medium text-white shadow-sm transition-all duration-150 hover:opacity-90 active:scale-95"
+              >
+                <SparkIcon />
+                <span className="hidden sm:inline">AI Agent</span>
+              </Link>
 
-          <Link
-            href="/messages"
-            aria-label="Messages"
-            className="relative flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#1565C0]/20 bg-white text-[#1565C0] transition-all duration-150 hover:bg-[#E3F2FD] active:scale-95"
-          >
-            <MessageIcon />
-            {messageUnreadCount > 0 ? (
-              <span className="absolute -right-1 -top-1 min-w-[18px] rounded-full bg-[#1976D2] px-1.5 py-0.5 text-center text-[10px] font-bold leading-none text-white">
-                {messageUnreadCount}
-              </span>
-            ) : null}
-          </Link>
+              <Link
+                href="/messages"
+                aria-label="Messages"
+                className="relative flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#1565C0]/20 bg-white text-[#1565C0] transition-all duration-150 hover:bg-[#E3F2FD] active:scale-95"
+              >
+                <MessageIcon />
+                {messageUnreadCount > 0 ? (
+                  <span className="absolute -right-1 -top-1 min-w-[18px] rounded-full bg-[#1976D2] px-1.5 py-0.5 text-center text-[10px] font-bold leading-none text-white">
+                    {messageUnreadCount}
+                  </span>
+                ) : null}
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="text-sm font-bold text-[#1565C0] hover:underline"
+              >
+                Login
+              </Link>
+              <Link
+                href="/signup"
+                className="rounded-full bg-[#1565C0] px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-[#0D47A1] transition active:scale-95"
+              >
+                Join Free
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>
