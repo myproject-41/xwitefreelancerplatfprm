@@ -20,7 +20,7 @@ export default function SessionHydrator() {
       .catch(() => {
         // Token invalid — clearAuthState already removed it via 401 interceptor
       })
-  }, [])
+  }, [setUser, setToken])
 
   return null
 }
