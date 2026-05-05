@@ -26,7 +26,7 @@ export default function SiteFooter() {
         {/* Brand */}
         <div>
           <Link href="/" className="inline-block mb-4">
-            <img src="/xwiteprofile.png" alt="Xwite" className="h-12 w-12 rounded-xl object-cover" />
+            <img src="/logo.png" alt="Xwite" className="h-12 w-12 rounded-xl object-cover" />
           </Link>
           <p className="text-sm text-white/60 leading-relaxed max-w-[200px]">
             Build, collaborate, and ship real projects together.

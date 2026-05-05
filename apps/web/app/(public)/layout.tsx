@@ -7,7 +7,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       <header className="sticky top-0 z-50 w-full border-b border-zinc-200/40 bg-white/95 backdrop-blur-md shadow-sm">
         <div className="mx-auto flex h-16 max-w-screen-xl items-center justify-between gap-4 px-6">
           <Link href="/" className="flex items-center gap-2">
-            <img src="/xwiteprofile.png" alt="Xwite" className="h-9 w-9 rounded-xl object-cover" />
+            <img src="/logo.png" alt="Xwite" className="h-9 w-9 rounded-xl object-cover" />
             <span className="font-extrabold text-[#1b1c1a] text-lg tracking-tight">Xwite</span>
           </Link>
           <div className="flex items-center gap-3">

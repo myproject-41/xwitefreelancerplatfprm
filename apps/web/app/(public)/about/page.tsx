@@ -8,7 +8,7 @@ export default function AboutPage() {
       {/* Hero */}
       <div className="mb-12 text-center">
         <img
-          src="/xwiteprofile.png"
+          src="/logo.png"
           alt="Xwite"
           className="mx-auto h-20 w-20 rounded-2xl object-cover shadow-lg mb-6"
         />

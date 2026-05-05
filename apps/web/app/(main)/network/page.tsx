@@ -981,7 +981,7 @@ function NetworkPageInner() {
       {isGuest && (
         <div className="max-w-screen-xl mx-auto px-4 md:px-8 pt-20 md:pt-24">
           <div className="rounded-2xl bg-gradient-to-br from-[#1565C0] to-[#1976D2] text-white p-8 flex flex-col sm:flex-row items-center gap-6 shadow-lg mb-6">
-            <img src="/xwiteprofile.png" alt="Xwite" className="h-16 w-16 rounded-2xl object-cover shadow-md shrink-0" />
+            <img src="/logo.png" alt="Xwite" className="h-16 w-16 rounded-2xl object-cover shadow-md shrink-0" />
             <div className="flex-1 text-center sm:text-left">
               <h2 className="text-xl font-extrabold mb-1">Connect with professionals on Xwite</h2>
               <p className="text-white/80 text-sm">Sign in to see people you may know, send connection requests, and grow your network.</p>

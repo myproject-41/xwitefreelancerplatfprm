@@ -34,13 +34,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
         {/* Favicon — versioned to bust browser cache after logo update */}
-        <link rel="icon" type="image/png" href="/xwiteprofile.png?v=2" />
-        <link rel="shortcut icon" type="image/png" href="/xwiteprofile.png?v=2" />
+        <link rel="icon" type="image/png" href="/logo.png?v=2" />
+        <link rel="shortcut icon" type="image/png" href="/logo.png?v=2" />
         {/* iOS PWA splash / status bar */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <link rel="apple-touch-icon" href="/xwiteprofile.png?v=2" />
+        <link rel="apple-touch-icon" href="/logo.png?v=2" />
       </head>
       <body style={{
         fontFamily: 'Manrope, Inter, sans-serif',

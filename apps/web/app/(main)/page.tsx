@@ -298,7 +298,7 @@ export default function HomePage() {
         <main className="min-h-screen bg-[linear-gradient(180deg,#faf9f6_0%,#f3f4ef_100%)] flex flex-col items-center justify-center px-6 py-20 text-[#1b1c1a]">
           <div className="mx-auto w-full max-w-lg text-center">
             <img
-              src="/xwiteprofile.png"
+              src="/logo.png"
               alt="Xwite"
               className="mx-auto h-16 w-16 rounded-2xl object-cover shadow-md mb-6"
             />

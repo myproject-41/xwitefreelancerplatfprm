@@ -4,7 +4,7 @@ const OFFLINE_URL = '/'
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
-  '/xwiteprofile.png',
+  '/logo.png',
 ]
 
 // ── Install: cache static assets ─────────────────────────────────────────────
@@ -86,8 +86,8 @@ self.addEventListener('push', (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title || 'Xwite', {
       body: data.message || '',
-      icon: '/xwiteprofile.png',
-      badge: '/xwiteprofile.png',
+      icon: '/logo.png',
+      badge: '/logo.png',
       data: { url: data.link || '/' },
     })
   )
