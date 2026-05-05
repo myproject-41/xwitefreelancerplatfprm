@@ -314,8 +314,8 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
     new Set((initialFollowing as any[]).map((f: any) => f.following?.id ?? f.followingId).filter(Boolean))
   )
   const [connected, setConnected] = useState<Set<string>>(new Set())
-  const [showAllCompanies, setShowAllCompanies] = useState(false)
-  const [showAllPeople, setShowAllPeople] = useState(false)
+  const [companyLimit, setCompanyLimit] = useState(6)
+  const [peopleLimit, setPeopleLimit] = useState(6)
   const router = useRouter()
 
   useEffect(() => {
@@ -326,11 +326,11 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
     ))
   }, [initialFollowing])
 
-  // Split real suggestions into companies vs people
+  // Split suggestions — companies first (already relevance-sorted by backend), then people
   const allCompanySuggestions = suggestions.filter((s: any) => s.role === 'COMPANY')
-  const allPeopleSuggestions = suggestions.filter((s: any) => s.role !== 'COMPANY' && !dismissed.has(s.id))
-  const companySuggestions = showAllCompanies ? allCompanySuggestions : allCompanySuggestions.slice(0, 3)
-  const peopleSuggestions = showAllPeople ? allPeopleSuggestions : allPeopleSuggestions.slice(0, 4)
+  const allPeopleSuggestions  = suggestions.filter((s: any) => s.role !== 'COMPANY' && !dismissed.has(s.id))
+  const companySuggestions = allCompanySuggestions.slice(0, companyLimit)
+  const peopleSuggestions  = allPeopleSuggestions.slice(0, peopleLimit)
 
   async function handleFollow(userId: string) {
     const isFollowed = followed.has(userId)
@@ -364,12 +364,14 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
             <h2 className="font-[Manrope] text-2xl font-extrabold tracking-tight text-[#1b1c1a]">Recommended for your Industry</h2>
             <p className="text-[#404850] mt-1 text-sm">Stay ahead with insights from leading companies on Xwite.</p>
           </div>
-          <button
-            onClick={() => setShowAllCompanies(v => !v)}
-            className="text-[#1565C0] font-bold text-sm flex items-center gap-1 hover:underline"
-          >
-            {showAllCompanies ? 'Show less' : 'See all'} <Icons.ArrowRight />
-          </button>
+          {allCompanySuggestions.length > companyLimit && (
+            <button
+              onClick={() => setCompanyLimit(v => v + 6)}
+              className="text-[#1565C0] font-bold text-sm flex items-center gap-1 hover:underline"
+            >
+              See more ({allCompanySuggestions.length - companyLimit}) <Icons.ArrowRight />
+            </button>
+          )}
         </div>
 
         {companySuggestions.length === 0 ? (
@@ -539,14 +541,14 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
           </div>
         )}
 
-        {/* View more / Show less for people */}
-        {allPeopleSuggestions.length > 4 && (
+        {/* Load more people */}
+        {allPeopleSuggestions.length > peopleLimit && (
           <div className="flex justify-center mt-4">
             <button
-              onClick={() => setShowAllPeople(v => !v)}
+              onClick={() => setPeopleLimit(v => v + 6)}
               className="px-6 py-2 rounded-full border-2 border-[#1565C0] text-[#1565C0] font-bold text-sm hover:bg-[#1565C0]/5 transition active:scale-95"
             >
-              {showAllPeople ? 'Show less' : `View more (${allPeopleSuggestions.length - 4} more)`}
+              Load more ({allPeopleSuggestions.length - peopleLimit} more)
             </button>
           </div>
         )}

@@ -203,16 +203,22 @@ export class ConnectionService {
     return mapped
   }
 
-  // Get people you may know
+  // Get people you may know — all eligible users, relevant ones first
   async getSuggestions(userId: string) {
-    // Get existing connections to exclude
-    const existing = await prisma.connection.findMany({
-      where: {
-        OR: [
-          { fromUserId: userId },
-          { toUserId: userId },
-        ],
+    // Fetch current user's profile for relevance matching
+    const me = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        role: true,
+        freelancerProfile: { select: { skills: true, country: true } },
+        companyProfile:   { select: { industry: true, country: true } },
+        clientProfile:    { select: { country: true } },
       },
+    })
+
+    // Collect all user IDs already connected/pending with current user
+    const existing = await prisma.connection.findMany({
+      where: { OR: [{ fromUserId: userId }, { toUserId: userId }] },
       select: { fromUserId: true, toUserId: true },
     })
 
@@ -221,17 +227,14 @@ export class ConnectionService {
       excludeIds.add(c.fromUserId)
       excludeIds.add(c.toUserId)
     })
-
-    const baseWhere = {
-      id: { notIn: Array.from(excludeIds) },
-      isOnboarded: true,
-    }
+    const excludeArr = Array.from(excludeIds)
 
     const selectFields = {
       id: true,
       email: true,
       role: true,
       isVerified: true,
+      createdAt: true,
       freelancerProfile: {
         select: { fullName: true, title: true, profileImage: true, country: true, skills: true },
       },
@@ -243,35 +246,61 @@ export class ConnectionService {
       },
     }
 
-    // Fetch companies and people separately so each section always gets results
-    // Remove isOnboarded requirement for companies — show any company with a profile
-    const companyWhere = {
-      id: { notIn: Array.from(excludeIds) },
-      role: 'COMPANY' as const,
-      companyProfile: { isNot: null },
-    }
-    const peopleWhere = {
-      id: { notIn: Array.from(excludeIds) },
-      isOnboarded: true,
-      NOT: { role: 'COMPANY' as const },
-    }
-
+    // Fetch ALL eligible companies and people (no hard limit)
     const [companies, people] = await Promise.all([
       prisma.user.findMany({
-        where: companyWhere,
-        take: 9,
+        where: {
+          id: { notIn: excludeArr },
+          role: 'COMPANY',
+          companyProfile: { isNot: null },
+        },
         orderBy: { createdAt: 'desc' },
         select: selectFields,
       }).catch(() => [] as any[]),
       prisma.user.findMany({
-        where: peopleWhere,
-        take: 10,
+        where: {
+          id: { notIn: excludeArr },
+          isOnboarded: true,
+          NOT: { role: 'COMPANY' },
+        },
         orderBy: { createdAt: 'desc' },
         select: selectFields,
       }).catch(() => [] as any[]),
     ])
 
-    return [...companies, ...people]
+    // Relevance sort for companies: same industry first, then same country, then rest
+    const myIndustry = me?.companyProfile?.industry || ''
+    const myCountry  = me?.companyProfile?.country || me?.freelancerProfile?.country || me?.clientProfile?.country || ''
+
+    const sortedCompanies = companies.sort((a: any, b: any) => {
+      const aScore = (a.companyProfile?.industry === myIndustry && myIndustry ? 2 : 0)
+                   + (a.companyProfile?.country  === myCountry  && myCountry  ? 1 : 0)
+      const bScore = (b.companyProfile?.industry === myIndustry && myIndustry ? 2 : 0)
+                   + (b.companyProfile?.country  === myCountry  && myCountry  ? 1 : 0)
+      return bScore - aScore
+    })
+
+    // Relevance sort for people: shared skills count first, then same role, then same country
+    const mySkills: string[] = me?.freelancerProfile?.skills || []
+    const myRole = me?.role || ''
+
+    const sortedPeople = people.sort((a: any, b: any) => {
+      const aSkills: string[] = a.freelancerProfile?.skills || []
+      const bSkills: string[] = b.freelancerProfile?.skills || []
+      const sharedA = mySkills.filter(s => aSkills.includes(s)).length
+      const sharedB = mySkills.filter(s => bSkills.includes(s)).length
+      if (sharedB !== sharedA) return sharedB - sharedA
+
+      const aRoleBonus = a.role === myRole ? 1 : 0
+      const bRoleBonus = b.role === myRole ? 1 : 0
+      if (bRoleBonus !== aRoleBonus) return bRoleBonus - aRoleBonus
+
+      const aCountryBonus = (a.freelancerProfile?.country || a.clientProfile?.country) === myCountry && myCountry ? 1 : 0
+      const bCountryBonus = (b.freelancerProfile?.country || b.clientProfile?.country) === myCountry && myCountry ? 1 : 0
+      return bCountryBonus - aCountryBonus
+    })
+
+    return [...sortedCompanies, ...sortedPeople]
   }
 
   // Get connection status between two users
