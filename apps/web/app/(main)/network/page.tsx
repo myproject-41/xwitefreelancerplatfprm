@@ -455,23 +455,13 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                   key={u.id}
                   className="bg-white rounded-2xl border border-[#e3e2df] shadow-sm overflow-hidden group hover:shadow-md transition-shadow"
                 >
-                  {/* Header banner */}
+                  {/* Header banner — avatar anchored inside so it overlaps */}
                   <div className={`h-16 bg-gradient-to-br ${grad} relative`}>
-                    {/* Dismiss button */}
-                    <button
-                      onClick={() => setDismissed((prev) => new Set(prev).add(u.id))}
-                      className="absolute top-2 right-2 p-1 rounded-full bg-white/30 hover:bg-white/60 transition opacity-0 group-hover:opacity-100"
-                    >
-                      <Icons.Close />
-                    </button>
-                  </div>
-
-                  {/* Avatar row — overlaps banner */}
-                  <div className="px-4 -mt-7 mb-2 flex items-end justify-between">
+                    {/* Avatar — absolute so it sits ON TOP of the banner */}
                     <button
                       type="button"
                       onClick={() => u.id && router.push(getProfilePath(u))}
-                      className="shrink-0"
+                      className="absolute -bottom-7 left-4 z-10"
                     >
                       {image ? (
                         <img
@@ -485,13 +475,23 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                         </div>
                       )}
                     </button>
-                    <span className={`text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full ${rolePillStyle}`}>
-                      {roleLabel}
-                    </span>
+                    {/* Dismiss button */}
+                    <button
+                      onClick={() => setDismissed((prev) => new Set(prev).add(u.id))}
+                      className="absolute top-2 right-2 p-1 rounded-full bg-white/30 hover:bg-white/60 transition opacity-0 group-hover:opacity-100"
+                    >
+                      <Icons.Close />
+                    </button>
                   </div>
 
-                  {/* Body */}
-                  <div className="px-4 pb-4">
+                  {/* Body — pt-10 leaves room for the overlapping avatar */}
+                  <div className="px-4 pt-10 pb-4">
+                    {/* Role pill — right aligned */}
+                    <div className="flex justify-end -mt-6 mb-2">
+                      <span className={`text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full ${rolePillStyle}`}>
+                        {roleLabel}
+                      </span>
+                    </div>
                     {/* Name + badge */}
                     <button
                       type="button"
