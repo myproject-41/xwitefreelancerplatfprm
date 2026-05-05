@@ -432,99 +432,118 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
             <p className="text-xs text-[#707881] mt-1">Complete your profile to get better recommendations</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {peopleSuggestions.map((u: any) => {
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+            {peopleSuggestions.map((u: any, i: number) => {
               const { name, title, image, country, isVerified } = getUserInfo(u)
               const isConnected = connected.has(u.id)
-              const roleLabel = u.role === 'FREELANCER' ? 'Freelancer' : u.role === 'CLIENT' ? 'Client' : u.role?.replace(/_/g, ' ')
+              const isFreelancer = u.role === 'FREELANCER'
+              const roleLabel = isFreelancer ? 'Freelancer' : u.role === 'CLIENT' ? 'Client' : u.role?.replace(/_/g, ' ')
+              const skills: string[] = u.freelancerProfile?.skills || []
+              // Don't show title if it's blank or identical to the role label
+              const showTitle = title && title.toLowerCase() !== roleLabel?.toLowerCase() && title.toLowerCase() !== u.role?.toLowerCase()
+
+              const freelancerGrads = ['from-[#dbeafe] to-[#93c5fd]', 'from-[#ede9fe] to-[#c4b5fd]', 'from-[#cffafe] to-[#67e8f9]']
+              const clientGrads     = ['from-[#dcfce7] to-[#86efac]', 'from-[#fef3c7] to-[#fde047]', 'from-[#fce7f3] to-[#f9a8d4]']
+              const grad = isFreelancer ? freelancerGrads[i % freelancerGrads.length] : clientGrads[i % clientGrads.length]
+
+              const rolePillStyle = isFreelancer
+                ? 'bg-[#dbeafe] text-[#1d4ed8]'
+                : 'bg-[#dcfce7] text-[#15803d]'
 
               return (
                 <div
                   key={u.id}
-                  className="bg-white rounded-xl border border-[#e3e2df]/60 p-6 flex items-start gap-6 relative overflow-hidden group hover:bg-[#f4f3f0] transition-colors shadow-sm"
+                  className="bg-white rounded-2xl border border-[#e3e2df] shadow-sm overflow-hidden group hover:shadow-md transition-shadow"
                 >
-                  {/* Dismiss — appears on hover, top-right */}
-                  <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {/* Header banner */}
+                  <div className={`h-16 bg-gradient-to-br ${grad} relative`}>
+                    {/* Dismiss button */}
                     <button
                       onClick={() => setDismissed((prev) => new Set(prev).add(u.id))}
-                      className="p-2 rounded-full hover:bg-[#e3e2df] transition-colors"
+                      className="absolute top-2 right-2 p-1 rounded-full bg-white/30 hover:bg-white/60 transition opacity-0 group-hover:opacity-100"
                     >
                       <Icons.Close />
                     </button>
                   </div>
 
-                  {/* Avatar — clickable */}
-                  <button
-                    type="button"
-                    className="shrink-0"
-                    onClick={() => u.id && router.push(getProfilePath(u))}
-                  >
-                    {image ? (
-                      <img
-                        src={image}
-                        alt={name}
-                        className="w-24 h-24 rounded-xl object-cover border-4 border-white shadow-sm hover:opacity-90 transition-opacity"
-                      />
-                    ) : (
-                      <div className="w-24 h-24 rounded-xl border-4 border-white shadow-sm bg-gradient-to-br from-[#BBDEFB] to-[#93ccff] flex items-center justify-center text-2xl font-black text-[#1565C0] hover:opacity-90 transition-opacity">
-                        {getInitials(name)}
-                      </div>
-                    )}
-                  </button>
-
-                  {/* Content */}
-                  <div className="flex-1 min-w-0 space-y-2">
-                    {/* Name + title — clickable */}
+                  {/* Avatar row — overlaps banner */}
+                  <div className="px-4 -mt-7 mb-2 flex items-end justify-between">
                     <button
                       type="button"
-                      className="text-left w-full"
+                      onClick={() => u.id && router.push(getProfilePath(u))}
+                      className="shrink-0"
+                    >
+                      {image ? (
+                        <img
+                          src={image}
+                          alt={name}
+                          className="w-14 h-14 rounded-xl object-cover border-2 border-white shadow-md hover:opacity-90 transition-opacity"
+                        />
+                      ) : (
+                        <div className={`w-14 h-14 rounded-xl border-2 border-white shadow-md flex items-center justify-center text-lg font-black text-[#1565C0] hover:opacity-90 transition-opacity bg-gradient-to-br ${grad}`}>
+                          {getInitials(name)}
+                        </div>
+                      )}
+                    </button>
+                    <span className={`text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full ${rolePillStyle}`}>
+                      {roleLabel}
+                    </span>
+                  </div>
+
+                  {/* Body */}
+                  <div className="px-4 pb-4">
+                    {/* Name + badge */}
+                    <button
+                      type="button"
+                      className="text-left w-full mb-1"
                       onClick={() => u.id && router.push(getProfilePath(u))}
                     >
-                      <div className="flex items-center gap-1.5">
-                        <h4 className="font-[Manrope] font-bold text-xl text-[#1b1c1a] leading-tight hover:text-[#1565C0] transition-colors">{name}</h4>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <h4 className="font-[Manrope] font-bold text-[15px] text-[#1b1c1a] leading-snug hover:text-[#1565C0] transition-colors">{name}</h4>
                         {isVerified && <VerifiedBadge size="sm" />}
                       </div>
-                      <p className="text-sm font-medium text-[#1565C0]">{title}</p>
+                      {showTitle && (
+                        <p className="text-xs text-[#536279] mt-0.5 leading-tight">{title}</p>
+                      )}
                     </button>
 
-                    {/* Role / location row */}
-                    <div className="flex items-center gap-2 text-xs text-[#404850]">
-                      <div className="flex items-center gap-1.5">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#BBDEFB]/50 text-[#1565C0] font-semibold text-[10px] uppercase tracking-wide">
-                          {roleLabel}
-                        </span>
-                        {country && (
-                          <span className="flex items-center gap-1 text-[#707881]">
-                            <Icons.Location />
-                            {country}
+                    {/* Location */}
+                    {country && (
+                      <p className="flex items-center gap-1 text-xs text-[#707881] mb-2">
+                        <Icons.Location />
+                        {country}
+                      </p>
+                    )}
+
+                    {/* Skills — freelancers only */}
+                    {isFreelancer && skills.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-3">
+                        {skills.slice(0, 3).map((s: string) => (
+                          <span key={s} className="text-[10px] font-semibold bg-[#dbeafe] text-[#1d4ed8] px-2 py-0.5 rounded-full">
+                            {s}
                           </span>
-                        )}
+                        ))}
                       </div>
-                    </div>
+                    )}
 
                     {/* Connect button */}
-                    <div className="pt-2">
-                      <button
-                        onClick={async () => {
-                          if (isConnected) return
-                          setConnected((prev) => new Set(prev).add(u.id))
-                          try {
-                            await onConnect(u.id)
-                          } catch {
-                            setConnected((prev) => { const s = new Set(prev); s.delete(u.id); return s })
-                          }
-                        }}
-                        disabled={isConnected}
-                        className={`flex items-center gap-2 px-6 py-2 rounded-full font-bold text-sm transition-all active:scale-95 ${
-                          isConnected
-                            ? 'bg-[#efeeeb] text-[#707881] cursor-default'
-                            : 'bg-[#1565C0] text-white shadow-[0_4px_12px_rgba(21,101,192,0.2)]'
-                        }`}
-                      >
-                        <Icons.PersonAdd />
-                        {isConnected ? 'Request Sent' : 'Connect'}
-                      </button>
-                    </div>
+                    <button
+                      onClick={async () => {
+                        if (isConnected) return
+                        setConnected((prev) => new Set(prev).add(u.id))
+                        try { await onConnect(u.id) }
+                        catch { setConnected((prev) => { const s = new Set(prev); s.delete(u.id); return s }) }
+                      }}
+                      disabled={isConnected}
+                      className={`mt-1 w-full flex items-center justify-center gap-2 py-2 rounded-full font-bold text-sm transition-all active:scale-95 ${
+                        isConnected
+                          ? 'bg-[#efeeeb] text-[#707881] cursor-default'
+                          : 'bg-[#1565C0] text-white shadow-[0_3px_10px_rgba(21,101,192,0.25)] hover:bg-[#1251a3]'
+                      }`}
+                    >
+                      <Icons.PersonAdd />
+                      {isConnected ? 'Request Sent' : 'Connect'}
+                    </button>
                   </div>
                 </div>
               )
