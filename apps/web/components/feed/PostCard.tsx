@@ -112,18 +112,6 @@ function timeAgo(date: string) {
   return `${Math.floor(hours / 24)}d ago`
 }
 
-function formatTimestamp(date?: string) {
-  if (!date) return ''
-
-  try {
-    return new Intl.DateTimeFormat('en-IN', {
-      dateStyle: 'medium',
-      timeStyle: 'short',
-    }).format(new Date(date))
-  } catch {
-    return date
-  }
-}
 
 function compactBudget(post: any) {
   if (!post.budget) return null
@@ -477,7 +465,7 @@ export default function PostCard({
 
           <p
             ref={descRef}
-            className={`font-[Manrope] text-[14px] font-normal leading-[1.65] text-[#5e6670] ${expanded || detailMode ? '' : 'line-clamp-4'}`}
+            className={`font-[Manrope] text-[14px] font-normal leading-[1.65] text-[#5e6670] md:font-medium md:text-[15px] ${expanded || detailMode ? '' : 'line-clamp-4'}`}
           >
             {post.description}
           </p>
