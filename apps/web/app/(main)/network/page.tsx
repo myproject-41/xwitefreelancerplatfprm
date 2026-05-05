@@ -277,13 +277,16 @@ function PendingInvitations({ pending, onAccept, onIgnore }: { pending: any[]; o
       </div>
       <div className="divide-y divide-[#efeeeb]">
         {pending.slice(0, 3).map((req: any) => {
-          const { name, title, image } = getUserInfo(req.fromUser)
+          const { name, title, image, isVerified } = getUserInfo(req.fromUser)
           return (
             <div key={req.id} className="p-4 hover:bg-[#faf9f6] transition-colors">
               <button type="button" onClick={() => req.fromUser?.id && router.push(getProfilePath(req.fromUser))} className="flex w-full items-start gap-3 mb-3 text-left">
                 <Avatar name={name} image={image} size="md" />
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-sm text-[#1b1c1a] truncate">{name}</p>
+                  <div className="flex items-center gap-1 min-w-0">
+                    <p className="font-bold text-sm text-[#1b1c1a] truncate">{name}</p>
+                    {isVerified && <VerifiedBadge size="sm" />}
+                  </div>
                   <p className="text-xs text-[#707881] truncate">{title || req.fromUser?.role}</p>
                 </div>
               </button>
@@ -376,7 +379,7 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {companySuggestions.map((co: any, i: number) => {
-              const { name, title, image } = getUserInfo(co)
+              const { name, title, image, isVerified } = getUserInfo(co)
               const isFollowed = followed.has(co.id)
               const gradients = [
                 'from-[#cde5ff] to-[#1976D2]',
@@ -396,7 +399,10 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                     </div>
                   </div>
                   <div className="p-6 pt-9">
-                    <h3 className="font-[Manrope] font-bold text-lg group-hover:text-[#1565C0] transition-colors leading-tight">{name}</h3>
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <h3 className="font-[Manrope] font-bold text-lg group-hover:text-[#1565C0] transition-colors leading-tight">{name}</h3>
+                      {isVerified && <VerifiedBadge size="sm" />}
+                    </div>
                     <p className="text-xs text-[#404850] mb-1">{title || 'Company'}</p>
                     <p className="text-sm text-[#707881] line-clamp-2 mb-4 leading-relaxed">
                       {co.companyProfile?.description || `${name} is a company on Xwite. Connect and collaborate.`}
@@ -481,11 +487,11 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                       className="text-left w-full"
                       onClick={() => u.id && router.push(getProfilePath(u))}
                     >
-                      <h4 className="font-[Manrope] font-bold text-xl text-[#1b1c1a] leading-tight hover:text-[#1565C0] transition-colors">{name}</h4>
-                      <p className="text-sm font-medium text-[#1565C0] flex items-center gap-1">
+                      <div className="flex items-center gap-1.5">
+                        <h4 className="font-[Manrope] font-bold text-xl text-[#1b1c1a] leading-tight hover:text-[#1565C0] transition-colors">{name}</h4>
                         {isVerified && <VerifiedBadge size="sm" />}
-                        {title}
-                      </p>
+                      </div>
+                      <p className="text-sm font-medium text-[#1565C0]">{title}</p>
                     </button>
 
                     {/* Role / location row */}
@@ -595,7 +601,7 @@ function ConnectionsSection({ pending, connections, onAccept, onIgnore, onRemove
       ) : (
         <div className="space-y-3">
           {filtered.map((c: any) => {
-            const { name, title, image } = getUserInfo(c.user)
+            const { name, title, image, isVerified } = getUserInfo(c.user)
             const diff = Date.now() - new Date(c.connectedAt).getTime()
             const days = Math.floor(diff / 86400000)
             const timeAgo = days < 1 ? 'Today' : days < 30 ? `${days}d ago` : days < 365 ? `${Math.floor(days / 30)}mo ago` : `${Math.floor(days / 365)}y ago`
@@ -604,7 +610,10 @@ function ConnectionsSection({ pending, connections, onAccept, onIgnore, onRemove
                 <button type="button" onClick={() => c.user?.id && router.push(getProfilePath(c.user))} className="flex flex-1 min-w-0 items-center gap-3 text-left">
                   <Avatar name={name} image={image} size="md" />
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-sm text-[#1b1c1a] truncate">{name}</p>
+                    <div className="flex items-center gap-1 min-w-0">
+                      <p className="font-bold text-sm text-[#1b1c1a] truncate">{name}</p>
+                      {isVerified && <VerifiedBadge size="sm" />}
+                    </div>
                     <p className="text-xs text-[#707881] truncate">{title}</p>
                     <p className="text-xs text-[#707881] mt-0.5">Connected {timeAgo}</p>
                   </div>
@@ -642,14 +651,17 @@ function FollowSection({ pending, following, followers, onAccept, onIgnore, onUn
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {following.map((f: any) => {
-              const { name, title, image } = getUserInfo(f.following)
+              const { name, title, image, isVerified } = getUserInfo(f.following)
               const isUnfollowed = unfollowed.has(f.following.id)
               return (
                 <div key={f.following.id} className="bg-white rounded-xl border border-[#e3e2df] shadow-sm p-4 flex items-center gap-3 hover:bg-[#faf9f6] transition-colors">
                   <button type="button" onClick={() => f.following?.id && router.push(getProfilePath(f.following))} className="flex flex-1 min-w-0 items-center gap-3 text-left">
                     <Avatar name={name} image={image} size="md" />
                     <div className="flex-1 min-w-0">
-                      <p className="font-bold text-sm text-[#1b1c1a] truncate">{name}</p>
+                      <div className="flex items-center gap-1 min-w-0">
+                        <p className="font-bold text-sm text-[#1b1c1a] truncate">{name}</p>
+                        {isVerified && <VerifiedBadge size="sm" />}
+                      </div>
                       <p className="text-xs text-[#707881] truncate">{title}</p>
                     </div>
                   </button>
@@ -676,14 +688,17 @@ function FollowSection({ pending, following, followers, onAccept, onIgnore, onUn
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {followers.map((f: any) => {
-              const { name, title, image } = getUserInfo(f.follower)
+              const { name, title, image, isVerified } = getUserInfo(f.follower)
               const isConnected = connected.has(f.follower.id)
               return (
                 <div key={f.follower.id} className="bg-white rounded-xl border border-[#e3e2df] shadow-sm p-4 flex items-center gap-3 hover:bg-[#faf9f6] transition-colors">
                   <button type="button" onClick={() => f.follower?.id && router.push(getProfilePath(f.follower))} className="flex flex-1 min-w-0 items-center gap-3 text-left">
                     <Avatar name={name} image={image} size="md" />
                     <div className="flex-1 min-w-0">
-                      <p className="font-bold text-sm text-[#1b1c1a] truncate">{name}</p>
+                      <div className="flex items-center gap-1 min-w-0">
+                        <p className="font-bold text-sm text-[#1b1c1a] truncate">{name}</p>
+                        {isVerified && <VerifiedBadge size="sm" />}
+                      </div>
                       <p className="text-xs text-[#707881] truncate">{title}</p>
                     </div>
                   </button>
@@ -1019,13 +1034,16 @@ function NetworkPageInner() {
                 </div>
                 <div className="divide-y divide-[#efeeeb]">
                   {pending.slice(0, 2).map((req: any) => {
-                    const { name, title, image } = getUserInfo(req.fromUser)
+                    const { name, title, image, isVerified } = getUserInfo(req.fromUser)
                     return (
                       <div key={req.id} className="p-4 hover:bg-[#faf9f6] transition-colors">
                         <div className="flex items-start gap-3 mb-3">
                           <Avatar name={name} image={image} size="sm" />
                           <div className="flex-1 min-w-0">
-                            <p className="font-bold text-sm text-[#1b1c1a] truncate">{name}</p>
+                            <div className="flex items-center gap-1 min-w-0">
+                              <p className="font-bold text-sm text-[#1b1c1a] truncate">{name}</p>
+                              {isVerified && <VerifiedBadge size="sm" />}
+                            </div>
                             <p className="text-xs text-[#707881] truncate">{title}</p>
                           </div>
                         </div>
