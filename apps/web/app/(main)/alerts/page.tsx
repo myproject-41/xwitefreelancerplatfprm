@@ -406,22 +406,6 @@ export default function AlertsPage() {
             </h1>
             <p className="mb-4 text-xs text-[#6b7280]">Proposals, payments and activity updates</p>
 
-            {/* Stats cards */}
-            <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-1">
-              <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4 shadow-sm">
-                <p className="text-xs font-bold uppercase tracking-widest text-[#94a3b8]">Total</p>
-                <p className="mt-1 text-2xl font-extrabold text-[#1b1c1a]">{notifications.length}</p>
-                <p className="text-xs text-[#6b7280]">notifications</p>
-              </div>
-              <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4 shadow-sm">
-                <p className="text-xs font-bold uppercase tracking-widest text-[#94a3b8]">Unread</p>
-                <p className={`mt-1 text-2xl font-extrabold ${unreadCount > 0 ? 'text-[#1565C0]' : 'text-[#1b1c1a]'}`}>
-                  {unreadCount}
-                </p>
-                <p className="text-xs text-[#6b7280]">new alerts</p>
-              </div>
-            </div>
-
             {/* Filter buttons */}
             <div className="flex gap-2 lg:flex-col">
               {(['all', 'unread'] as const).map(f => (

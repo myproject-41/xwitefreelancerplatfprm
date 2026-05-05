@@ -418,9 +418,11 @@ export default function PostCard({
             </div>
 
             <div className="min-w-0">
-              <p className="truncate font-[Manrope] text-sm font-semibold text-[#1b1c1a]">{author.name}</p>
-              <p className="flex items-center gap-1 truncate text-[11px] text-[#6b7280]">
+              <div className="flex items-center gap-1">
+                <p className="truncate font-[Manrope] text-sm font-semibold text-[#1b1c1a]">{author.name}</p>
                 {author.isVerified && <VerifiedBadge size="sm" />}
+              </div>
+              <p className="truncate text-[11px] text-[#6b7280]">
                 {author.title}
                 {author.country ? ` - ${author.country}` : ''}
                 {post.createdAt ? ` · ${timeAgo(post.createdAt)}` : ''}

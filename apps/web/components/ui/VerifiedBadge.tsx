@@ -1,16 +1,28 @@
-import type { SVGProps } from 'react'
-
 export default function VerifiedBadge({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
-  const sz = size === 'sm' ? 'h-3.5 w-3.5' : size === 'lg' ? 'h-5 w-5' : 'h-4 w-4'
-  const props: SVGProps<SVGSVGElement> = {
-    viewBox: '0 0 24 24',
-    className: `${sz} shrink-0 text-[#1565C0]`,
-    'aria-label': 'Verified',
-  }
+  const px = size === 'sm' ? 16 : size === 'lg' ? 22 : 18
   return (
-    <svg {...props}>
-      <circle cx="12" cy="12" r="12" fill="currentColor" />
-      <path d="M9.5 16.5 5.5 12.5l1.41-1.41L9.5 13.67l7.59-7.59L18.5 7.5z" fill="white" />
+    <svg
+      width={px}
+      height={px}
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-label="Verified"
+      className="inline-block shrink-0"
+    >
+      {/* soft outer ring for depth */}
+      <circle cx="12" cy="12" r="12" fill="#1565C0" fillOpacity="0.12" />
+      {/* main filled circle */}
+      <circle cx="12" cy="12" r="9.5" fill="#1565C0" />
+      {/* inner highlight arc */}
+      <circle cx="12" cy="12" r="9.5" stroke="white" strokeOpacity="0.18" strokeWidth="1" fill="none" />
+      {/* checkmark */}
+      <path
+        d="M7.8 12.4L10.6 15.2L16.2 9.2"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   )
 }
