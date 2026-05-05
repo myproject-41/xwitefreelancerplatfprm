@@ -61,6 +61,15 @@ function TrashIcon() {
   )
 }
 
+function EditIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z" />
+    </svg>
+  )
+}
+
 function formatRole(value?: string) {
   return value ? value.toLowerCase().replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()) : 'Member'
 }
@@ -436,7 +445,15 @@ export default function PostCard({
                   <MoreIcon />
                 </button>
                 {showMenu && (
-                  <div className="absolute right-0 top-full z-20 mt-1 min-w-[140px] overflow-hidden rounded-xl border border-[#e9e8e5] bg-white shadow-lg">
+                  <div className="absolute right-0 top-full z-20 mt-1 min-w-[150px] overflow-hidden rounded-xl border border-[#e9e8e5] bg-white shadow-lg">
+                    <button
+                      type="button"
+                      onClick={() => { setShowMenu(false); router.push(`/posts/${post.id}/edit`) }}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm font-semibold text-[#1b1c1a] transition hover:bg-[#f4f3f0]"
+                    >
+                      <EditIcon />
+                      Edit post
+                    </button>
                     <button
                       type="button"
                       onClick={() => void handleDelete()}

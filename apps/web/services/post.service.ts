@@ -57,6 +57,16 @@ export const postService = {
     return res.data
   },
 
+  async updatePost(id: string, data: {
+    title?: string
+    description?: string
+    budget?: number
+    skills?: string[]
+  }) {
+    const res = await apiClient.patch(`/api/posts/${id}`, data)
+    return res.data
+  },
+
   async deletePost(id: string) {
     const res = await apiClient.delete(`/api/posts/${id}`)
     return res.data
