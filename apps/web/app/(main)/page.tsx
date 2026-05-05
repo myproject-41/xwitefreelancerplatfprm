@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import PostCard from '../../components/feed/PostCard'
 import MainHeader from '../../components/ui/MainHeader'
+import SiteFooter from '../../components/ui/SiteFooter'
 import { networkService } from '../../services/network.service'
 import { postService } from '../../services/post.service'
 import { authService } from '../../services/auth.service'
@@ -293,35 +294,46 @@ export default function HomePage() {
 
   if (!user) {
     return (
-      <main className="min-h-screen bg-[linear-gradient(180deg,#faf9f6_0%,#f3f4ef_100%)] flex items-center justify-center px-6 py-16 text-[#1b1c1a]">
-        <div className="mx-auto w-full max-w-lg text-center">
-          <img
-            src="/xwiteprofile.png"
-            alt="Xwite"
-            className="mx-auto h-16 w-16 rounded-2xl object-cover shadow-md mb-6"
-          />
-          <h1 className="text-4xl font-extrabold tracking-tight text-[#1b1c1a] sm:text-5xl leading-tight">
-            Build, collaborate, and ship real projects together.
-          </h1>
-          <p className="mt-5 text-base leading-7 text-[#5a6470] sm:text-lg">
-            Xwite is a freelance marketplace connecting clients with skilled professionals for fast, secure project delivery.
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <Link
-              href="/login"
-              className="inline-flex items-center justify-center rounded-full bg-[#1565C0] px-8 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(21,101,192,0.25)] transition hover:bg-[#0D47A1] active:scale-95"
-            >
-              Login
-            </Link>
-            <Link
-              href="/signup"
-              className="inline-flex items-center justify-center rounded-full border border-[#bfc7d1] bg-white px-8 py-3 text-sm font-bold text-[#404850] transition hover:bg-[#f7f7f5] active:scale-95"
-            >
-              Create Account
-            </Link>
+      <>
+        <main className="min-h-screen bg-[linear-gradient(180deg,#faf9f6_0%,#f3f4ef_100%)] flex flex-col items-center justify-center px-6 py-20 text-[#1b1c1a]">
+          <div className="mx-auto w-full max-w-lg text-center">
+            <img
+              src="/xwiteprofile.png"
+              alt="Xwite"
+              className="mx-auto h-16 w-16 rounded-2xl object-cover shadow-md mb-6"
+            />
+            <h1 className="text-4xl font-extrabold tracking-tight text-[#1b1c1a] sm:text-5xl leading-tight">
+              Build, collaborate, and ship real projects together.
+            </h1>
+            <p className="mt-5 text-base leading-7 text-[#5a6470] sm:text-lg">
+              Xwite is a freelance marketplace connecting clients with skilled professionals for fast, secure project delivery.
+            </p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+              <Link
+                href="/login"
+                className="inline-flex items-center justify-center rounded-full bg-[#1565C0] px-8 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(21,101,192,0.25)] transition hover:bg-[#0D47A1] active:scale-95"
+              >
+                Login
+              </Link>
+              <Link
+                href="/signup"
+                className="inline-flex items-center justify-center rounded-full border border-[#bfc7d1] bg-white px-8 py-3 text-sm font-bold text-[#404850] transition hover:bg-[#f7f7f5] active:scale-95"
+              >
+                Create Account
+              </Link>
+            </div>
+            <div className="mt-10 flex flex-wrap justify-center gap-4 text-xs text-[#707881]">
+              <Link href="/how-it-works" className="hover:text-[#1565C0] transition">How It Works</Link>
+              <Link href="/about" className="hover:text-[#1565C0] transition">About</Link>
+              <Link href="/contact" className="hover:text-[#1565C0] transition">Contact</Link>
+              <Link href="/terms" className="hover:text-[#1565C0] transition">Terms</Link>
+              <Link href="/privacy" className="hover:text-[#1565C0] transition">Privacy</Link>
+              <Link href="/refund-policy" className="hover:text-[#1565C0] transition">Refund Policy</Link>
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+        <SiteFooter />
+      </>
     )
   }
 
