@@ -48,26 +48,50 @@ export class WalletController {
     }
   }
 
-  /* POST /api/wallet/webhook - Razorpay webhook (no auth middleware) */
+  /* POST /api/wallet/webhook - Razorpay webhook (no auth middleware)
+   *
+   * Status code policy:
+   *  - 401 invalid signature  → don't accept; Razorpay retries are pointless
+   *  - 200 processed/duplicate/ignored → acknowledge so Razorpay stops retrying
+   *  - 200 permanent error → log it, but stop retries (already malformed/etc)
+   *  - 5xx transient error → Razorpay retries (correct behaviour for DB blips)
+   */
   async webhook(req: Request, res: Response): Promise<void> {
+    const signature = req.headers['x-razorpay-signature'] as string | undefined
+    const rawBody   = req.rawBody
+
+    if (!signature || !rawBody) {
+      // Missing signature/body → bad request from caller (not Razorpay retry-worthy)
+      res.status(401).json({ success: false, message: 'Missing signature or body' })
+      return
+    }
+
     try {
-      const signature = req.headers['x-razorpay-signature'] as string
-      const rawBody = req.rawBody
+      const outcome = await walletService.handleWebhook(rawBody, signature)
 
-      if (!signature) {
-        res.status(400).json({ success: false, message: 'Missing signature' })
-        return
+      switch (outcome.kind) {
+        case 'invalid_signature':
+          res.status(401).json({ success: false, message: 'Invalid signature' })
+          return
+        case 'transient_error':
+          console.error('[webhook] transient error:', outcome.error)
+          res.status(503).json({ success: false, message: 'Temporarily unavailable' })
+          return
+        case 'permanent_error':
+          console.error('[webhook] permanent error:', outcome.error)
+          // Acknowledge so Razorpay stops retrying — we've logged it
+          res.status(200).json({ success: false, message: outcome.error })
+          return
+        case 'duplicate':
+        case 'processed':
+        case 'ignored':
+          res.status(200).json({ success: true, status: outcome.kind })
+          return
       }
-
-      if (!rawBody) {
-        res.status(400).json({ success: false, message: 'Missing raw body' })
-        return
-      }
-
-      await walletService.handleWebhook(rawBody, signature)
-      res.json({ success: true })
     } catch (error: any) {
-      res.status(400).json({ success: false, message: error.message })
+      // Unexpected error path — treat as transient so Razorpay retries
+      console.error('[webhook] unexpected error:', error?.message)
+      res.status(503).json({ success: false, message: 'Webhook processing failed' })
     }
   }
 

@@ -61,6 +61,20 @@ enum EscrowStatus {
   REFUNDED
 }
 
+enum RazorpayOrderStatus {
+  CREATED
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum WebhookEventStatus {
+  RECEIVED
+  PROCESSED
+  FAILED
+  IGNORED
+}
+
 enum WalletTxType {
   CREDIT
   DEBIT
@@ -165,6 +179,7 @@ model User {
   wallet            Wallet?
   clientEscrows     Escrow[] @relation("EscrowClient")
   freelancerEscrows Escrow[] @relation("EscrowFreelancer")
+  razorpayOrders    RazorpayOrder[]
 
   // Reviews
   reviewsGiven    Review[] @relation("ReviewGiven")
@@ -560,4 +575,63 @@ model AgentJob {
   updatedAt DateTime       @updatedAt
 
   @@map("agent_jobs")
+}
+
+// ─── RazorpayOrder ───────────────────────────────────────────────────────────
+// Tracks every Razorpay order we create. Webhook validates incoming payments
+// against this table to prevent crediting unrelated payments.
+model RazorpayOrder {
+  id          String              @id @default(cuid())
+  orderId     String              @unique
+  userId      String
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount      Int
+  currency    String              @default("INR")
+  receipt     String              @unique
+  status      RazorpayOrderStatus @default(CREATED)
+  paymentId   String?
+  notes       Json?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@map("razorpay_orders")
+}
+
+// ─── ProcessedPayment ────────────────────────────────────────────────────────
+// Idempotency table — unique constraint on paymentId guarantees a Razorpay
+// payment is only ever credited to the wallet once, even under concurrent
+// webhook + verify-payment calls.
+model ProcessedPayment {
+  id        String   @id @default(cuid())
+  paymentId String   @unique
+  orderId   String?
+  userId    String
+  amount    Float
+  source    String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("processed_payments")
+}
+
+// ─── WebhookEvent ────────────────────────────────────────────────────────────
+// Audit log of every webhook received. Persisted before processing so we can
+// reconcile failures.
+model WebhookEvent {
+  id           String             @id @default(cuid())
+  eventId      String?
+  eventType    String
+  payload      Json
+  signature    String
+  status       WebhookEventStatus @default(RECEIVED)
+  errorMessage String?
+  receivedAt   DateTime           @default(now())
+  processedAt  DateTime?
+
+  @@index([eventType])
+  @@index([receivedAt])
+  @@index([status])
+  @@map("webhook_events")
 }
