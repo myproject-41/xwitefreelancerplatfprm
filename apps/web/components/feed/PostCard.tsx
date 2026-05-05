@@ -166,6 +166,8 @@ export default function PostCard({
   const [likers, setLikers] = useState<any[]>([])
   const [likersLoading, setLikersLoading] = useState(false)
   const [estimatedDays, setEstimatedDays] = useState('')
+  const descRef = useRef<HTMLParagraphElement>(null)
+  const [isTruncated, setIsTruncated] = useState(false)
 
   const author = getAuthor(post)
   const targetUserId = post.client?.id || post.clientId || ''
@@ -239,6 +241,16 @@ export default function PostCard({
     document.addEventListener('mousedown', handleOutside)
     return () => document.removeEventListener('mousedown', handleOutside)
   }, [showMenu])
+
+  useEffect(() => {
+    const el = descRef.current
+    if (!el || detailMode) return
+    const raf = requestAnimationFrame(() => {
+      setIsTruncated(el.scrollHeight > el.clientHeight)
+    })
+    return () => cancelAnimationFrame(raf)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [post.id, post.description])
 
   const handleDelete = async () => {
     setShowMenu(false)
@@ -386,28 +398,11 @@ export default function PostCard({
   const postStatus: string = post.status ?? 'OPEN'
   const isInProgress = postStatus === 'IN_PROGRESS'
   const isCompleted  = postStatus === 'COMPLETED' || postStatus === 'CLOSED'
-  const isNotOpen    = postStatus !== 'OPEN'
-  const showViewerTaskStatus = !isOwner && isActionCompleted && actionKind === 'collaborate'
-  const showClosedStatus = !isOwner && isNotOpen && !showViewerTaskStatus && (isCompleted || hasExistingProposal)
-  const showInProgressBadge = isInProgress
 
   return (
-    <article className="relative overflow-hidden rounded-xl border border-[rgba(228,228,231,0.1)] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)] transition hover:shadow-[0_8px_24px_rgba(27,28,26,0.08)]">
-      {/* Status badge — top-right corner */}
-      {showInProgressBadge && (
-        <span className="absolute right-3 top-3 z-10 flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-blue-700">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-blue-500" />
-          In Progress
-        </span>
-      )}
-      {isCompleted && (
-        <span className="absolute right-3 top-3 z-10 flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-green-700">
-          <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-          Done
-        </span>
-      )}
+    <article className="overflow-hidden rounded-xl border border-[rgba(228,228,231,0.1)] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.08)] transition hover:shadow-[0_8px_24px_rgba(27,28,26,0.08)]">
       <div className="p-5">
-        <div className="mb-4 flex items-start justify-between gap-4">
+        <div className="mb-4 flex items-start justify-between gap-3">
           <button
             type="button"
             className="flex min-w-0 items-start gap-3 rounded-lg p-0 text-left transition-opacity hover:opacity-80"
@@ -426,67 +421,68 @@ export default function PostCard({
             </div>
 
             <div className="min-w-0">
-              <p className="truncate font-[Manrope] text-sm font-bold text-[#1b1c1a]">{author.name}</p>
-              <p className="flex items-center gap-1 truncate text-[11px] text-[#404850]">
+              <p className="truncate font-[Manrope] text-sm font-semibold text-[#1b1c1a]">{author.name}</p>
+              <p className="flex items-center gap-1 truncate text-[11px] text-[#6b7280]">
                 {author.isVerified && <VerifiedBadge size="sm" />}
                 {author.title}
                 {author.country ? ` - ${author.country}` : ''}
-                {post.createdAt ? ` - ${timeAgo(post.createdAt)}` : ''}
+                {post.createdAt ? ` · ${timeAgo(post.createdAt)}` : ''}
               </p>
-              {post.createdAt ? (
-                <p className="mt-1 truncate text-[10px] text-[#707881]">{formatTimestamp(post.createdAt)}</p>
-              ) : null}
             </div>
           </button>
 
-          {isOwner && (
-            <div className="relative" ref={menuRef}>
-              <button
-                type="button"
-                onClick={() => setShowMenu(v => !v)}
-                className="rounded-full p-1 text-[#404850] transition hover:bg-[#f4f3f0]"
-                aria-label="Post actions"
-              >
-                <MoreIcon />
-              </button>
-              {showMenu && (
-                <div className="absolute right-0 top-full z-20 mt-1 min-w-[140px] overflow-hidden rounded-xl border border-[#e9e8e5] bg-white shadow-lg">
-                  <button
-                    type="button"
-                    onClick={() => void handleDelete()}
-                    className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm font-semibold text-red-600 transition hover:bg-red-50"
-                  >
-                    <TrashIcon />
-                    Delete post
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
+          <div className="flex flex-shrink-0 flex-col items-end gap-1.5">
+            {budget && (
+              <span className="font-[Manrope] text-[17px] font-extrabold leading-tight text-[#1b1c1a]">
+                {budget}
+              </span>
+            )}
+            {isOwner && (
+              <div className="relative mt-0.5" ref={menuRef}>
+                <button
+                  type="button"
+                  onClick={() => setShowMenu(v => !v)}
+                  className="rounded-full p-1 text-[#9ca3af] transition hover:bg-[#f4f3f0] hover:text-[#404850]"
+                  aria-label="Post actions"
+                >
+                  <MoreIcon />
+                </button>
+                {showMenu && (
+                  <div className="absolute right-0 top-full z-20 mt-1 min-w-[140px] overflow-hidden rounded-xl border border-[#e9e8e5] bg-white shadow-lg">
+                    <button
+                      type="button"
+                      onClick={() => void handleDelete()}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm font-semibold text-red-600 transition hover:bg-red-50"
+                    >
+                      <TrashIcon />
+                      Delete post
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-wrap items-center gap-2">
-            {budget ? (
-              <span className="text-sm font-extrabold text-[#1565C0]">{budget}</span>
-            ) : null}
-          </div>
-
+        <div className="flex flex-col gap-2.5">
           <button
             type="button"
             onClick={detailMode ? undefined : openPost}
-            className={`text-left font-[Manrope] text-xl font-extrabold leading-[1.35] tracking-[-0.015em] text-[#1565C0] ${
+            className={`text-left font-[Manrope] text-[18px] font-bold leading-[1.3] tracking-[-0.01em] text-[#14181f] ${
               detailMode ? 'cursor-default' : 'hover:underline'
             }`}
           >
             {post.title}
           </button>
 
-          <p className={`text-sm leading-[1.6] text-[#1b1c1a] ${expanded || detailMode ? '' : 'line-clamp-4'}`}>
+          <p
+            ref={descRef}
+            className={`font-[Manrope] text-[14px] font-normal leading-[1.65] text-[#5e6670] ${expanded || detailMode ? '' : 'line-clamp-4'}`}
+          >
             {post.description}
           </p>
 
-          {post.description?.length > 180 && !detailMode ? (
+          {isTruncated && !detailMode ? (
             <button
               onClick={() => setExpanded((value) => !value)}
               className="-mt-1 w-fit text-xs font-bold text-[#1565C0] hover:underline"
@@ -563,47 +559,45 @@ export default function PostCard({
         </div>
 
         <div className="mt-6 flex gap-3">
-          {userRole ? (
-            showClosedStatus ? (
-              <span className={`flex-1 rounded-lg px-4 py-2.5 text-center text-sm font-bold cursor-not-allowed ${
-                isCompleted
-                  ? 'bg-green-50 text-green-700 border border-green-200'
-                  : 'bg-blue-50 text-blue-700 border border-blue-200'
-              }`}>
-                {isCompleted ? '✓ Done' : '⏳ Task In Progress'}
-              </span>
-            ) : (
-              <button
-                onClick={() => {
-                  if (isOwner) {
-                    if (!detailMode) openPost()
-                    return
-                  }
-                  if (isActionCompleted) return
-                  if (actionKind === 'connect') {
-                    void handleConnect()
-                    return
-                  }
-                  setShowProposal((value) => !value)
-                }}
-                disabled={!isOwner && isActionCompleted}
-                className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-bold transition ${
-                  isOwner
-                    ? 'border border-[#d7dde4] bg-white text-[#1565C0] shadow-none hover:bg-[#f8fafc]'
-                    : isActionCompleted
-                      ? 'cursor-not-allowed border border-[#d7dde4] bg-white text-[#6b7280] shadow-none'
-                    : 'bg-[linear-gradient(to_right,#1565C0,#1976D2)] text-white shadow-[0_2px_8px_rgba(21,101,192,0.3)] hover:opacity-95 active:scale-[0.97]'
-                }`}
-              >
-                {isOwner
-                  ? 'View'
+          {isInProgress ? (
+            <span className="flex-1 cursor-default rounded-lg border border-blue-200 bg-blue-50 px-4 py-2.5 text-center text-sm font-bold text-blue-700">
+              ⏳ In Progress
+            </span>
+          ) : isCompleted ? (
+            <span className="flex-1 cursor-default rounded-lg border border-green-200 bg-green-50 px-4 py-2.5 text-center text-sm font-bold text-green-700">
+              ✓ Completed
+            </span>
+          ) : userRole ? (
+            <button
+              onClick={() => {
+                if (isOwner) {
+                  if (!detailMode) openPost()
+                  return
+                }
+                if (isActionCompleted) return
+                if (actionKind === 'connect') {
+                  void handleConnect()
+                  return
+                }
+                setShowProposal((value) => !value)
+              }}
+              disabled={!isOwner && isActionCompleted}
+              className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-bold transition ${
+                isOwner
+                  ? 'border border-[#d7dde4] bg-white text-[#1565C0] shadow-none hover:bg-[#f8fafc]'
                   : isActionCompleted
+                    ? 'cursor-not-allowed border border-[#d7dde4] bg-white text-[#6b7280] shadow-none'
+                    : 'bg-[linear-gradient(to_right,#1565C0,#1976D2)] text-white shadow-[0_2px_8px_rgba(21,101,192,0.3)] hover:opacity-95 active:scale-[0.97]'
+              }`}
+            >
+              {isOwner
+                ? 'View'
+                : isActionCompleted
                   ? completedLabel
                   : showProposal
-                      ? 'Cancel'
-                      : actionLabel}
-              </button>
-            )
+                    ? 'Cancel'
+                    : actionLabel}
+            </button>
           ) : null}
         </div>
 
