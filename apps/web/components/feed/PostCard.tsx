@@ -504,15 +504,6 @@ export default function PostCard({
             </div>
           ) : null}
 
-          {!detailMode ? (
-            <button
-              type="button"
-              onClick={openPost}
-              className="w-fit text-xs font-bold uppercase tracking-[0.18em] text-[#707881] transition hover:text-[#1565C0]"
-            >
-              View post
-            </button>
-          ) : null}
         </div>
 
         <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-[#ece9e2] pt-4 text-xs text-[#707881]">
@@ -560,12 +551,12 @@ export default function PostCard({
 
         <div className="mt-6 flex gap-3">
           {isInProgress ? (
-            <span className="flex-1 cursor-default rounded-lg border border-blue-200 bg-blue-50 px-4 py-2.5 text-center text-sm font-bold text-blue-700">
-              ⏳ In Progress
+            <span className="flex-1 cursor-default rounded-lg border border-[#d7dde4] bg-white px-4 py-2.5 text-center text-sm font-bold text-[#1b1c1a]">
+              In Progress
             </span>
           ) : isCompleted ? (
-            <span className="flex-1 cursor-default rounded-lg border border-green-200 bg-green-50 px-4 py-2.5 text-center text-sm font-bold text-green-700">
-              ✓ Completed
+            <span className="flex-1 cursor-default rounded-lg border border-[#d7dde4] bg-white px-4 py-2.5 text-center text-sm font-bold text-[#1b1c1a]">
+              Completed
             </span>
           ) : userRole ? (
             <button
