@@ -2,14 +2,14 @@ import axios from 'axios'
 import Cookies from 'js-cookie'
 
 const TOKEN_KEY = 'xwite_token'
-const AUTH_STORE_KEY = 'xwite-auth'
 
 function clearAuthState() {
   if (typeof window === 'undefined') return
 
   localStorage.removeItem(TOKEN_KEY)
-  localStorage.removeItem(AUTH_STORE_KEY)
   Cookies.remove(TOKEN_KEY)
+  // Do NOT remove AUTH_STORE_KEY — user profile data should survive token expiry
+  // so the UI remains populated when the user re-authenticates
 }
 
 // Production: empty baseURL so Next.js rewrites proxy all /api/* calls to Railway server-side

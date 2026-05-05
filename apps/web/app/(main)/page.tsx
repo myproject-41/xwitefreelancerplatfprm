@@ -123,14 +123,6 @@ function fmtSpend(amount: number, currency = 'INR') {
   }).format(amount)
 }
 
-function BoltIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
-      <path d="M13 2 5 13h5l-1 9 8-11h-5l1-9Z" />
-    </svg>
-  )
-}
-
 export default function HomePage() {
   const router = useRouter()
   const { user, setUser } = useAuthStore()
@@ -301,28 +293,29 @@ export default function HomePage() {
 
   if (!user) {
     return (
-      <main className="min-h-screen bg-[linear-gradient(180deg,#faf9f6_0%,#f3f4ef_100%)] px-6 py-24 text-[#1b1c1a]">
-        <div className="mx-auto max-w-3xl rounded-[28px] border border-[#e3e2df] bg-white/90 p-8 shadow-[0_20px_60px_rgba(27,28,26,0.08)] backdrop-blur">
-          <div className="inline-flex items-center gap-2 rounded-full bg-[#E3F2FD] px-4 py-2 text-sm font-semibold text-[#1565C0]">
-            <BoltIcon />
-            Xwite Home
-          </div>
-          <h1 className="mt-6 max-w-2xl text-4xl font-extrabold tracking-tight text-[#1b1c1a] sm:text-5xl">
-            A collaboration home built for people who actually want to ship together.
+      <main className="min-h-screen bg-[linear-gradient(180deg,#faf9f6_0%,#f3f4ef_100%)] flex items-center justify-center px-6 py-16 text-[#1b1c1a]">
+        <div className="mx-auto w-full max-w-lg text-center">
+          <img
+            src="/xwiteprofile.png"
+            alt="Xwite"
+            className="mx-auto h-16 w-16 rounded-2xl object-cover shadow-md mb-6"
+          />
+          <h1 className="text-4xl font-extrabold tracking-tight text-[#1b1c1a] sm:text-5xl leading-tight">
+            Build, collaborate, and ship real projects together.
           </h1>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-[#5a6470] sm:text-lg">
-            Sign in to see live tasks, collaboration requests, and skill exchange posts in the new home layout.
+          <p className="mt-5 text-base leading-7 text-[#5a6470] sm:text-lg">
+            Xwite is a freelance marketplace connecting clients with skilled professionals for fast, secure project delivery.
           </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Link
               href="/login"
-              className="inline-flex items-center justify-center rounded-full bg-[#1565C0] px-6 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(21,101,192,0.2)] transition hover:bg-[#1565C0]"
+              className="inline-flex items-center justify-center rounded-full bg-[#1565C0] px-8 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(21,101,192,0.25)] transition hover:bg-[#0D47A1] active:scale-95"
             >
               Login
             </Link>
             <Link
               href="/signup"
-              className="inline-flex items-center justify-center rounded-full border border-[#bfc7d1] bg-white px-6 py-3 text-sm font-bold text-[#404850] transition hover:bg-[#f7f7f5]"
+              className="inline-flex items-center justify-center rounded-full border border-[#bfc7d1] bg-white px-8 py-3 text-sm font-bold text-[#404850] transition hover:bg-[#f7f7f5] active:scale-95"
             >
               Create Account
             </Link>

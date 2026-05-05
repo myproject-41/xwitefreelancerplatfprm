@@ -887,9 +887,10 @@ function NetworkPageInner() {
   const [connections, setConnections] = useState<any[]>([])
   const [following, setFollowing] = useState<any[]>([])
   const [followers, setFollowers] = useState<any[]>([])
+  const [isGuest, setIsGuest] = useState(false)
 
   useEffect(() => {
-    if (!authService.isLoggedIn()) { router.push('/login'); return }
+    if (!authService.isLoggedIn()) { setLoading(false); setIsGuest(true); return }
     void loadAll()
   }, [])
 
@@ -939,6 +940,7 @@ function NetworkPageInner() {
   }
 
   const handleConnect = async (userId: string) => {
+    if (isGuest) { router.push('/login'); return }
     try {
       await networkService.sendRequest(userId)
       toast.success('Connection request sent!')
@@ -976,7 +978,27 @@ function NetworkPageInner() {
     <div className="min-h-screen bg-[#faf9f6] pb-24">
       <MainHeader />
 
-      <div className="max-w-screen-xl mx-auto px-4 md:px-8 pt-20 md:pt-24">
+      {isGuest && (
+        <div className="max-w-screen-xl mx-auto px-4 md:px-8 pt-20 md:pt-24">
+          <div className="rounded-2xl bg-gradient-to-br from-[#1565C0] to-[#1976D2] text-white p-8 flex flex-col sm:flex-row items-center gap-6 shadow-lg mb-6">
+            <img src="/xwiteprofile.png" alt="Xwite" className="h-16 w-16 rounded-2xl object-cover shadow-md shrink-0" />
+            <div className="flex-1 text-center sm:text-left">
+              <h2 className="text-xl font-extrabold mb-1">Connect with professionals on Xwite</h2>
+              <p className="text-white/80 text-sm">Sign in to see people you may know, send connection requests, and grow your network.</p>
+            </div>
+            <div className="flex gap-3 shrink-0">
+              <Link href="/login" className="px-5 py-2.5 rounded-full bg-white text-[#1565C0] text-sm font-bold hover:bg-[#f0f7ff] transition active:scale-95">
+                Sign in
+              </Link>
+              <Link href="/signup" className="px-5 py-2.5 rounded-full border border-white/40 text-white text-sm font-bold hover:bg-white/10 transition active:scale-95">
+                Join now
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className={`max-w-screen-xl mx-auto px-4 md:px-8 ${isGuest ? 'pt-0' : 'pt-20 md:pt-24'}`}>
         {/* Mobile tab strip */}
         <div className="flex gap-2 overflow-x-auto pb-2 mb-5 lg:hidden scrollbar-hide">
           {navItems.map((item) => (

@@ -46,7 +46,6 @@ export const authService = {
   removeToken() {
     if (typeof window !== 'undefined') {
       localStorage.removeItem(TOKEN_KEY)
-      localStorage.removeItem('xwite-auth')
     }
     Cookies.remove(TOKEN_KEY)
   },
