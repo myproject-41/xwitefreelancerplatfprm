@@ -19,10 +19,6 @@ export const metadata: Metadata = {
     statusBarStyle: 'black-translucent',
     title: 'Xwite',
   },
-  icons: {
-    icon: '/xwiteprofile.png',
-    apple: '/xwiteprofile.png',
-  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -37,11 +33,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&display=swap"
           rel="stylesheet"
         />
+        {/* Favicon — versioned to bust browser cache after logo update */}
+        <link rel="icon" type="image/png" href="/xwiteprofile.png?v=2" />
+        <link rel="shortcut icon" type="image/png" href="/xwiteprofile.png?v=2" />
         {/* iOS PWA splash / status bar */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <link rel="apple-touch-icon" href="/xwiteprofile.png" />
+        <link rel="apple-touch-icon" href="/xwiteprofile.png?v=2" />
       </head>
       <body style={{
         fontFamily: 'Manrope, Inter, sans-serif',
