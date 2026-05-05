@@ -375,12 +375,6 @@ export default function PublicProfilePage() {
 
                   {/* Badges */}
                   <div className="pub-badges-row">
-                    {profile.availability && (
-                      <span className="pub-badge pub-badge-avail">
-                        <span className="pub-avail-dot" />
-                        Available
-                      </span>
-                    )}
                     {profile.avgRating > 0 && (
                       <span className="pub-badge pub-badge-rating">
                         ★ {profile.avgRating.toFixed(1)} ({profile.totalReviews} reviews)
@@ -435,13 +429,21 @@ export default function PublicProfilePage() {
                         </div>
                       </div>
                       <div className="pub-section-body">
-                        <div className="pub-lang-display">
-                          {languages.map((l: any, i: number) => (
-                            <div key={i} className="pub-lang-chip">
-                              <span className="pub-lang-name">{l.language}</span>
-                              <span className="pub-lang-prof">{l.proficiency}</span>
-                            </div>
-                          ))}
+                        <div className="pub-lang-grid">
+                          {languages.map((l: any, i: number) => {
+                            const profKey = (l.proficiency || '').toLowerCase().replace(/\s+/g, '-')
+                            return (
+                              <div key={i} className="pub-lang-card">
+                                <div className="pub-lang-card-icon">
+                                  <MaterialIcon name="translate" size={16} color="#1976D2" />
+                                </div>
+                                <div className="pub-lang-card-body">
+                                  <span className="pub-lang-card-name">{l.language}</span>
+                                  <span className={`pub-lang-card-prof pub-lang-prof-${profKey}`}>{l.proficiency}</span>
+                                </div>
+                              </div>
+                            )
+                          })}
                         </div>
                       </div>
                     </>
@@ -457,20 +459,27 @@ export default function PublicProfilePage() {
                           <h2 className="pub-section-title">Experience</h2>
                         </div>
                       </div>
-                      <div className="pub-section-body pub-timeline">
-                        {experience.map((e: any, i: number) => (
-                          <div key={i} className="pub-timeline-item">
-                            <div className="pub-timeline-dot" />
-                            <div className="pub-timeline-body">
-                              <p className="pub-timeline-title">{e.title ?? e.role ?? 'Role'}</p>
-                              <p className="pub-timeline-sub">
-                                {e.company}
-                                {e.from && ` · ${e.from}${e.current ? ' – Present' : e.to ? ` – ${e.to}` : ''}`}
-                              </p>
-                              {e.description && <p className="pub-timeline-desc">{e.description}</p>}
-                            </div>
-                          </div>
-                        ))}
+                      <div className="pub-section-body">
+                        <div className="pub-exp-list">
+                          {experience.map((e: any, i: number) => {
+                            const initials = (e.company || 'C').slice(0, 2).toUpperCase()
+                            return (
+                              <div key={i} className="pub-exp-card">
+                                <div className="pub-exp-logo">{initials}</div>
+                                <div className="pub-exp-body">
+                                  <p className="pub-exp-role">{e.title ?? e.role ?? 'Role'}</p>
+                                  {e.company && <p className="pub-exp-company">{e.company}</p>}
+                                  {e.from && (
+                                    <p className="pub-exp-dates">
+                                      {e.from}{e.current ? ' – Present' : e.to ? ` – ${e.to}` : ''}
+                                    </p>
+                                  )}
+                                  {e.description && <p className="pub-exp-desc">{e.description}</p>}
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
                       </div>
                     </>
                   )}
@@ -485,17 +494,22 @@ export default function PublicProfilePage() {
                           <h2 className="pub-section-title">Education</h2>
                         </div>
                       </div>
-                      <div className="pub-section-body pub-timeline">
-                        {quals.map((q: any, i: number) => (
-                          <div key={i} className="pub-timeline-item">
-                            <div className="pub-timeline-dot pub-timeline-dot-edu" />
-                            <div className="pub-timeline-body">
-                              <p className="pub-timeline-title">{q.degree}</p>
-                              <p className="pub-timeline-sub">{q.institution}{q.year ? ` · ${q.year}` : ''}</p>
-                              {q.description && <p className="pub-timeline-desc">{q.description}</p>}
+                      <div className="pub-section-body">
+                        <div className="pub-edu-list">
+                          {quals.map((q: any, i: number) => (
+                            <div key={i} className="pub-edu-card">
+                              <div className="pub-edu-icon">
+                                <MaterialIcon name="school" size={18} color="#fff" />
+                              </div>
+                              <div className="pub-edu-body">
+                                <p className="pub-edu-degree">{q.degree}</p>
+                                {q.institution && <p className="pub-edu-institution">{q.institution}</p>}
+                                {q.year && <p className="pub-edu-year">{q.year}</p>}
+                                {q.description && <p className="pub-edu-desc">{q.description}</p>}
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
                     </>
                   )}
@@ -505,37 +519,37 @@ export default function PublicProfilePage() {
               {/* ── COMPLETED TASKS ── */}
               {completedTasks.length > 0 && (
                 <div className="pub-section-card">
-                  <button
-                    className="pub-accordion-hdr"
-                    onClick={() => setTasksOpen(v => !v)}
-                  >
-                    <div className="pub-accordion-hdr-left">
+                  <div className="pub-section-hdr">
+                    <div className="pub-section-hdr-left">
                       <MaterialIcon name="task_alt" size={18} color="#15803d" />
-                      <h2 className="pub-section-title" style={{ color: '#15803d' }}>
-                        Completed Work
-                      </h2>
+                      <h2 className="pub-section-title" style={{ color: '#15803d' }}>Completed Work</h2>
                       <span className="pub-count-badge pub-count-green">{completedTasks.length}</span>
                     </div>
-                    <MaterialIcon
-                      name="expand_more"
-                      size={20}
-                      color="#64748b"
-                    />
-                  </button>
-                  {tasksOpen && (
-                    <div className="pub-section-body">
-                      <div className="pub-tasks-list">
-                        {completedTasks.map((task: any, i: number) => (
-                          <div key={task?.id ?? i} className="pub-task-card-simple">
-                            <MaterialIcon name="check_circle" size={15} color="#15803d" />
-                            <span className="pub-task-title-simple">
-                              {task?.task?.title ?? task?.title ?? 'Task'}
-                            </span>
+                  </div>
+                  <div className="pub-tasks-scroll">
+                    {completedTasks.map((task: any, i: number) => {
+                      const rating = task?.review?.rating ?? task?.rating ?? null
+                      return (
+                        <div key={task?.id ?? i} className="pub-task-hcard">
+                          <div className="pub-task-hcard-top">
+                            <MaterialIcon name="check_circle" size={16} color="#15803d" />
+                            <span className="pub-task-hcard-done">Completed</span>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                          <p className="pub-task-hcard-title">{task?.task?.title ?? task?.title ?? 'Task'}</p>
+                          {rating != null ? (
+                            <div className="pub-task-hcard-stars">
+                              {[1, 2, 3, 4, 5].map(s => (
+                                <span key={s} className={s <= Math.round(rating) ? 'pub-star-filled' : 'pub-star-empty'}>★</span>
+                              ))}
+                              <span className="pub-task-hcard-rating">{Number(rating).toFixed(1)}</span>
+                            </div>
+                          ) : (
+                            <p className="pub-task-hcard-no-rating">No rating yet</p>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
                 </div>
               )}
 
@@ -762,7 +776,7 @@ const STYLES = `
 /* ── ROOT ── */
 .pub-root{display:grid;grid-template-areas:"main";grid-template-rows:1fr;grid-template-columns:1fr;background:#f1f5f9;min-height:100dvh;font-family:'Inter',sans-serif;color:#0f172a;}
 @media(max-width:899px){.pub-root{padding-top:64px;}}
-@media(min-width:900px){.pub-root{grid-template-areas:"left-sidebar main";grid-template-columns:230px 1fr;grid-template-rows:1fr;}}
+@media(min-width:900px){.pub-root{grid-template-areas:"left-sidebar main right-sidebar";grid-template-columns:230px 1fr 260px;grid-template-rows:1fr;}}
 
 .pub-brand{font-size:19px;font-weight:800;color:#1976D2;letter-spacing:-0.03em;font-family:'Inter',sans-serif;}
 
@@ -874,9 +888,19 @@ const STYLES = `
 .pub-pending-note{font-size:12px;color:#92400e;background:#fef9c3;border-radius:999px;padding:6px 14px;font-weight:600;}
 
 /* ── COMPLETED TASKS ── */
-.pub-tasks-list{display:flex;flex-direction:column;gap:6px;}
-.pub-task-card-simple{display:flex;align-items:center;gap:8px;padding:9px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;}
-.pub-task-title-simple{font-size:13px;font-weight:600;color:#0f172a;line-height:1.4;}
+.pub-tasks-scroll{display:flex;gap:12px;overflow-x:auto;padding:14px 18px 18px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#e2e8f0 transparent;}
+.pub-tasks-scroll::-webkit-scrollbar{height:4px;}
+.pub-tasks-scroll::-webkit-scrollbar-track{background:transparent;}
+.pub-tasks-scroll::-webkit-scrollbar-thumb{background:#e2e8f0;border-radius:999px;}
+.pub-task-hcard{flex-shrink:0;width:200px;background:linear-gradient(145deg,#f0fdf4,#dcfce7);border:1px solid #bbf7d0;border-radius:14px;padding:14px;scroll-snap-align:start;display:flex;flex-direction:column;gap:8px;}
+.pub-task-hcard-top{display:flex;align-items:center;gap:6px;}
+.pub-task-hcard-done{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:#15803d;}
+.pub-task-hcard-title{font-size:13px;font-weight:700;color:#0f172a;line-height:1.4;flex:1;}
+.pub-task-hcard-stars{display:flex;align-items:center;gap:1px;margin-top:auto;padding-top:4px;}
+.pub-star-filled{color:#f59e0b;font-size:15px;line-height:1;}
+.pub-star-empty{color:#d1d5db;font-size:15px;line-height:1;}
+.pub-task-hcard-rating{font-size:12px;font-weight:700;color:#64748b;margin-left:5px;}
+.pub-task-hcard-no-rating{font-size:11px;color:#94a3b8;font-style:italic;margin-top:auto;}
 
 /* ── POSTS ── */
 .pub-posts-list{display:flex;flex-direction:column;gap:10px;}
@@ -891,25 +915,42 @@ const STYLES = `
 .pub-post-skills{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;}
 .pub-post-skill{font-size:10px;font-weight:600;background:#e0f2fe;color:#0369a1;border-radius:999px;padding:2px 9px;}
 
-/* ── TIMELINE ── */
-.pub-timeline{display:flex;flex-direction:column;gap:14px;}
-.pub-timeline-item{display:flex;gap:12px;align-items:flex-start;}
-.pub-timeline-dot{width:10px;height:10px;border-radius:50%;background:#1976D2;flex-shrink:0;margin-top:4px;box-shadow:0 0 0 3px rgba(0,119,181,0.18);}
-.pub-timeline-dot-edu{background:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,0.18);}
-.pub-timeline-body{flex:1;min-width:0;}
-.pub-timeline-title{font-size:14px;font-weight:700;color:#0f172a;}
-.pub-timeline-sub{font-size:12px;color:#64748b;margin-top:2px;}
-.pub-timeline-desc{font-size:13px;color:#536279;line-height:1.6;margin-top:4px;}
+/* ── LANGUAGE CARDS ── */
+.pub-lang-grid{display:flex;flex-direction:column;gap:8px;}
+.pub-lang-card{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-left:3px solid #1976D2;border-radius:0 10px 10px 0;}
+.pub-lang-card-icon{width:32px;height:32px;background:#e0f2fe;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.pub-lang-card-body{display:flex;align-items:center;justify-content:space-between;flex:1;gap:8px;}
+.pub-lang-card-name{font-size:14px;font-weight:700;color:#0f172a;}
+.pub-lang-card-prof{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:3px 9px;border-radius:999px;}
+.pub-lang-prof-native,.pub-lang-prof-native-speaker{background:#dcfce7;color:#15803d;}
+.pub-lang-prof-fluent{background:#dbeffe;color:#0369a1;}
+.pub-lang-prof-professional{background:#ede9fe;color:#5b21b6;}
+.pub-lang-prof-conversational,.pub-lang-prof-intermediate{background:#fef9c3;color:#92400e;}
+.pub-lang-prof-basic,.pub-lang-prof-beginner,.pub-lang-prof-elementary{background:#f1f5f9;color:#64748b;}
 
-/* ── LANGUAGE DISPLAY ── */
-.pub-lang-display{display:flex;flex-wrap:wrap;gap:8px;}
-.pub-lang-chip{display:flex;align-items:center;gap:7px;background:linear-gradient(135deg,#f0f9ff,#e8f4fd);border:1px solid #bae6fd;border-radius:999px;padding:6px 14px;}
-.pub-lang-name{font-size:12px;font-weight:700;color:#1976D2;}
-.pub-lang-prof{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;background:#dbeffe;color:#0369a1;border:1px solid #bae6fd;padding:2px 7px;border-radius:999px;}
+/* ── EXPERIENCE CARDS ── */
+.pub-exp-list{display:flex;flex-direction:column;gap:10px;}
+.pub-exp-card{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;}
+.pub-exp-logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#1565C0,#1976D2);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:13px;font-weight:800;letter-spacing:.02em;}
+.pub-exp-body{flex:1;min-width:0;}
+.pub-exp-role{font-size:14px;font-weight:700;color:#0f172a;}
+.pub-exp-company{font-size:13px;font-weight:500;color:#1976D2;margin-top:1px;}
+.pub-exp-dates{font-size:11px;color:#94a3b8;margin-top:2px;font-weight:500;}
+.pub-exp-desc{font-size:12px;color:#536279;line-height:1.6;margin-top:5px;}
+
+/* ── EDUCATION CARDS ── */
+.pub-edu-list{display:flex;flex-direction:column;gap:10px;}
+.pub-edu-card{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:#faf5ff;border:1px solid #e9d5ff;border-radius:12px;}
+.pub-edu-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#8b5cf6);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.pub-edu-body{flex:1;min-width:0;}
+.pub-edu-degree{font-size:14px;font-weight:700;color:#0f172a;}
+.pub-edu-institution{font-size:13px;font-weight:500;color:#7c3aed;margin-top:1px;}
+.pub-edu-year{font-size:11px;color:#94a3b8;margin-top:2px;font-weight:500;}
+.pub-edu-desc{font-size:12px;color:#536279;line-height:1.6;margin-top:5px;}
 
 /* ── RIGHT SIDEBAR ── */
 .pub-sidebar-right{display:none;grid-area:right-sidebar;}
-@media(min-width:900px){.pub-sidebar-right{display:flex;flex-direction:column;gap:10px;padding:24px 14px;background:#f1f5f9;position:sticky;top:0;height:100dvh;overflow-y:auto;}}
+@media(min-width:900px){.pub-sidebar-right{display:flex;flex-direction:column;gap:10px;padding:24px 14px;background:#f1f5f9;position:sticky;top:24px;max-height:calc(100dvh - 48px);overflow-y:auto;align-self:start;}}
 .pub-right-card{background:#fff;border-radius:16px;padding:16px;border:1px solid #e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,0.05);display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;}
 .pub-right-avatar{width:60px;height:60px;border-radius:14px;overflow:hidden;background:#e2e5e9;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;}
 .pub-right-avatar img{width:100%;height:100%;object-fit:cover;}
