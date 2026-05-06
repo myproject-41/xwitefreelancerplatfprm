@@ -419,7 +419,7 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
         <div className="flex items-end justify-between mb-6">
           <div>
             <h2 className="font-[Manrope] text-2xl font-extrabold tracking-tight text-[#1b1c1a]">People you may know</h2>
-            <p className="text-[#404850] mt-1 text-sm">Based on your shared connections and professional history.</p>
+            <p className="text-[#404850] mt-1 text-sm">Connect with talented freelancers like you.</p>
           </div>
         </div>
 
@@ -432,118 +432,127 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
             <p className="text-xs text-[#707881] mt-1">Complete your profile to get better recommendations</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
             {peopleSuggestions.map((u: any) => {
               const { name, title, image, country, isVerified } = getUserInfo(u)
-              const isConnected = connected.has(u.id)
               const isFreelancer = u.role === 'FREELANCER'
               const roleLabel = isFreelancer ? 'Freelancer' : u.role === 'CLIENT' ? 'Client' : u.role?.replace(/_/g, ' ')
               const skills: string[] = u.freelancerProfile?.skills || []
               const showTitle = title && title.toLowerCase() !== roleLabel?.toLowerCase() && title.toLowerCase() !== u.role?.toLowerCase()
 
-              const rolePillStyle = isFreelancer
-                ? 'bg-[#E3F2FD] text-[#0160B9]'
-                : 'bg-[#dcfce7] text-[#15803d]'
+              const isAvailable  = Boolean(u.freelancerProfile?.availability)
+              const rating       = u.freelancerProfile?.avgRating
+              const reviewCount  = u.freelancerProfile?.totalReviews ?? 0
+              const hourlyRate   = u.freelancerProfile?.hourlyRate
+              const currency     = u.freelancerProfile?.currency || 'INR'
+              const currencySymbol = currency === 'USD' ? '$' : currency === 'EUR' ? '€' : currency === 'GBP' ? '£' : '₹'
 
               return (
                 <div
                   key={u.id}
-                  className="relative bg-white rounded-2xl border border-[#e3e2df] shadow-sm hover:shadow-lg hover:border-[#bfd9ef] hover:-translate-y-0.5 transition-all duration-200 group p-4"
+                  className="relative bg-white rounded-2xl border border-[#e3e2df] shadow-sm hover:shadow-lg hover:border-[#bfd9ef] hover:-translate-y-0.5 transition-all duration-200 p-6"
                 >
-                  {/* Dismiss button */}
+                  {/* Status pill — top right */}
+                  {isFreelancer && (
+                    <span className={`absolute top-5 right-5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold ${
+                      isAvailable ? 'bg-[#dcfce7] text-[#15803d]' : 'bg-[#f1f5f9] text-[#64748b]'
+                    }`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${isAvailable ? 'bg-[#16a34a]' : 'bg-[#94a3b8]'}`} />
+                      {isAvailable ? 'Online' : 'Offline'}
+                    </span>
+                  )}
+
+                  {/* Avatar — circular, top-left */}
                   <button
                     type="button"
-                    onClick={() => setDismissed((prev) => new Set(prev).add(u.id))}
-                    aria-label="Dismiss"
-                    className="absolute top-2.5 right-2.5 p-1.5 rounded-full text-[#707881] hover:bg-[#f4f3f0] hover:text-[#1b1c1a] transition opacity-0 group-hover:opacity-100"
+                    onClick={() => u.id && router.push(getProfilePath(u))}
+                    className="block mb-4"
+                    aria-label={`View ${name}'s profile`}
                   >
-                    <Icons.Close />
-                  </button>
-
-                  {/* Top row: avatar + info */}
-                  <div className="flex gap-4">
-                    {/* Avatar — left */}
-                    <button
-                      type="button"
-                      onClick={() => u.id && router.push(getProfilePath(u))}
-                      className="shrink-0 self-start ring-2 ring-white outline outline-2 outline-[#e3e2df]/70 group-hover:outline-[#0160B9]/40 rounded-2xl shadow-sm transition-all duration-200"
-                    >
-                      {image ? (
-                        <img
-                          src={image}
-                          alt={name}
-                          className="w-16 h-16 rounded-2xl object-cover"
-                        />
-                      ) : (
-                        <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-black text-white bg-gradient-to-br from-[#0160B9] to-[#0277CC]">
-                          {getInitials(name)}
-                        </div>
-                      )}
-                    </button>
-
-                    {/* Info — middle */}
-                    <div className="flex-1 min-w-0 pr-7">
-                      {/* Name + verified badge */}
-                      <button
-                        type="button"
-                        className="block w-full text-left"
-                        onClick={() => u.id && router.push(getProfilePath(u))}
-                      >
-                        <div className="flex items-center gap-1 mb-1">
-                          <h4 className="font-[Manrope] font-bold text-[15px] text-[#1b1c1a] leading-snug truncate group-hover:text-[#0160B9] transition-colors">{name}</h4>
-                          {isVerified && <VerifiedBadge size="sm" />}
-                        </div>
-                      </button>
-
-                      {/* Role pill + title */}
-                      <div className="flex items-center gap-2 mb-1 min-w-0">
-                        <span className={`shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${rolePillStyle}`}>
-                          {roleLabel}
-                        </span>
-                        {showTitle && (
-                          <span className="text-xs text-[#536279] truncate">{title}</span>
-                        )}
+                    {image ? (
+                      <img
+                        src={image}
+                        alt={name}
+                        className="w-24 h-24 rounded-full object-cover ring-2 ring-white shadow-md"
+                      />
+                    ) : (
+                      <div className="w-24 h-24 rounded-full flex items-center justify-center text-2xl font-black text-white bg-gradient-to-br from-[#0160B9] to-[#0277CC] ring-2 ring-white shadow-md">
+                        {getInitials(name)}
                       </div>
-
-                      {/* Location */}
-                      {country && (
-                        <p className="flex items-center gap-1 text-[11px] text-[#707881]">
-                          <Icons.Location />
-                          <span className="truncate">{country}</span>
-                        </p>
-                      )}
-
-                      {/* Skills — freelancers only */}
-                      {isFreelancer && skills.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {skills.slice(0, 3).map((s: string) => (
-                            <span key={s} className="text-[10px] font-semibold bg-[#f4f3f0] text-[#536279] px-2 py-0.5 rounded-full">
-                              {s}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Connect button — full width below */}
-                  <button
-                    onClick={async () => {
-                      if (isConnected) return
-                      setConnected((prev) => new Set(prev).add(u.id))
-                      try { await onConnect(u.id) }
-                      catch { setConnected((prev) => { const s = new Set(prev); s.delete(u.id); return s }) }
-                    }}
-                    disabled={isConnected}
-                    className={`mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-full font-bold text-sm transition-all active:scale-95 ${
-                      isConnected
-                        ? 'bg-[#efeeeb] text-[#707881] cursor-default'
-                        : 'bg-[#0160B9] text-white shadow-[0_3px_10px_rgba(1,96,185,0.25)] hover:bg-[#0160B9]/90 hover:shadow-[0_5px_14px_rgba(1,96,185,0.32)]'
-                    }`}
-                  >
-                    <Icons.PersonAdd />
-                    {isConnected ? 'Request Sent' : 'Connect'}
+                    )}
                   </button>
+
+                  {/* Name + verified */}
+                  <button
+                    type="button"
+                    onClick={() => u.id && router.push(getProfilePath(u))}
+                    className="block w-full text-left mb-1"
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <h3 className="font-[Manrope] font-extrabold text-xl text-[#1b1c1a] leading-snug truncate hover:text-[#0160B9] transition-colors">{name}</h3>
+                      {isVerified && <VerifiedBadge size="md" />}
+                    </div>
+                  </button>
+
+                  {/* Title / role */}
+                  <p className="text-[15px] text-[#536279] mb-4 truncate">
+                    {showTitle ? title : roleLabel}
+                  </p>
+
+                  {/* Star rating row */}
+                  {isFreelancer && rating != null && rating > 0 ? (
+                    <div className="flex items-center gap-2 mb-5">
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="#fbbf24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                      <span className="font-bold text-base text-[#1b1c1a]">{Number(rating).toFixed(1)}</span>
+                      <span className="text-sm text-[#707881]">({reviewCount} {reviewCount === 1 ? 'review' : 'reviews'})</span>
+                    </div>
+                  ) : country ? (
+                    <p className="flex items-center gap-1.5 text-sm text-[#707881] mb-5">
+                      <Icons.Location />
+                      <span className="truncate">{country}</span>
+                    </p>
+                  ) : (
+                    <div className="mb-5" />
+                  )}
+
+                  {/* Divider */}
+                  <div className="border-t border-[#efeeeb] mb-5" />
+
+                  {/* Skills — 2×2 grid (freelancers) */}
+                  {isFreelancer && skills.length > 0 ? (
+                    <div className="grid grid-cols-2 gap-2 mb-6">
+                      {skills.slice(0, 4).map((s: string) => (
+                        <span
+                          key={s}
+                          className="inline-flex items-center justify-center px-3 py-2 rounded-full bg-[#E3F2FD] text-[#0160B9] text-xs font-semibold truncate"
+                        >
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="mb-6" />
+                  )}
+
+                  {/* Bottom row: rate + View Profile */}
+                  <div className="flex items-center justify-between gap-3">
+                    {isFreelancer && hourlyRate ? (
+                      <p className="text-2xl font-extrabold text-[#1b1c1a] whitespace-nowrap">
+                        {currencySymbol}{hourlyRate}
+                        <span className="text-sm font-medium text-[#707881] ml-0.5">/hr</span>
+                      </p>
+                    ) : (
+                      <span />
+                    )}
+                    <button
+                      onClick={() => u.id && router.push(getProfilePath(u))}
+                      className="ml-auto px-5 py-2.5 rounded-lg bg-[#0160B9] text-white font-bold text-sm shadow-[0_3px_10px_rgba(1,96,185,0.25)] hover:bg-[#0160B9]/90 hover:shadow-[0_5px_14px_rgba(1,96,185,0.32)] active:scale-95 transition-all"
+                    >
+                      View Profile
+                    </button>
+                  </div>
                 </div>
               )
             })}
