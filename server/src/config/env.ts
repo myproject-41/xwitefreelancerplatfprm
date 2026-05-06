@@ -39,8 +39,10 @@ if (!parsed.success) {
 
 export const env = parsed.data
 
-// ─── Razorpay key sanity checks ──────────────────────────────────────────────
-// Live keys: rzp_live_*  /  Test keys: rzp_test_*
+// ─── Razorpay key sanity checks (warnings only — never block server boot) ──
+// Production safety is enforced inside wallet.service.ts where the keys are
+// actually used. Throwing here would put the whole server in a restart loop
+// and cascade 502s to every endpoint, including /api/auth/login.
 if (env.RAZORPAY_KEY_ID) {
   const isLiveKey = env.RAZORPAY_KEY_ID.startsWith('rzp_live_')
   const isTestKey = env.RAZORPAY_KEY_ID.startsWith('rzp_test_')
@@ -48,18 +50,13 @@ if (env.RAZORPAY_KEY_ID) {
   if (!isLiveKey && !isTestKey) {
     console.warn('[env] RAZORPAY_KEY_ID does not match expected rzp_live_* / rzp_test_* format')
   }
-
   if (env.NODE_ENV === 'production' && isTestKey) {
-    console.error('[env] FATAL: Test Razorpay key in production environment')
-    throw new Error('Test Razorpay key cannot be used in production')
+    console.warn('[env] WARNING: Test Razorpay key in production — payments will use test mode')
   }
-
   if (env.NODE_ENV !== 'production' && isLiveKey) {
     console.warn('[env] WARNING: Live Razorpay key in non-production environment — real money will move!')
   }
-
   if (env.NODE_ENV === 'production' && !env.RAZORPAY_WEBHOOK_SECRET) {
-    console.error('[env] FATAL: RAZORPAY_WEBHOOK_SECRET is required in production')
-    throw new Error('RAZORPAY_WEBHOOK_SECRET is required in production')
+    console.warn('[env] WARNING: RAZORPAY_WEBHOOK_SECRET not set — webhooks will be rejected')
   }
 }
