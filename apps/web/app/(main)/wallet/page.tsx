@@ -18,7 +18,7 @@ const TX_COLORS: Record<string, string> = {
   CREDIT: 'text-green-600',
   DEBIT: 'text-red-500',
   ESCROW_HOLD: 'text-orange-500',
-  ESCROW_RELEASE: 'text-[#0277CC]',
+  ESCROW_RELEASE: 'text-[#0160B9]',
   WITHDRAWAL: 'text-red-500',
   REFUND: 'text-green-600',
 }
@@ -102,7 +102,7 @@ export default function WalletPage() {
         description: 'Add funds to wallet',
         order_id: order.orderId,
         prefill: { name: '', email: '', contact: '' },
-        theme: { color: '#0277CC' },
+        theme: { color: '#0160B9' },
         handler: async (response: any) => {
           try {
             await walletService.verifyPayment({
@@ -196,7 +196,7 @@ export default function WalletPage() {
 
           {/* ── LEFT: Balance card (always visible) ── */}
           <div className="lg:sticky lg:top-24">
-            <div className="bg-[linear-gradient(135deg,#0160B9_0%,#0277CC_100%)] rounded-2xl p-6 text-white shadow-[0_4px_16px_rgba(1,96,185,0.3)]">
+            <div className="bg-[#0160B9] rounded-2xl p-6 text-white shadow-[0_4px_16px_rgba(1,96,185,0.3)]">
               <p className="text-blue-100 text-sm font-medium">Available Balance</p>
               <p className="text-4xl font-extrabold mt-1">
                 ₹{wallet?.balance?.toLocaleString() || '0'}
@@ -315,7 +315,7 @@ export default function WalletPage() {
                 <button
                   onClick={handleAddFunds}
                   disabled={actionLoading || !amount}
-                  className="w-full rounded-xl bg-[linear-gradient(135deg,#0160B9_0%,#0277CC_100%)] py-3 text-sm font-bold text-white shadow-[0_4px_12px_rgba(1,96,185,0.25)] transition hover:opacity-95 active:scale-[0.98] disabled:opacity-60"
+                  className="w-full rounded-xl bg-[#0160B9] py-3 text-sm font-bold text-white shadow-[0_4px_12px_rgba(1,96,185,0.25)] transition hover:opacity-95 active:scale-[0.98] disabled:opacity-60"
                 >
                   {actionLoading ? 'Processing...' : `Pay ₹${amount || '0'} via Razorpay`}
                 </button>
@@ -392,7 +392,7 @@ export default function WalletPage() {
                 <button
                   onClick={handleWithdraw}
                   disabled={actionLoading || !amount || Number(amount) < 100 || Number(amount) > (wallet?.balance ?? 0)}
-                  className="w-full rounded-xl bg-[linear-gradient(135deg,#0160B9_0%,#0277CC_100%)] py-3 text-sm font-bold text-white shadow-[0_4px_12px_rgba(1,96,185,0.25)] transition hover:opacity-95 active:scale-[0.98] disabled:opacity-60"
+                  className="w-full rounded-xl bg-[#0160B9] py-3 text-sm font-bold text-white shadow-[0_4px_12px_rgba(1,96,185,0.25)] transition hover:opacity-95 active:scale-[0.98] disabled:opacity-60"
                 >
                   {actionLoading ? 'Processing...' : `Request Withdrawal of ₹${amount || '0'}`}
                 </button>

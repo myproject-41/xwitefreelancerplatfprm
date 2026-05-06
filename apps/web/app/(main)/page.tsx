@@ -312,7 +312,7 @@ export default function HomePage() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
               <Link
                 href="/login"
-                className="inline-flex items-center justify-center rounded-full bg-[#0160B9] px-8 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(1,96,185,0.25)] transition hover:bg-[#014A8C] active:scale-95"
+                className="inline-flex items-center justify-center rounded-full bg-[#0160B9] px-8 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(1,96,185,0.25)] transition active:scale-95"
               >
                 Login
               </Link>
@@ -495,7 +495,7 @@ export default function HomePage() {
                   <div key={skill} className="flex items-center gap-2">
                     <span className="w-4 shrink-0 text-[10px] font-bold text-[#b0b8c4]">#{idx + 1}</span>
                     <div className="flex flex-1 items-center justify-between overflow-hidden rounded-lg bg-[#f4f7fa] px-3 py-1.5">
-                      <span className="truncate text-[11px] font-bold uppercase text-[#014A8C]">{skill}</span>
+                      <span className="truncate text-[11px] font-bold uppercase text-[#0160B9]">{skill}</span>
                       <span className="ml-2 shrink-0 rounded-full bg-[#0160B9]/10 px-2 py-0.5 text-[10px] font-extrabold text-[#0160B9]">
                         {count} {count === 1 ? 'post' : 'posts'}
                       </span>

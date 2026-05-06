@@ -155,7 +155,7 @@ function MessagesPageInner() {
                     </div>
 
                     {conversation.unreadCount > 0 ? (
-                      <span className="rounded-full bg-[#0277CC] px-2.5 py-1 text-xs font-bold text-white">
+                      <span className="rounded-full bg-[#0160B9] px-2.5 py-1 text-xs font-bold text-white">
                         {conversation.unreadCount}
                       </span>
                     ) : (

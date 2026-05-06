@@ -17,7 +17,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             </Link>
             <Link
               href="/signup"
-              className="rounded-full bg-[#0160B9] px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-[#014A8C] transition active:scale-95"
+              className="rounded-full bg-[#0160B9] px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-[#0160B9] transition active:scale-95"
             >
               Join Free
             </Link>

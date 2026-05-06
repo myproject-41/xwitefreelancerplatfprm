@@ -50,9 +50,9 @@ const TYPE_ICON: Record<string, string> = {
 }
 
 const TYPE_COLOR: Record<string, string> = {
-  NEW_PROPOSAL: '#0277CC', PROPOSAL_ACCEPTED: '#16a34a', PROPOSAL_REJECTED: '#dc2626',
+  NEW_PROPOSAL: '#0160B9', PROPOSAL_ACCEPTED: '#16a34a', PROPOSAL_REJECTED: '#dc2626',
   ESCROW_FUNDED: '#16a34a', TASK_COMPLETED: '#d97706', PAYMENT_RECEIVED: '#16a34a',
-  PAYMENT_RELEASED: '#16a34a', NEW_MESSAGE: '#0277CC', CONNECTION_REQUEST: '#7c3aed',
+  PAYMENT_RELEASED: '#16a34a', NEW_MESSAGE: '#0160B9', CONNECTION_REQUEST: '#7c3aed',
   DISPUTE_OPENED: '#dc2626', DISPUTE_RESOLVED: '#16a34a',
 }
 
@@ -187,7 +187,7 @@ function ProposalCard({
       {/* Post title */}
       {p.postTitle && (
         <p className="mb-2 text-xs font-semibold text-[#6b7280]">
-          Proposal for: <span className="text-[#0277CC]">"{p.postTitle}"</span>
+          Proposal for: <span className="text-[#0160B9]">"{p.postTitle}"</span>
         </p>
       )}
 
@@ -199,7 +199,7 @@ function ProposalCard({
           </p>
           {isLong && (
             <button type="button" onClick={() => setExpanded(e => !e)}
-              className="mt-1 text-xs font-semibold text-[#0277CC]">
+              className="mt-1 text-xs font-semibold text-[#0160B9]">
               {expanded ? 'Show less' : 'Read more'}
             </button>
           )}
@@ -222,7 +222,7 @@ function ProposalCard({
       ) : done === null ? (
         <div className="flex flex-wrap gap-2">
           <button type="button" onClick={accept} disabled={accepting || rejecting}
-            className="flex-1 min-w-[90px] rounded-xl bg-[linear-gradient(135deg,#0160B9,#0277CC)] py-2.5 px-3.5 text-sm font-bold text-white disabled:opacity-60">
+            className="flex-1 min-w-[90px] rounded-xl bg-[#0160B9] py-2.5 px-3.5 text-sm font-bold text-white disabled:opacity-60">
             {accepting ? 'Accepting…' : '✓ Accept'}
           </button>
           <button type="button" onClick={reject} disabled={accepting || rejecting}
@@ -236,7 +236,7 @@ function ProposalCard({
             ✓ Accepted
           </div>
           <Link href="/payment/escrow"
-            className="rounded-xl bg-[#0277CC] py-2.5 px-3.5 text-sm font-bold text-white">
+            className="rounded-xl bg-[#0160B9] py-2.5 px-3.5 text-sm font-bold text-white">
             View Escrow →
           </Link>
         </div>
@@ -320,14 +320,14 @@ function NotifRow({
 
           {!isProposal && !isAgent && notif.link && (
             <Link href={notif.link} onClick={e => e.stopPropagation()}
-              className="mt-1.5 inline-block text-xs font-semibold text-[#0277CC]">
+              className="mt-1.5 inline-block text-xs font-semibold text-[#0160B9]">
               View →
             </Link>
           )}
         </div>
 
         {!notif.isRead && (
-          <div className={`mt-1.5 h-2.5 w-2.5 flex-shrink-0 rounded-full ${isAgent ? 'bg-purple-500' : 'bg-[#0277CC]'}`} />
+          <div className={`mt-1.5 h-2.5 w-2.5 flex-shrink-0 rounded-full ${isAgent ? 'bg-purple-500' : 'bg-[#0160B9]'}`} />
         )}
       </div>
     </div>

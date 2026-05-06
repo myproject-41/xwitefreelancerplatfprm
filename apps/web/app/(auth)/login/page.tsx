@@ -43,7 +43,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[#EDF1F7] px-4 py-8">
       <div className="mx-auto w-full max-w-md">
-        <div className="mb-6 overflow-hidden rounded-[28px] bg-gradient-to-br from-[#0277CC] via-[#0160B9] to-[#0277CC] px-6 py-7 text-white shadow-[0_24px_60px_rgba(1,96,185,0.32)]">
+        <div className="mb-6 overflow-hidden rounded-[28px] bg-[#0160B9] px-6 py-7 text-white shadow-[0_24px_60px_rgba(1,96,185,0.32)]">
           <h1 className="font-headline text-3xl font-extrabold tracking-tight">Welcome Back</h1>
           <p className="mt-2 text-sm font-medium text-white/75">Sign in to continue to Xwite</p>
         </div>
@@ -51,7 +51,7 @@ export default function LoginPage() {
         <div className="rounded-[24px] border border-white/70 bg-white/90 p-6 shadow-[0_18px_44px_rgba(1,96,185,0.08)] backdrop-blur-xl">
           <div className="mb-5 flex items-center justify-between">
             <p className="text-sm font-bold uppercase tracking-[0.16em] text-slate-500">Sign In</p>
-            <span className="rounded-full bg-[#0277CC]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-[#0160B9]">
+            <span className="rounded-full bg-[#0160B9]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-[#0160B9]">
               Secure
             </span>
           </div>
@@ -74,7 +74,7 @@ export default function LoginPage() {
                 required
                 value={form.email}
                 onChange={(e) => { setForm({ ...form, email: e.target.value }); setError(null) }}
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-[#0D1B2A] outline-none transition focus:border-[#0277CC] focus:ring-2 focus:ring-[#e8f4fd]"
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-[#0D1B2A] outline-none transition focus:border-[#0160B9] focus:ring-2 focus:ring-[#e8f4fd]"
                 placeholder="you@example.com"
               />
             </div>
@@ -87,13 +87,13 @@ export default function LoginPage() {
                   required
                   value={form.password}
                   onChange={(e) => { setForm({ ...form, password: e.target.value }); setError(null) }}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 pr-14 text-sm text-[#0D1B2A] outline-none transition focus:border-[#0277CC] focus:ring-2 focus:ring-[#e8f4fd]"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 pr-14 text-sm text-[#0D1B2A] outline-none transition focus:border-[#0160B9] focus:ring-2 focus:ring-[#e8f4fd]"
                   placeholder="Your password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold uppercase tracking-wide text-slate-500 transition hover:text-[#0277CC]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold uppercase tracking-wide text-slate-500 transition hover:text-[#0160B9]"
                 >
                   {showPassword ? 'Hide' : 'Show'}
                 </button>
@@ -103,7 +103,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-[#0277CC] py-3.5 text-sm font-extrabold text-white shadow-[0_16px_34px_rgba(1,96,185,0.30)] transition hover:bg-[#0160B9] active:scale-[0.98] disabled:opacity-60"
+              className="w-full rounded-xl bg-[#0160B9] py-3.5 text-sm font-extrabold text-white shadow-[0_16px_34px_rgba(1,96,185,0.30)] transition active:scale-[0.98] disabled:opacity-60"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -118,7 +118,7 @@ export default function LoginPage() {
 
           <p className="mt-6 text-center text-sm text-slate-500">
             Don't have an account?{' '}
-            <a href="/signup" className="font-bold text-[#0277CC] hover:underline">
+            <a href="/signup" className="font-bold text-[#0160B9] hover:underline">
               Sign up
             </a>
           </p>

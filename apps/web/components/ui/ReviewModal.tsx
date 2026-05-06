@@ -104,7 +104,7 @@ export default function ReviewModal({ escrowId, reviewedId, freelancerName, task
             <button
               onClick={handleSubmit}
               disabled={loading || !selected}
-              className="flex-1 rounded-xl bg-[linear-gradient(135deg,#0160B9,#0277CC)] py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-95 disabled:opacity-50"
+              className="flex-1 rounded-xl bg-[#0160B9] py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-95 disabled:opacity-50"
             >
               {loading ? 'Submitting…' : 'Submit Review'}
             </button>

@@ -169,7 +169,7 @@ function ProposalCard({
             type="button"
             onClick={() => setExpanded((e) => !e)}
             style={{
-              marginTop: 6, fontSize: 12, color: '#0277CC', fontWeight: 600,
+              marginTop: 6, fontSize: 12, color: '#0160B9', fontWeight: 600,
               background: 'none', border: 'none', cursor: 'pointer', padding: 0,
             }}
           >
@@ -200,7 +200,7 @@ function ProposalCard({
             disabled={accepting || rejecting}
             style={{
               flex: 1, minWidth: 100, padding: '9px 16px',
-              background: 'linear-gradient(135deg,#0160B9 0%,#0277CC 100%)',
+              background: '#0160B9',
               color: 'white', border: 'none', borderRadius: 12,
               fontSize: 13, fontWeight: 700, cursor: 'pointer',
               opacity: accepting || rejecting ? 0.65 : 1,
@@ -524,7 +524,7 @@ export default function ConversationPage() {
                     <div
                       className={`max-w-[85%] rounded-[22px] px-4 py-3 shadow-sm md:max-w-[70%] ${
                         isOwn
-                          ? 'bg-[linear-gradient(135deg,#0160B9_0%,#0277CC_100%)] text-white'
+                          ? 'bg-[#0160B9] text-white'
                           : 'border border-[#e5e7eb] bg-white text-[#1b1c1a]'
                       }`}
                     >
@@ -566,7 +566,7 @@ export default function ConversationPage() {
                 }}
                 rows={3}
                 disabled={isChatLocked}
-                className="min-h-[96px] flex-1 resize-none rounded-2xl border border-[#d6dce3] bg-[#fafbfc] px-4 py-3 text-sm text-[#1b1c1a] outline-none transition focus:border-[#0277CC] focus:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+                className="min-h-[96px] flex-1 resize-none rounded-2xl border border-[#d6dce3] bg-[#fafbfc] px-4 py-3 text-sm text-[#1b1c1a] outline-none transition focus:border-[#0160B9] focus:bg-white disabled:cursor-not-allowed disabled:opacity-50"
                 placeholder="Write your message here… (Enter to send, Shift+Enter for new line)"
               />
 
@@ -575,7 +575,7 @@ export default function ConversationPage() {
                   type="button"
                   onClick={() => void sendMessage()}
                   disabled={sending || !draft.trim() || isChatLocked}
-                  className="rounded-2xl bg-[linear-gradient(135deg,#0160B9_0%,#0277CC_100%)] px-5 py-3 text-sm font-bold text-white shadow-[0_12px_28px_rgba(1,96,185,0.22)] transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="rounded-2xl bg-[#0160B9] px-5 py-3 text-sm font-bold text-white shadow-[0_12px_28px_rgba(1,96,185,0.22)] transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {sending ? 'Sending…' : 'Send message'}
                 </button>

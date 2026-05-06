@@ -150,7 +150,7 @@ export default function AdminPage() {
                       onClick={() => handleApprove(c.userId)}
                       disabled={approvingId === c.userId}
                       style={{
-                        padding: '8px 16px', borderRadius: 8, background: 'linear-gradient(135deg,#0160B9,#0277CC)',
+                        padding: '8px 16px', borderRadius: 8, background: '#0160B9',
                         color: '#fff', fontSize: 13, fontWeight: 700, border: 'none', cursor: 'pointer',
                         opacity: approvingId === c.userId ? 0.6 : 1,
                       }}

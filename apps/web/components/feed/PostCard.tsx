@@ -585,7 +585,7 @@ export default function PostCard({
                   ? 'border border-[#d7dde4] bg-white text-[#0160B9] shadow-none hover:bg-[#f8fafc]'
                   : isActionCompleted
                     ? 'cursor-not-allowed border border-[#d7dde4] bg-white text-[#6b7280] shadow-none'
-                    : 'bg-[linear-gradient(to_right,#0160B9,#0277CC)] text-white shadow-[0_2px_8px_rgba(1,96,185,0.3)] hover:opacity-95 active:scale-[0.97]'
+                    : 'bg-[linear-gradient(to_right,#0160B9,#0160B9)] text-white shadow-[0_2px_8px_rgba(1,96,185,0.3)] hover:opacity-95 active:scale-[0.97]'
               }`}
             >
               {isOwner
@@ -656,7 +656,7 @@ export default function PostCard({
             <button
               onClick={handleProposal}
               disabled={loading}
-              className="mt-4 w-full rounded-full bg-[linear-gradient(135deg,#0160B9_0%,#0277CC_100%)] py-3 text-sm font-bold text-white shadow-[0_12px_28px_rgba(1,96,185,0.22)] transition hover:opacity-95 disabled:opacity-60"
+              className="mt-4 w-full rounded-full bg-[#0160B9] py-3 text-sm font-bold text-white shadow-[0_12px_28px_rgba(1,96,185,0.22)] transition hover:opacity-95 disabled:opacity-60"
             >
               {actionLabel}
             </button>

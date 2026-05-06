@@ -144,7 +144,7 @@ export default function SettingsPage() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-bold text-[#1b1c1a]">{user?.email}</p>
-                  <span className="mt-0.5 inline-block rounded-full bg-[#e8f4fd] px-2.5 py-0.5 text-[11px] font-bold text-[#0277CC]">
+                  <span className="mt-0.5 inline-block rounded-full bg-[#e8f4fd] px-2.5 py-0.5 text-[11px] font-bold text-[#0160B9]">
                     {user?.role}
                   </span>
                 </div>
@@ -268,7 +268,7 @@ export default function SettingsPage() {
                           placeholder="Repeat new password" />
                       </div>
                       <button type="submit" disabled={pwLoading}
-                        className="w-full rounded-xl bg-[linear-gradient(135deg,#0160B9,#0277CC)] py-3 text-sm font-bold text-white shadow-sm transition hover:opacity-95 disabled:opacity-60">
+                        className="w-full rounded-xl bg-[#0160B9] py-3 text-sm font-bold text-white shadow-sm transition hover:opacity-95 disabled:opacity-60">
                         {pwLoading ? 'Changing…' : 'Change Password'}
                       </button>
                     </form>
@@ -349,7 +349,7 @@ export default function SettingsPage() {
             {page === 'privacy-policy' && (
               <div className="space-y-4">
                 <div className="rounded-2xl border border-[#e2e8f0] bg-[#e8f4fd] p-4">
-                  <p className="text-xs font-bold text-[#0277CC]">Last updated: May 2026</p>
+                  <p className="text-xs font-bold text-[#0160B9]">Last updated: May 2026</p>
                   <p className="mt-1 text-sm font-bold text-[#0160B9]">Xwite Privacy Policy</p>
                 </div>
                 <StaticCard title="1. Introduction">
@@ -425,7 +425,7 @@ export default function SettingsPage() {
             {page === 'user-agreement' && (
               <div className="space-y-4">
                 <div className="rounded-2xl border border-[#e2e8f0] bg-[#e8f4fd] p-4">
-                  <p className="text-xs font-bold text-[#0277CC]">Effective: May 2026</p>
+                  <p className="text-xs font-bold text-[#0160B9]">Effective: May 2026</p>
                   <p className="mt-1 text-sm font-bold text-[#0160B9]">Xwite User Agreement</p>
                 </div>
                 <StaticCard title="1. Acceptance">

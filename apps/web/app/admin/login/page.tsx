@@ -76,7 +76,7 @@ export default function AdminLoginPage() {
             width: 52,
             height: 52,
             borderRadius: 14,
-            background: 'linear-gradient(135deg, #0160B9, #0277CC)',
+            background: 'linear-gradient(135deg, #0160B9, #0160B9)',
             marginBottom: 16,
           }}>
             <svg width="26" height="26" viewBox="0 0 24 24" fill="white">
@@ -161,7 +161,7 @@ export default function AdminLoginPage() {
               marginTop: 4,
               padding: '13px',
               borderRadius: 10,
-              background: loading ? 'rgba(1,96,185,0.5)' : 'linear-gradient(135deg, #0160B9, #0277CC)',
+              background: loading ? 'rgba(1,96,185,0.5)' : 'linear-gradient(135deg, #0160B9, #0160B9)',
               color: '#fff',
               fontSize: 15,
               fontWeight: 700,

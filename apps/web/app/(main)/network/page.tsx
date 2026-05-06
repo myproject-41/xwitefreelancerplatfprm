@@ -122,7 +122,7 @@ const Icons = {
 
 // ── Gradient banners per index ─────────────────────────────────────────────────
 const CARD_GRADIENTS = [
-  'from-[#cde5ff] to-[#0277CC]',
+  'from-[#cde5ff] to-[#0160B9]',
   'from-[#BBDEFB] to-[#45617a]',
   'from-[#ffdcc0] to-[#a85f00]',
 ]
@@ -375,7 +375,7 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
               const { name, title, image, isVerified } = getUserInfo(co)
               const isFollowed = followed.has(co.id)
               const gradients = [
-                'from-[#cde5ff] to-[#0277CC]',
+                'from-[#cde5ff] to-[#0160B9]',
                 'from-[#BBDEFB] to-[#45617a]',
                 'from-[#ffdcc0] to-[#a85f00]',
               ]
@@ -565,7 +565,7 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
       </section>
 
       {/* Network growth banner */}
-      <section className="bg-gradient-to-br from-[#0160B9] to-[#0277CC] rounded-xl p-6 text-white shadow-lg">
+      <section className="bg-[#0160B9] rounded-xl p-6 text-white shadow-lg">
         <h3 className="font-[Manrope] font-bold text-lg mb-1">Grow your professional network</h3>
         <p className="text-white/80 text-sm mb-4">Connect with professionals, collaborate on projects, and build lasting relationships.</p>
         <div className="flex flex-wrap gap-3">
@@ -742,7 +742,7 @@ function GroupsSection({ pending, onAccept, onIgnore }: any) {
         <h2 className="font-[Manrope] font-extrabold text-2xl text-[#1b1c1a]">Groups</h2>
         <div className="flex gap-2">
           <button className="flex items-center gap-1.5 border border-[#0160B9] text-[#0160B9] px-4 py-2 rounded-full text-sm font-bold hover:bg-[#0160B9]/5 transition">Discover</button>
-          <button onClick={() => setShowCreate(true)} className="flex items-center gap-1.5 bg-[#0160B9] text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-[#014A8C] transition active:scale-95"><Icons.Plus /> Create</button>
+          <button onClick={() => setShowCreate(true)} className="flex items-center gap-1.5 bg-[#0160B9] text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-[#0160B9] transition active:scale-95"><Icons.Plus /> Create</button>
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -786,7 +786,7 @@ function EventsSection({ pending, onAccept, onIgnore }: any) {
       <PendingInvitations pending={pending} onAccept={onAccept} onIgnore={onIgnore} />
       <div className="flex items-center justify-between mb-5">
         <h2 className="font-[Manrope] font-extrabold text-2xl text-[#1b1c1a]">Events</h2>
-        <button onClick={() => setShowCreate(true)} className="flex items-center gap-1.5 bg-[#0160B9] text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-[#014A8C] transition active:scale-95"><Icons.Plus /> Create Event</button>
+        <button onClick={() => setShowCreate(true)} className="flex items-center gap-1.5 bg-[#0160B9] text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-[#0160B9] transition active:scale-95"><Icons.Plus /> Create Event</button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {MOCK_EVENTS.map((ev, i) => {
@@ -816,7 +816,7 @@ function EventsSection({ pending, onAccept, onIgnore }: any) {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <button onClick={() => setRegistered((prev) => { const n = new Set(prev); n.has(ev.id) ? n.delete(ev.id) : n.add(ev.id); return n })} className={`flex-1 py-2 rounded-full text-sm font-bold transition active:scale-95 ${isReg ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-[#0160B9] text-white hover:bg-[#014A8C]'}`}>{isReg ? '✓ Registered' : 'Register'}</button>
+                  <button onClick={() => setRegistered((prev) => { const n = new Set(prev); n.has(ev.id) ? n.delete(ev.id) : n.add(ev.id); return n })} className={`flex-1 py-2 rounded-full text-sm font-bold transition active:scale-95 ${isReg ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-[#0160B9] text-white hover:bg-[#0160B9]'}`}>{isReg ? '✓ Registered' : 'Register'}</button>
                   <button className="flex-1 py-2 rounded-full border border-[#bfc7d1] text-[#404850] text-sm font-bold hover:bg-[#efeeeb] transition active:scale-95">Details</button>
                 </div>
               </div>
@@ -841,7 +841,7 @@ function NewslettersSection({ pending, onAccept, onIgnore, userRole }: any) {
         <div className="flex gap-2">
           <button className="flex items-center gap-1.5 border border-[#0160B9] text-[#0160B9] px-4 py-2 rounded-full text-sm font-bold hover:bg-[#0160B9]/5 transition">Discover</button>
           {userRole === 'COMPANY' && (
-            <button onClick={() => setShowCreate(true)} className="flex items-center gap-1.5 bg-[#0160B9] text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-[#014A8C] transition active:scale-95"><Icons.Plus /> Create</button>
+            <button onClick={() => setShowCreate(true)} className="flex items-center gap-1.5 bg-[#0160B9] text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-[#0160B9] transition active:scale-95"><Icons.Plus /> Create</button>
           )}
         </div>
       </div>
@@ -862,7 +862,7 @@ function NewslettersSection({ pending, onAccept, onIgnore, userRole }: any) {
               <p className="text-xs text-[#707881] mb-4">{n.subs} subscribers · {n.freq}</p>
               <button
                 onClick={() => setSubscribed((prev) => { const nx = new Set(prev); nx.has(n.id) ? nx.delete(n.id) : nx.add(n.id); return nx })}
-                className={`w-full py-2 rounded-full text-sm font-bold transition active:scale-95 ${isSub ? 'bg-[#0160B9] text-white hover:bg-[#014A8C]' : 'border border-[#0160B9] text-[#0160B9] hover:bg-[#0160B9]/5'}`}
+                className={`w-full py-2 rounded-full text-sm font-bold transition active:scale-95 ${isSub ? 'bg-[#0160B9] text-white hover:bg-[#0160B9]' : 'border border-[#0160B9] text-[#0160B9] hover:bg-[#0160B9]/5'}`}
               >
                 {isSub ? 'Unsubscribe' : 'Subscribe'}
               </button>
@@ -980,7 +980,7 @@ function NetworkPageInner() {
 
       {isGuest && (
         <div className="max-w-screen-xl mx-auto px-4 md:px-8 pt-20 md:pt-24">
-          <div className="rounded-2xl bg-gradient-to-br from-[#0160B9] to-[#0277CC] text-white p-8 flex flex-col sm:flex-row items-center gap-6 shadow-lg mb-6">
+          <div className="rounded-2xl bg-[#0160B9] text-white p-8 flex flex-col sm:flex-row items-center gap-6 shadow-lg mb-6">
             <img src="/logo.png" alt="Xwite" className="h-16 w-16 rounded-2xl object-cover shadow-md shrink-0" />
             <div className="flex-1 text-center sm:text-left">
               <h2 className="text-xl font-extrabold mb-1">Connect with professionals on Xwite</h2>
@@ -1041,7 +1041,7 @@ function NetworkPageInner() {
             </div>
 
             {/* Quick stats */}
-            <div className="bg-gradient-to-br from-[#0160B9] to-[#0277CC] rounded-xl p-5 text-white shadow-sm">
+            <div className="bg-[#0160B9] rounded-xl p-5 text-white shadow-sm">
               <p className="font-[Manrope] font-bold text-sm mb-3 opacity-90">Your Network</p>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -1090,7 +1090,7 @@ function NetworkPageInner() {
                           </button>
                           <button
                             onClick={() => handleAccept(req.id)}
-                            className="flex-1 py-1.5 rounded-full bg-[#0160B9] text-white text-xs font-bold hover:bg-[#014A8C] transition active:scale-95"
+                            className="flex-1 py-1.5 rounded-full bg-[#0160B9] text-white text-xs font-bold hover:bg-[#0160B9] transition active:scale-95"
                           >
                             Accept
                           </button>

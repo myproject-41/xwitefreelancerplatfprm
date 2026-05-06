@@ -194,7 +194,7 @@ export default function CreatePostPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-2xl bg-[linear-gradient(135deg,#0160B9_0%,#0277CC_100%)] py-4 text-base font-extrabold text-white shadow-[0_4px_16px_rgba(1,96,185,0.3)] transition hover:opacity-95 active:scale-[0.98] disabled:opacity-60"
+              className="w-full rounded-2xl bg-[#0160B9] py-4 text-base font-extrabold text-white shadow-[0_4px_16px_rgba(1,96,185,0.3)] transition hover:opacity-95 active:scale-[0.98] disabled:opacity-60"
             >
               {loading
                 ? 'Publishing…'

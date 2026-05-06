@@ -187,7 +187,7 @@ export default function FloatingChatPanel() {
                 <div
                   className={`max-w-[85%] rounded-[20px] px-3.5 py-3 text-sm shadow-sm ${
                     isOwn
-                      ? 'bg-[linear-gradient(135deg,#0160B9_0%,#0277CC_100%)] text-white'
+                      ? 'bg-[#0160B9] text-white'
                       : 'border border-[#e5e7eb] bg-white text-[#1b1c1a]'
                   }`}
                 >
@@ -220,7 +220,7 @@ export default function FloatingChatPanel() {
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
           rows={3}
-          className="min-h-[92px] w-full resize-none rounded-2xl border border-[#d6dce3] bg-[#fafbfc] px-4 py-3 text-sm text-[#1b1c1a] outline-none transition focus:border-[#0277CC] focus:bg-white"
+          className="min-h-[92px] w-full resize-none rounded-2xl border border-[#d6dce3] bg-[#fafbfc] px-4 py-3 text-sm text-[#1b1c1a] outline-none transition focus:border-[#0160B9] focus:bg-white"
           placeholder="Write your message here..."
         />
 
@@ -230,7 +230,7 @@ export default function FloatingChatPanel() {
             type="button"
             onClick={() => void handleSend()}
             disabled={sending || !draft.trim()}
-            className="rounded-2xl bg-[linear-gradient(135deg,#0160B9_0%,#0277CC_100%)] px-5 py-2.5 text-sm font-bold text-white shadow-[0_12px_28px_rgba(1,96,185,0.22)] transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-2xl bg-[#0160B9] px-5 py-2.5 text-sm font-bold text-white shadow-[0_12px_28px_rgba(1,96,185,0.22)] transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {sending ? 'Sending...' : 'Send'}
           </button>

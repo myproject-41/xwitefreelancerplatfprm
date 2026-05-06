@@ -303,7 +303,7 @@ function TaskCard({ task }: { task: Task }) {
           <Link href={`/posts/${task.id}`}
             style={{
               padding: '10px 18px', borderRadius: 12,
-              background: 'linear-gradient(135deg,#0160B9,#0277CC)',
+              background: '#0160B9',
               color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none',
             }}>
             Send Proposal →
@@ -320,7 +320,7 @@ function TaskCard({ task }: { task: Task }) {
           <button type="button" onClick={sendProposal} disabled={sending}
             style={{
               padding: '10px 22px', borderRadius: 12,
-              background: 'linear-gradient(135deg,#0160B9,#0277CC)',
+              background: '#0160B9',
               color: '#fff', border: 'none', fontSize: 13, fontWeight: 700,
               cursor: sending ? 'not-allowed' : 'pointer', opacity: sending ? .65 : 1,
             }}>
@@ -449,7 +449,7 @@ function FreelancerCard({
           <button type="button" onClick={directNotify} disabled={notifying || phase !== 'idle'}
             style={{
               flex: 1, padding: '9px 12px', borderRadius: 10,
-              background: 'linear-gradient(135deg,#0160B9,#0277CC)',
+              background: '#0160B9',
               color: '#fff', border: 'none',
               fontSize: 13, fontWeight: 700, cursor: notifying || phase !== 'idle' ? 'not-allowed' : 'pointer',
               opacity: notifying || phase !== 'idle' ? .65 : 1,
@@ -585,7 +585,7 @@ export default function AgentPage() {
       `}</style>
 
       {/* Header */}
-      <div style={{ background: 'linear-gradient(135deg,#0160B9,#0277CC)', padding: '52px 20px 24px', color: '#fff' }}>
+      <div style={{ background: '#0160B9', padding: '52px 20px 24px', color: '#fff' }}>
         <div style={{ maxWidth: 640, margin: '0 auto' }}>
           <p style={{ margin: 0, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.14em', opacity: .75 }}>AI-Powered</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 6 }}>

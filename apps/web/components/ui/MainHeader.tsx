@@ -136,7 +136,7 @@ export default function MainHeader() {
               >
                 {item.label}
                 {user && getBadgeCount(item.href) ? (
-                  <span className="ml-2 rounded-full bg-[#0277CC] px-2 py-0.5 text-[10px] font-bold text-white">
+                  <span className="ml-2 rounded-full bg-[#0160B9] px-2 py-0.5 text-[10px] font-bold text-white">
                     {getBadgeCount(item.href)}
                   </span>
                 ) : null}
@@ -179,7 +179,7 @@ export default function MainHeader() {
             <>
               <Link
                 href="/agent"
-                className="inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#0160B9_0%,#0277CC_100%)] px-4 py-2 text-sm font-medium text-white shadow-sm transition-all duration-150 hover:opacity-90 active:scale-95"
+                className="inline-flex items-center gap-2 rounded-full bg-[#0160B9] px-4 py-2 text-sm font-medium text-white shadow-sm transition-all duration-150 hover:opacity-90 active:scale-95"
               >
                 <SparkIcon />
                 <span className="hidden sm:inline">AI Agent</span>
@@ -192,7 +192,7 @@ export default function MainHeader() {
               >
                 <MessageIcon />
                 {messageUnreadCount > 0 ? (
-                  <span className="absolute -right-1 -top-1 min-w-[18px] rounded-full bg-[#0277CC] px-1.5 py-0.5 text-center text-[10px] font-bold leading-none text-white">
+                  <span className="absolute -right-1 -top-1 min-w-[18px] rounded-full bg-[#0160B9] px-1.5 py-0.5 text-center text-[10px] font-bold leading-none text-white">
                     {messageUnreadCount}
                   </span>
                 ) : null}
@@ -208,7 +208,7 @@ export default function MainHeader() {
               </Link>
               <Link
                 href="/signup"
-                className="rounded-full bg-[#0160B9] px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-[#014A8C] transition active:scale-95"
+                className="rounded-full bg-[#0160B9] px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-[#0160B9] transition active:scale-95"
               >
                 Join Free
               </Link>
