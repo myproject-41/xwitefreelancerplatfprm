@@ -308,12 +308,10 @@ function PendingInvitations({ pending, onAccept, onIgnore }: { pending: any[]; o
 }
 
 // ── SECTION: Overview ─────────────────────────────────────────────────────────
-function OverviewSection({ pending, suggestions, following: initialFollowing = [], onAccept, onIgnore, onConnect }: any) {
-  const [dismissed, setDismissed] = useState<Set<string>>(new Set())
+function OverviewSection({ pending, suggestions, following: initialFollowing = [], onAccept, onIgnore }: any) {
   const [followed, setFollowed] = useState<Set<string>>(() =>
     new Set((initialFollowing as any[]).map((f: any) => f.following?.id ?? f.followingId).filter(Boolean))
   )
-  const [connected, setConnected] = useState<Set<string>>(new Set())
   const [peopleLimit, setPeopleLimit] = useState(8)
   const router = useRouter()
 
@@ -327,7 +325,7 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
 
   // Show ALL companies (relevance-sorted by backend), paginate people
   const allCompanySuggestions = suggestions.filter((s: any) => s.role === 'COMPANY')
-  const allPeopleSuggestions  = suggestions.filter((s: any) => s.role !== 'COMPANY' && !dismissed.has(s.id))
+  const allPeopleSuggestions  = suggestions.filter((s: any) => s.role !== 'COMPANY')
   const peopleSuggestions     = allPeopleSuggestions.slice(0, peopleLimit)
 
   async function handleFollow(userId: string) {
@@ -451,7 +449,7 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
             <p className="text-xs text-[#707881] mt-1">Complete your profile to get better recommendations</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 items-start">
             {peopleSuggestions.map((u: any, i: number) => {
               const { name, title, image, isVerified } = getUserInfo(u)
               const isFreelancer = u.role === 'FREELANCER'
@@ -473,10 +471,13 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
               ]
               const palette = SKILL_PALETTES[i % SKILL_PALETTES.length]
 
+              const country = u.freelancerProfile?.country || u.companyProfile?.country || u.clientProfile?.country || ''
+              const showSkills = isFreelancer && skills.length > 0
+
               return (
                 <div
                   key={u.id}
-                  className="bg-white rounded-2xl p-5 shadow-[0_8px_24px_rgba(27,28,26,0.05)] hover:shadow-[0_14px_36px_rgba(27,28,26,0.10)] hover:-translate-y-0.5 transition-all duration-300"
+                  className="bg-white rounded-2xl p-5 border border-[#eef0f3] shadow-[0_4px_18px_rgba(27,28,26,0.04)] hover:shadow-[0_14px_36px_rgba(27,28,26,0.10)] hover:border-[#dbe6f1] hover:-translate-y-0.5 transition-all duration-300"
                 >
                   {/* Top row: avatar + status pill */}
                   <div className="flex items-start justify-between mb-4">
@@ -503,13 +504,15 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                       )}
                     </button>
 
-                    {/* Status pill */}
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
-                      isAvailable ? 'bg-[#dcfce7] text-[#15803d]' : 'bg-[#f1f5f9] text-[#64748b]'
-                    }`}>
-                      <span className={`h-1.5 w-1.5 rounded-full ${isAvailable ? 'bg-[#16a34a]' : 'bg-[#94a3b8]'}`} />
-                      {isAvailable ? 'Online' : 'Offline'}
-                    </span>
+                    {/* Status pill — only for freelancers */}
+                    {isFreelancer && (
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold ${
+                        isAvailable ? 'bg-[#dcfce7] text-[#15803d]' : 'bg-[#f1f5f9] text-[#64748b]'
+                      }`}>
+                        <span className={`h-1.5 w-1.5 rounded-full ${isAvailable ? 'bg-[#16a34a]' : 'bg-[#94a3b8]'}`} />
+                        {isAvailable ? 'Online' : 'Offline'}
+                      </span>
+                    )}
                   </div>
 
                   {/* Name + verified badge */}
@@ -519,48 +522,51 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                     className="block w-full text-left mb-1"
                   >
                     <div className="flex items-center gap-1.5">
-                      <h3 className="font-[Manrope] font-bold text-xl text-[#1b1c1a] leading-snug truncate hover:text-[#0160B9] transition-colors">{name}</h3>
-                      {isVerified && <VerifiedBadge size="md" />}
+                      <h3 className="font-[Manrope] font-bold text-lg text-[#1b1c1a] leading-snug truncate hover:text-[#0160B9] transition-colors">{name}</h3>
+                      {isVerified && <VerifiedBadge size="sm" />}
                     </div>
                   </button>
 
                   {/* Title / role */}
-                  <p className="text-[#536279] text-sm mb-4 truncate">{subtitle}</p>
+                  <p className="text-[#536279] text-[13px] truncate">{subtitle}</p>
 
-                  {/* Skills — 2×2 grid */}
-                  {isFreelancer && skills.length > 0 ? (
-                    <div className="grid grid-cols-2 gap-2 mb-5">
+                  {/* Skills — only render when freelancer has skills */}
+                  {showSkills && (
+                    <div className="grid grid-cols-2 gap-1.5 mt-3">
                       {skills.slice(0, 4).map((s: string) => (
                         <span
                           key={s}
-                          className={`inline-flex items-center justify-center px-3 py-1.5 rounded-full text-xs font-semibold truncate ${palette.bg} ${palette.text}`}
+                          className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-[11px] font-semibold truncate ${palette.bg} ${palette.text}`}
                         >
                           {s}
                         </span>
                       ))}
                     </div>
-                  ) : (
-                    <div className="mb-5" />
                   )}
 
-                  {/* Bottom row: rate + arrow button */}
-                  <div className="flex items-center justify-between gap-3">
+                  {/* Bottom row: rate (or location) + arrow button */}
+                  <div className="flex items-center justify-between gap-3 mt-4 pt-4 border-t border-[#f1f3f5]">
                     {isFreelancer && hourlyRate ? (
                       <p className="whitespace-nowrap">
-                        <span className="text-[#707881] font-medium text-sm">From </span>
-                        <span className="font-extrabold text-xl text-[#1b1c1a]">{currencySymbol}{hourlyRate}</span>
-                        <span className="text-[#707881] font-medium text-sm"> /hr</span>
+                        <span className="text-[#707881] font-medium text-xs">From </span>
+                        <span className="font-extrabold text-lg text-[#1b1c1a]">{currencySymbol}{hourlyRate}</span>
+                        <span className="text-[#707881] font-medium text-xs"> /hr</span>
+                      </p>
+                    ) : country ? (
+                      <p className="flex items-center gap-1 text-[#707881] text-xs font-medium truncate">
+                        <Icons.Location />
+                        <span className="truncate">{country}</span>
                       </p>
                     ) : (
-                      <span className="text-[#707881] text-sm font-medium">{roleLabel}</span>
+                      <span className="text-[#707881] text-xs font-medium">{roleLabel}</span>
                     )}
 
                     <button
                       onClick={() => u.id && router.push(getProfilePath(u))}
                       aria-label={`View ${name}'s profile`}
-                      className="w-11 h-11 rounded-xl bg-[#E3F2FD] hover:bg-[#0160B9] text-[#0160B9] hover:text-white flex items-center justify-center shrink-0 active:scale-95 transition-all"
+                      className="w-10 h-10 rounded-xl bg-[#E3F2FD] hover:bg-[#0160B9] text-[#0160B9] hover:text-white flex items-center justify-center shrink-0 active:scale-95 transition-all"
                     >
-                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M5 12h14m-7-7l7 7-7 7"/>
                       </svg>
                     </button>
