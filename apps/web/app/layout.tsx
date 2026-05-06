@@ -3,7 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import PwaRegister from '../components/PwaRegister'
 
 export const viewport: Viewport = {
-  themeColor: '#1565C0',
+  themeColor: '#0160B9',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,

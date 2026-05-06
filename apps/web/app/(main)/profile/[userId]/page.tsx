@@ -316,7 +316,7 @@ export default function PublicProfilePage() {
                         onClick={handleFollow}
                         disabled={followLoading}
                       >
-                        <MaterialIcon name={isFollowing ? 'check' : 'add'} size={16} color={isFollowing ? '#1976D2' : '#fff'} />
+                        <MaterialIcon name={isFollowing ? 'check' : 'add'} size={16} color={isFollowing ? '#0277CC' : '#fff'} />
                         {followLoading ? '…' : isFollowing ? 'Following' : 'Follow'}
                       </button>
                     )}
@@ -326,7 +326,7 @@ export default function PublicProfilePage() {
                         onClick={handleMessage}
                         disabled={msgLoading}
                       >
-                        <MaterialIcon name="chat" size={16} color="#1976D2" />
+                        <MaterialIcon name="chat" size={16} color="#0277CC" />
                         {msgLoading ? 'Opening…' : 'Message'}
                       </button>
                     ) : (
@@ -345,7 +345,7 @@ export default function PublicProfilePage() {
                 {/* Profile info */}
                 <div className="pub-profile-info">
                   <p className="pub-conn-count">
-                    <MaterialIcon name="people" size={14} color="#1976D2" />
+                    <MaterialIcon name="people" size={14} color="#0277CC" />
                     {profile.connectionsCount ?? 0} connections
                   </p>
                   <div className="pub-name-row">
@@ -407,7 +407,7 @@ export default function PublicProfilePage() {
                           rel="noopener noreferrer"
                           className="pub-portfolio-link"
                         >
-                          <MaterialIcon name="link" size={13} color="#1976D2" />
+                          <MaterialIcon name="link" size={13} color="#0277CC" />
                           <span>{p.label}</span>
                         </a>
                       ))}
@@ -424,7 +424,7 @@ export default function PublicProfilePage() {
                     <>
                       <div className="pub-section-hdr">
                         <div className="pub-section-hdr-left">
-                          <MaterialIcon name="translate" size={18} color="#1976D2" />
+                          <MaterialIcon name="translate" size={18} color="#0277CC" />
                           <h2 className="pub-section-title">Languages</h2>
                         </div>
                       </div>
@@ -435,7 +435,7 @@ export default function PublicProfilePage() {
                             return (
                               <div key={i} className="pub-lang-card">
                                 <div className="pub-lang-card-icon">
-                                  <MaterialIcon name="translate" size={16} color="#1976D2" />
+                                  <MaterialIcon name="translate" size={16} color="#0277CC" />
                                 </div>
                                 <div className="pub-lang-card-body">
                                   <span className="pub-lang-card-name">{l.language}</span>
@@ -455,7 +455,7 @@ export default function PublicProfilePage() {
                       {languages.length > 0 && <div className="pub-card-divider" />}
                       <div className="pub-section-hdr">
                         <div className="pub-section-hdr-left">
-                          <MaterialIcon name="work" size={18} color="#1976D2" />
+                          <MaterialIcon name="work" size={18} color="#0277CC" />
                           <h2 className="pub-section-title">Experience</h2>
                         </div>
                       </div>
@@ -490,7 +490,7 @@ export default function PublicProfilePage() {
                       {(languages.length > 0 || experience.length > 0) && <div className="pub-card-divider" />}
                       <div className="pub-section-hdr">
                         <div className="pub-section-hdr-left">
-                          <MaterialIcon name="school" size={18} color="#1976D2" />
+                          <MaterialIcon name="school" size={18} color="#0277CC" />
                           <h2 className="pub-section-title">Education</h2>
                         </div>
                       </div>
@@ -560,7 +560,7 @@ export default function PublicProfilePage() {
                   onClick={() => setPostsOpen(v => !v)}
                 >
                   <div className="pub-accordion-hdr-left">
-                    <MaterialIcon name="article" size={18} color="#1976D2" />
+                    <MaterialIcon name="article" size={18} color="#0277CC" />
                     <h2 className="pub-section-title">Posts</h2>
                     {isConnected && posts.length > 0 && (
                       <span className="pub-count-badge">{posts.length}</span>
@@ -666,11 +666,11 @@ export default function PublicProfilePage() {
                   <button
                     type="button"
                     className={`pub-btn-connect-full${isFollowing ? ' following-full' : ''}`}
-                    style={isFollowing ? {background:'#fff',color:'#1976D2',border:'1.5px solid #bae6fd'} : {}}
+                    style={isFollowing ? {background:'#fff',color:'#0277CC',border:'1.5px solid #bae6fd'} : {}}
                     onClick={handleFollow}
                     disabled={followLoading}
                   >
-                    <MaterialIcon name={isFollowing ? 'check' : 'add'} size={15} color={isFollowing ? '#1976D2' : '#fff'} />
+                    <MaterialIcon name={isFollowing ? 'check' : 'add'} size={15} color={isFollowing ? '#0277CC' : '#fff'} />
                     {followLoading ? '…' : isFollowing ? 'Following' : 'Follow'}
                   </button>
                 )}
@@ -778,7 +778,7 @@ const STYLES = `
 @media(max-width:899px){.pub-root{padding-top:64px;}}
 @media(min-width:900px){.pub-root{grid-template-areas:"left-sidebar main right-sidebar";grid-template-columns:230px 1fr 260px;grid-template-rows:1fr;}}
 
-.pub-brand{font-size:19px;font-weight:800;color:#1976D2;letter-spacing:-0.03em;font-family:'Inter',sans-serif;}
+.pub-brand{font-size:19px;font-weight:800;color:#0277CC;letter-spacing:-0.03em;font-family:'Inter',sans-serif;}
 
 /* ── LEFT SIDEBAR ── */
 .pub-sidebar-left{display:none;grid-area:left-sidebar;}
@@ -786,7 +786,7 @@ const STYLES = `
 .pub-sidebar-brand{display:flex;align-items:center;gap:8px;padding:0 8px;margin-bottom:24px;}
 .pub-sidebar-nav{display:flex;flex-direction:column;gap:3px;flex:1;}
 .pub-nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;border:none;background:transparent;color:#475569;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;text-align:left;width:100%;transition:background .15s,color .15s;}
-.pub-nav-item:hover{background:#f0f9ff;color:#1976D2;}
+.pub-nav-item:hover{background:#f0f9ff;color:#0277CC;}
 .pub-nav-label{flex:1;}
 .pub-sidebar-bottom{display:flex;flex-direction:column;gap:3px;border-top:1px solid #f1f5f9;padding-top:10px;}
 
@@ -796,7 +796,7 @@ const STYLES = `
 
 /* ── LOADER ── */
 .pub-loader{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:80px 20px;color:#94a3b8;font-size:14px;}
-.pub-spinner{width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#1976D2;border-radius:50%;animation:pub-spin .8s linear infinite;}
+.pub-spinner{width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#0277CC;border-radius:50%;animation:pub-spin .8s linear infinite;}
 
 /* ── PROFILE CARD ── */
 .pub-card{background:#fff;border-radius:0 0 24px 24px;overflow:visible;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 16px rgba(0,0,0,0.08);border:1px solid rgba(0,0,0,0.04);}
@@ -805,7 +805,7 @@ const STYLES = `
 /* ── COVER ── */
 .pub-cover{position:relative;margin:0;border-radius:20px 20px 0 0;overflow:hidden;height:120px;}
 .pub-cover-img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;}
-.pub-cover-ph{width:100%;height:100%;background:linear-gradient(135deg,#0f4c75 0%,#1b6ca8 30%,#1976D2 55%,#2196c4 80%,#4db8d9 100%);}
+.pub-cover-ph{width:100%;height:100%;background:linear-gradient(135deg,#0f4c75 0%,#1b6ca8 30%,#0277CC 55%,#2196c4 80%,#4db8d9 100%);}
 .pub-cover-ph::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(255,255,255,0.15) 0%,transparent 55%);pointer-events:none;}
 @media(min-width:900px){.pub-cover{height:150px;}}
 
@@ -820,30 +820,30 @@ const STYLES = `
 .pub-action-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 
 /* ── BUTTONS ── */
-.pub-btn-connect{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#0284c7,#1976D2);color:#fff;border:none;border-radius:999px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 3px 12px rgba(0,119,181,0.3);transition:transform .15s,box-shadow .15s;}
-.pub-btn-connect:hover{box-shadow:0 5px 18px rgba(0,119,181,0.4);}
+.pub-btn-connect{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#0284c7,#0277CC);color:#fff;border:none;border-radius:999px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 3px 12px rgba(1,96,185,0.3);transition:transform .15s,box-shadow .15s;}
+.pub-btn-connect:hover{box-shadow:0 5px 18px rgba(1,96,185,0.4);}
 .pub-btn-connect:active{transform:scale(.96);}
 .pub-btn-connect.pending{background:linear-gradient(135deg,#94a3b8,#64748b);box-shadow:0 2px 8px rgba(100,116,139,0.25);}
 .pub-btn-connect:disabled{opacity:.75;cursor:not-allowed;}
-.pub-btn-message{display:flex;align-items:center;gap:6px;background:#fff;color:#1976D2;border:1.5px solid #bae6fd;border-radius:999px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 2px 8px rgba(0,119,181,0.12);transition:transform .15s,box-shadow .15s,background .15s;}
-.pub-btn-message:hover{background:#f0f9ff;box-shadow:0 4px 14px rgba(0,119,181,0.2);}
+.pub-btn-message{display:flex;align-items:center;gap:6px;background:#fff;color:#0277CC;border:1.5px solid #bae6fd;border-radius:999px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 2px 8px rgba(1,96,185,0.12);transition:transform .15s,box-shadow .15s,background .15s;}
+.pub-btn-message:hover{background:#f0f9ff;box-shadow:0 4px 14px rgba(1,96,185,0.2);}
 .pub-btn-message:active{transform:scale(.96);}
 .pub-btn-message:disabled{opacity:.75;cursor:not-allowed;}
-.pub-btn-follow{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#0284c7,#1976D2);color:#fff;border:none;border-radius:999px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 3px 12px rgba(0,119,181,0.3);transition:transform .15s,box-shadow .15s;}
-.pub-btn-follow:hover{box-shadow:0 5px 18px rgba(0,119,181,0.4);}
+.pub-btn-follow{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#0284c7,#0277CC);color:#fff;border:none;border-radius:999px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 3px 12px rgba(1,96,185,0.3);transition:transform .15s,box-shadow .15s;}
+.pub-btn-follow:hover{box-shadow:0 5px 18px rgba(1,96,185,0.4);}
 .pub-btn-follow:active{transform:scale(.96);}
-.pub-btn-follow.following{background:#fff;color:#1976D2;border:1.5px solid #bae6fd;box-shadow:0 2px 8px rgba(0,119,181,0.12);}
+.pub-btn-follow.following{background:#fff;color:#0277CC;border:1.5px solid #bae6fd;box-shadow:0 2px 8px rgba(1,96,185,0.12);}
 .pub-btn-follow.following:hover{background:#f0f9ff;}
 .pub-btn-follow:disabled{opacity:.75;cursor:not-allowed;}
 
 /* ── PROFILE INFO ── */
 .pub-profile-info{padding:2px 18px 18px 20px;display:flex;flex-direction:column;gap:6px;}
 @media(min-width:900px){.pub-profile-info{padding:2px 24px 22px;}}
-.pub-conn-count{font-size:12px;font-weight:700;color:#1976D2;display:flex;align-items:center;gap:4px;opacity:.85;}
+.pub-conn-count{font-size:12px;font-weight:700;color:#0277CC;display:flex;align-items:center;gap:4px;opacity:.85;}
 .pub-name-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
 .pub-name{font-size:22px;font-weight:800;line-height:1.15;color:#0f172a;letter-spacing:-0.03em;}
 @media(min-width:900px){.pub-name{font-size:26px;}}
-.pub-title{font-size:14px;font-weight:500;color:#1976D2;margin-top:2px;}
+.pub-title{font-size:14px;font-weight:500;color:#0277CC;margin-top:2px;}
 .pub-title-level{color:#475569;font-weight:700;}
 .pub-location{font-size:12px;color:#94a3b8;display:flex;align-items:center;gap:3px;margin-top:2px;}
 .pub-bio{font-size:14px;font-weight:400;color:#475569;line-height:1.7;}
@@ -856,14 +856,14 @@ const STYLES = `
 .pub-tags{display:flex;flex-wrap:wrap;gap:6px;list-style:none;}
 .pub-tag{background:linear-gradient(135deg,#e0f2fe,#dbeffe);color:#0369a1;border:1px solid #bae6fd;padding:5px 12px;border-radius:999px;font-size:10.5px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;}
 .pub-portfolio-row{display:flex;flex-wrap:wrap;gap:6px;}
-.pub-portfolio-link{display:flex;align-items:center;gap:5px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:500;color:#1976D2;text-decoration:none;transition:background .15s;}
+.pub-portfolio-link{display:flex;align-items:center;gap:5px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:500;color:#0277CC;text-decoration:none;transition:background .15s;}
 .pub-portfolio-link:hover{background:#e0f2fe;}
 .pub-portfolio-link span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px;}
 
 /* ── SECTION CARDS ── */
 .pub-section-card{background:#fff;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 14px rgba(0,0,0,0.07);border:1px solid rgba(0,0,0,0.04);overflow:hidden;}
 @media(max-width:899px){.pub-section-card{margin:10px 12px 0;}}
-.pub-section-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 12px;border-bottom:1px solid #f1f5f9;border-left:3px solid #1976D2;}
+.pub-section-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 12px;border-bottom:1px solid #f1f5f9;border-left:3px solid #0277CC;}
 .pub-section-hdr-left{display:flex;align-items:center;gap:8px;}
 .pub-section-title{font-size:15px;font-weight:700;color:#0f172a;}
 .pub-section-body{padding:14px 18px 18px;}
@@ -871,7 +871,7 @@ const STYLES = `
 .pub-card-divider{height:1px;background:#f1f5f9;margin:0;}
 
 /* ── ACCORDION ── */
-.pub-accordion-hdr{width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 18px 12px;border-left:3px solid #1976D2;background:none;border-top:none;border-right:none;border-bottom:1px solid #f1f5f9;cursor:pointer;font-family:'Inter',sans-serif;text-align:left;transition:background .15s;}
+.pub-accordion-hdr{width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 18px 12px;border-left:3px solid #0277CC;background:none;border-top:none;border-right:none;border-bottom:1px solid #f1f5f9;cursor:pointer;font-family:'Inter',sans-serif;text-align:left;transition:background .15s;}
 .pub-accordion-hdr:hover{background:#f8fafc;}
 .pub-accordion-hdr-left{display:flex;align-items:center;gap:8px;}
 .pub-count-badge{font-size:10px;font-weight:800;background:#f1f5f9;color:#64748b;border-radius:999px;padding:2px 8px;}
@@ -882,7 +882,7 @@ const STYLES = `
 .pub-locked-icon{width:52px;height:52px;border-radius:16px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;}
 .pub-locked-title{font-size:14px;font-weight:700;color:#0f172a;}
 .pub-locked-sub{font-size:12px;color:#94a3b8;max-width:260px;line-height:1.5;}
-.pub-btn-connect-inline{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#0284c7,#1976D2);color:#fff;border:none;border-radius:999px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 3px 12px rgba(0,119,181,0.28);margin-top:4px;transition:transform .15s;}
+.pub-btn-connect-inline{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#0284c7,#0277CC);color:#fff;border:none;border-radius:999px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;box-shadow:0 3px 12px rgba(1,96,185,0.28);margin-top:4px;transition:transform .15s;}
 .pub-btn-connect-inline:hover{transform:translateY(-1px);}
 .pub-btn-connect-inline:disabled{opacity:.7;cursor:not-allowed;}
 .pub-pending-note{font-size:12px;color:#92400e;background:#fef9c3;border-radius:999px;padding:6px 14px;font-weight:600;}
@@ -905,7 +905,7 @@ const STYLES = `
 /* ── POSTS ── */
 .pub-posts-list{display:flex;flex-direction:column;gap:10px;}
 .pub-post-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:13px 15px;cursor:pointer;transition:all .18s;}
-.pub-post-card:hover{background:#f0f9ff;border-color:#bae6fd;box-shadow:0 3px 12px rgba(0,119,181,0.1);transform:translateY(-1px);}
+.pub-post-card:hover{background:#f0f9ff;border-color:#bae6fd;box-shadow:0 3px 12px rgba(1,96,185,0.1);transform:translateY(-1px);}
 .pub-post-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
 .pub-post-type{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;border-radius:6px;padding:3px 9px;}
 .pub-post-status{font-size:11px;font-weight:700;color:#64748b;}
@@ -917,7 +917,7 @@ const STYLES = `
 
 /* ── LANGUAGE CARDS ── */
 .pub-lang-grid{display:flex;flex-direction:column;gap:8px;}
-.pub-lang-card{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-left:3px solid #1976D2;border-radius:0 10px 10px 0;}
+.pub-lang-card{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-left:3px solid #0277CC;border-radius:0 10px 10px 0;}
 .pub-lang-card-icon{width:32px;height:32px;background:#e0f2fe;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .pub-lang-card-body{display:flex;align-items:center;justify-content:space-between;flex:1;gap:8px;}
 .pub-lang-card-name{font-size:14px;font-weight:700;color:#0f172a;}
@@ -931,10 +931,10 @@ const STYLES = `
 /* ── EXPERIENCE CARDS ── */
 .pub-exp-list{display:flex;flex-direction:column;gap:10px;}
 .pub-exp-card{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;}
-.pub-exp-logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#1565C0,#1976D2);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:13px;font-weight:800;letter-spacing:.02em;}
+.pub-exp-logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#0160B9,#0277CC);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:13px;font-weight:800;letter-spacing:.02em;}
 .pub-exp-body{flex:1;min-width:0;}
 .pub-exp-role{font-size:14px;font-weight:700;color:#0f172a;}
-.pub-exp-company{font-size:13px;font-weight:500;color:#1976D2;margin-top:1px;}
+.pub-exp-company{font-size:13px;font-weight:500;color:#0277CC;margin-top:1px;}
 .pub-exp-dates{font-size:11px;color:#94a3b8;margin-top:2px;font-weight:500;}
 .pub-exp-desc{font-size:12px;color:#536279;line-height:1.6;margin-top:5px;}
 
@@ -956,10 +956,10 @@ const STYLES = `
 .pub-right-avatar img{width:100%;height:100%;object-fit:cover;}
 .pub-right-name{font-size:14px;font-weight:700;color:#0f172a;}
 .pub-right-title{font-size:12px;color:#64748b;font-weight:500;}
-.pub-btn-message-full{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;background:#fff;color:#1976D2;border:1.5px solid #bae6fd;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px;box-shadow:0 2px 8px rgba(0,119,181,0.1);transition:transform .15s,background .15s;}
+.pub-btn-message-full{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;background:#fff;color:#0277CC;border:1.5px solid #bae6fd;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px;box-shadow:0 2px 8px rgba(1,96,185,0.1);transition:transform .15s,background .15s;}
 .pub-btn-message-full:hover{background:#f0f9ff;transform:translateY(-1px);}
 .pub-btn-message-full:disabled{opacity:.7;cursor:not-allowed;}
-.pub-btn-connect-full{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;background:linear-gradient(135deg,#0284c7,#1976D2);color:#fff;border:none;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px;box-shadow:0 3px 10px rgba(0,119,181,0.28);transition:transform .15s;}
+.pub-btn-connect-full{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;background:linear-gradient(135deg,#0284c7,#0277CC);color:#fff;border:none;border-radius:999px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px;box-shadow:0 3px 10px rgba(1,96,185,0.28);transition:transform .15s;}
 .pub-btn-connect-full:hover{transform:translateY(-1px);}
 .pub-btn-connect-full.pending{background:linear-gradient(135deg,#94a3b8,#64748b);}
 .pub-btn-connect-full:disabled{opacity:.7;cursor:not-allowed;}

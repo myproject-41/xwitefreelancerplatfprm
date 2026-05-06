@@ -11,12 +11,12 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             <span className="font-extrabold text-[#1b1c1a] text-lg tracking-tight">Xwite</span>
           </Link>
           <div className="flex items-center gap-3">
-            <Link href="/login" className="text-sm font-bold text-[#1565C0] hover:underline">
+            <Link href="/login" className="text-sm font-bold text-[#0160B9] hover:underline">
               Login
             </Link>
             <Link
               href="/signup"
-              className="rounded-full bg-[#1565C0] px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-[#0D47A1] transition active:scale-95"
+              className="rounded-full bg-[#0160B9] px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-[#014A8C] transition active:scale-95"
             >
               Join Free
             </Link>

@@ -151,13 +151,13 @@ export default function FloatingChatPanel() {
       <div className="flex items-center justify-between border-b border-[#edf0f3] bg-[linear-gradient(135deg,#f8fbff_0%,#eef5fb_100%)] px-4 py-3">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#707881]">Live Chat</p>
-          <p className="mt-1 text-sm font-extrabold text-[#1565C0]">{otherParticipantName}</p>
+          <p className="mt-1 text-sm font-extrabold text-[#0160B9]">{otherParticipantName}</p>
         </div>
 
         <div className="flex items-center gap-2">
           <Link
             href={`/messages?conversationId=${conversationId}`}
-            className="rounded-full border border-[#d6dce3] bg-white px-3 py-1.5 text-xs font-bold text-[#1565C0] transition hover:bg-[#f4f8fb]"
+            className="rounded-full border border-[#d6dce3] bg-white px-3 py-1.5 text-xs font-bold text-[#0160B9] transition hover:bg-[#f4f8fb]"
           >
             Inbox
           </Link>
@@ -187,20 +187,20 @@ export default function FloatingChatPanel() {
                 <div
                   className={`max-w-[85%] rounded-[20px] px-3.5 py-3 text-sm shadow-sm ${
                     isOwn
-                      ? 'bg-[linear-gradient(135deg,#1565C0_0%,#1976D2_100%)] text-white'
+                      ? 'bg-[linear-gradient(135deg,#0160B9_0%,#0277CC_100%)] text-white'
                       : 'border border-[#e5e7eb] bg-white text-[#1b1c1a]'
                   }`}
                 >
                   {!isOwn ? (
                     <div className="mb-2 flex items-center gap-2">
-                      <div className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-[#E3F2FD] text-[10px] font-bold text-[#1565C0]">
+                      <div className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-[#E3F2FD] text-[10px] font-bold text-[#0160B9]">
                         {message.senderProfileImage ? (
                           <img src={message.senderProfileImage} alt={message.senderName} className="h-full w-full object-cover" />
                         ) : (
                           getInitials(message.senderName)
                         )}
                       </div>
-                      <span className="text-[11px] font-bold text-[#1565C0]">{message.senderName}</span>
+                      <span className="text-[11px] font-bold text-[#0160B9]">{message.senderName}</span>
                     </div>
                   ) : null}
 
@@ -220,7 +220,7 @@ export default function FloatingChatPanel() {
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
           rows={3}
-          className="min-h-[92px] w-full resize-none rounded-2xl border border-[#d6dce3] bg-[#fafbfc] px-4 py-3 text-sm text-[#1b1c1a] outline-none transition focus:border-[#1976D2] focus:bg-white"
+          className="min-h-[92px] w-full resize-none rounded-2xl border border-[#d6dce3] bg-[#fafbfc] px-4 py-3 text-sm text-[#1b1c1a] outline-none transition focus:border-[#0277CC] focus:bg-white"
           placeholder="Write your message here..."
         />
 
@@ -230,7 +230,7 @@ export default function FloatingChatPanel() {
             type="button"
             onClick={() => void handleSend()}
             disabled={sending || !draft.trim()}
-            className="rounded-2xl bg-[linear-gradient(135deg,#1565C0_0%,#1976D2_100%)] px-5 py-2.5 text-sm font-bold text-white shadow-[0_12px_28px_rgba(21,101,192,0.22)] transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-2xl bg-[linear-gradient(135deg,#0160B9_0%,#0277CC_100%)] px-5 py-2.5 text-sm font-bold text-white shadow-[0_12px_28px_rgba(1,96,185,0.22)] transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {sending ? 'Sending...' : 'Send'}
           </button>

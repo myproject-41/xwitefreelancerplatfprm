@@ -62,7 +62,7 @@ function Avatar({ src, name, size = 40 }: { src?: string | null; name?: string |
       width: size, height: size, borderRadius: '50%', flexShrink: 0,
       background: '#e8f4fd', display: 'flex', alignItems: 'center',
       justifyContent: 'center', fontSize: size * 0.36, fontWeight: 700,
-      color: '#1565C0', overflow: 'hidden',
+      color: '#0160B9', overflow: 'hidden',
     }}>
       {src ? <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : getInitials(name)}
     </div>
@@ -89,14 +89,14 @@ function StepProgress({
               width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
               display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14,
               background: done ? '#dcfce7' : active ? '#e8f4fd' : '#f3f4f6',
-              border: `2px solid ${done ? '#16a34a' : active ? '#1565C0' : '#e5e7eb'}`,
+              border: `2px solid ${done ? '#16a34a' : active ? '#0160B9' : '#e5e7eb'}`,
               transition: 'all .3s',
             }}>
               {done ? '✓' : s.icon}
             </div>
             <span style={{
               fontSize: 13, fontWeight: active ? 700 : 500,
-              color: done ? '#16a34a' : active ? '#1565C0' : '#9ca3af',
+              color: done ? '#16a34a' : active ? '#0160B9' : '#9ca3af',
               transition: 'color .3s',
             }}>
               {s.text}
@@ -212,7 +212,7 @@ function TaskCard({ task }: { task: Task }) {
           {task.skills.slice(0, 6).map(s => (
             <span key={s} style={{
               fontSize: 11, fontWeight: 600, padding: '2px 9px', borderRadius: 20,
-              background: '#e8f4fd', color: '#1565C0', border: '1px solid #90CAF9',
+              background: '#e8f4fd', color: '#0160B9', border: '1px solid #90CAF9',
             }}>{s}</span>
           ))}
         </div>
@@ -240,13 +240,13 @@ function TaskCard({ task }: { task: Task }) {
       {phase === 'done' && draft && (
         <div style={{ background: '#f8fafc', border: '1px solid #e0e7ef', borderRadius: 12, padding: '14px 16px', marginBottom: 10 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-            <p style={{ margin: 0, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.08em', color: '#1565C0' }}>
+            <p style={{ margin: 0, fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.08em', color: '#0160B9' }}>
               🤖 AI-Generated Proposal
             </p>
             <button type="button" onClick={() => setCustomize(c => !c)}
               style={{
                 fontSize: 12, fontWeight: 600, padding: '4px 12px', borderRadius: 20,
-                background: customize ? '#1565C0' : '#f0f7ff', color: customize ? '#fff' : '#1565C0',
+                background: customize ? '#0160B9' : '#f0f7ff', color: customize ? '#fff' : '#0160B9',
                 border: '1.5px solid #90CAF9', cursor: 'pointer', fontFamily: 'Inter,sans-serif',
               }}>
               ✎ {customize ? 'Done' : 'Customize'}
@@ -303,7 +303,7 @@ function TaskCard({ task }: { task: Task }) {
           <Link href={`/posts/${task.id}`}
             style={{
               padding: '10px 18px', borderRadius: 12,
-              background: 'linear-gradient(135deg,#1565C0,#1976D2)',
+              background: 'linear-gradient(135deg,#0160B9,#0277CC)',
               color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none',
             }}>
             Send Proposal →
@@ -320,7 +320,7 @@ function TaskCard({ task }: { task: Task }) {
           <button type="button" onClick={sendProposal} disabled={sending}
             style={{
               padding: '10px 22px', borderRadius: 12,
-              background: 'linear-gradient(135deg,#1565C0,#1976D2)',
+              background: 'linear-gradient(135deg,#0160B9,#0277CC)',
               color: '#fff', border: 'none', fontSize: 13, fontWeight: 700,
               cursor: sending ? 'not-allowed' : 'pointer', opacity: sending ? .65 : 1,
             }}>
@@ -423,7 +423,7 @@ function FreelancerCard({
           {freelancer.matchedSkills.map(s => (
             <span key={s} style={{
               fontSize: 11, fontWeight: 600, padding: '2px 9px', borderRadius: 20,
-              background: '#e8f4fd', color: '#1565C0', border: '1px solid #90CAF9',
+              background: '#e8f4fd', color: '#0160B9', border: '1px solid #90CAF9',
             }}>{s}</span>
           ))}
         </div>
@@ -434,7 +434,7 @@ function FreelancerCard({
         <Link href={`/profile/${freelancer.userId}`}
           style={{
             flex: 1, padding: '9px 12px', borderRadius: 10,
-            background: '#f0f7ff', color: '#1565C0',
+            background: '#f0f7ff', color: '#0160B9',
             border: '1.5px solid #90CAF9',
             fontSize: 13, fontWeight: 600, textDecoration: 'none', textAlign: 'center',
           }}>
@@ -449,7 +449,7 @@ function FreelancerCard({
           <button type="button" onClick={directNotify} disabled={notifying || phase !== 'idle'}
             style={{
               flex: 1, padding: '9px 12px', borderRadius: 10,
-              background: 'linear-gradient(135deg,#1565C0,#1976D2)',
+              background: 'linear-gradient(135deg,#0160B9,#0277CC)',
               color: '#fff', border: 'none',
               fontSize: 13, fontWeight: 700, cursor: notifying || phase !== 'idle' ? 'not-allowed' : 'pointer',
               opacity: notifying || phase !== 'idle' ? .65 : 1,
@@ -569,7 +569,7 @@ export default function AgentPage() {
 
   const tierMeta = {
     expert: { label: 'Expert', emoji: '🏆', bg: '#fef3c7', color: '#d97706', border: '#fde68a', desc: 'Senior-level, high-rated professionals' },
-    intermediate: { label: 'Intermediate', emoji: '⚡', bg: '#e8f4fd', color: '#1565C0', border: '#90CAF9', desc: 'Solid experience, great value' },
+    intermediate: { label: 'Intermediate', emoji: '⚡', bg: '#e8f4fd', color: '#0160B9', border: '#90CAF9', desc: 'Solid experience, great value' },
     beginner: { label: 'Beginner', emoji: '🌱', bg: '#f3f4f6', color: '#374151', border: '#e5e7eb', desc: 'Fresh talent, competitive pricing' },
   }
 
@@ -585,7 +585,7 @@ export default function AgentPage() {
       `}</style>
 
       {/* Header */}
-      <div style={{ background: 'linear-gradient(135deg,#1565C0,#1976D2)', padding: '52px 20px 24px', color: '#fff' }}>
+      <div style={{ background: 'linear-gradient(135deg,#0160B9,#0277CC)', padding: '52px 20px 24px', color: '#fff' }}>
         <div style={{ maxWidth: 640, margin: '0 auto' }}>
           <p style={{ margin: 0, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.14em', opacity: .75 }}>AI-Powered</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 6 }}>
@@ -641,7 +641,7 @@ export default function AgentPage() {
                       <p style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#1b1c1a' }}>Help me hire</p>
                       <p style={{ margin: '3px 0 0', fontSize: 13, color: '#707881' }}>AI finds freelancers · sends personalized invitations</p>
                     </div>
-                    <span style={{ marginLeft: 'auto', fontSize: 18, color: '#1565C0' }}>→</span>
+                    <span style={{ marginLeft: 'auto', fontSize: 18, color: '#0160B9' }}>→</span>
                   </div>
                 </button>
               )}
@@ -715,12 +715,12 @@ export default function AgentPage() {
                       <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: '#1b1c1a' }}>{post.title}</p>
                       <p style={{ margin: '4px 0 0', fontSize: 12, color: '#707881', lineHeight: 1.5 }}>{post.description.slice(0, 100)}{post.description.length > 100 ? '…' : ''}</p>
                       <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 20, background: '#e8f4fd', color: '#1565C0' }}>{post.type}</span>
+                        <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 20, background: '#e8f4fd', color: '#0160B9' }}>{post.type}</span>
                         {post.budget && <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 20, background: '#f0fdf4', color: '#16a34a' }}>₹{Number(post.budget).toLocaleString('en-IN')}</span>}
                         <span style={{ fontSize: 11, color: '#707881' }}>{post._count.proposals} proposals</span>
                       </div>
                     </div>
-                    <span style={{ fontSize: 18, color: '#1565C0', flexShrink: 0, marginTop: 2 }}>→</span>
+                    <span style={{ fontSize: 18, color: '#0160B9', flexShrink: 0, marginTop: 2 }}>→</span>
                   </div>
                 </button>
               ))

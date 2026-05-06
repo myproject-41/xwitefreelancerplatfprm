@@ -71,7 +71,7 @@ export default function EditPostPage() {
     }
   }
 
-  const inputCls = 'mt-1 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm text-[#1b1c1a] outline-none placeholder:text-[#9ca3af] focus:ring-2 focus:ring-[#1565C0]/25'
+  const inputCls = 'mt-1 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm text-[#1b1c1a] outline-none placeholder:text-[#9ca3af] focus:ring-2 focus:ring-[#0160B9]/25'
 
   return (
     <div className="min-h-screen bg-[#f1f5f9]">
@@ -81,7 +81,7 @@ export default function EditPostPage() {
         <div className="mb-6 flex items-center gap-3">
           <button
             onClick={() => router.back()}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-[#d6dce3] bg-white text-[#1565C0] transition hover:bg-[#E3F2FD]"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-[#d6dce3] bg-white text-[#0160B9] transition hover:bg-[#E3F2FD]"
             aria-label="Back"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
@@ -169,7 +169,7 @@ export default function EditPostPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-2xl bg-[linear-gradient(135deg,#1565C0_0%,#1976D2_100%)] py-4 text-base font-extrabold text-white shadow-[0_4px_16px_rgba(21,101,192,0.3)] transition hover:opacity-95 active:scale-[0.98] disabled:opacity-60"
+              className="w-full rounded-2xl bg-[linear-gradient(135deg,#0160B9_0%,#0277CC_100%)] py-4 text-base font-extrabold text-white shadow-[0_4px_16px_rgba(1,96,185,0.3)] transition hover:opacity-95 active:scale-[0.98] disabled:opacity-60"
             >
               {loading ? 'Saving…' : 'Save Changes'}
             </button>

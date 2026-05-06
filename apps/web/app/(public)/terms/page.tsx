@@ -28,7 +28,7 @@ export default function TermsPage() {
         <ul className="space-y-4">
           {TERMS.map((term, i) => (
             <li key={i} className="flex items-start gap-4">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#1565C0] text-white text-[10px] font-extrabold mt-0.5">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#0160B9] text-white text-[10px] font-extrabold mt-0.5">
                 {i + 1}
               </span>
               <p className="text-sm text-[#404850] leading-relaxed">{term}</p>

@@ -96,7 +96,7 @@ export default function AdminPage() {
         {stats && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 32 }}>
             {[
-              { label: 'Total Users', value: stats.totalUsers, color: '#1565C0' },
+              { label: 'Total Users', value: stats.totalUsers, color: '#0160B9' },
               { label: 'Total Posts', value: stats.totalPosts, color: '#0891b2' },
               { label: 'Completed Tasks', value: stats.completedEscrows, color: '#16a34a' },
               { label: 'Pending GST', value: stats.pendingGst, color: '#d97706' },
@@ -133,13 +133,13 @@ export default function AdminPage() {
                 >
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <p style={{ fontSize: 14, fontWeight: 700, color: '#1b1c1a', marginBottom: 4 }}>{c.companyName}</p>
-                    <p style={{ fontSize: 12, color: '#64748b', marginBottom: 2 }}>GST: <span style={{ fontWeight: 600, color: '#1565C0' }}>{c.gstNumber}</span></p>
+                    <p style={{ fontSize: 12, color: '#64748b', marginBottom: 2 }}>GST: <span style={{ fontWeight: 600, color: '#0160B9' }}>{c.gstNumber}</span></p>
                     {c.phoneNumber && (
                       <p style={{ fontSize: 12, color: '#64748b', marginBottom: 2 }}>Phone: <span style={{ fontWeight: 600, color: '#374151' }}>{c.phoneNumber}</span></p>
                     )}
                     {c.gstCertificateUrl && (
                       <a href={c.gstCertificateUrl} target="_blank" rel="noreferrer"
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#1565C0', fontWeight: 600, textDecoration: 'none', marginTop: 2 }}>
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#0160B9', fontWeight: 600, textDecoration: 'none', marginTop: 2 }}>
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
                         View Certificate
                       </a>
@@ -150,7 +150,7 @@ export default function AdminPage() {
                       onClick={() => handleApprove(c.userId)}
                       disabled={approvingId === c.userId}
                       style={{
-                        padding: '8px 16px', borderRadius: 8, background: 'linear-gradient(135deg,#1565C0,#1976D2)',
+                        padding: '8px 16px', borderRadius: 8, background: 'linear-gradient(135deg,#0160B9,#0277CC)',
                         color: '#fff', fontSize: 13, fontWeight: 700, border: 'none', cursor: 'pointer',
                         opacity: approvingId === c.userId ? 0.6 : 1,
                       }}

@@ -39,7 +39,7 @@ export default function ClientOnboarding() {
   const bioValid    = bioLen >= 50
   const isSubmitting = loading || profileUploading
 
-  const BRAND = '#1565C0'
+  const BRAND = '#0160B9'
   const GREEN = '#16a34a'
 
   const optimizeSquareImage = async (file: File) => {
@@ -183,7 +183,7 @@ export default function ClientOnboarding() {
                   background: BRAND, color: 'white',
                   border: '2px solid white', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: '0 2px 8px rgba(21,101,192,0.45)',
+                  boxShadow: '0 2px 8px rgba(1,96,185,0.45)',
                   zIndex: 5,
                 }}
               >
@@ -216,7 +216,7 @@ export default function ClientOnboarding() {
                 borderRadius: 9, padding: '12px 15px',
                 fontSize: 15, color: '#111827', outline: 'none', fontFamily: 'inherit',
                 transition: 'border-color 0.15s, background 0.15s',
-                boxShadow: nameFocus ? '0 0 0 3px rgba(21,101,192,0.08)' : 'none',
+                boxShadow: nameFocus ? '0 0 0 3px rgba(1,96,185,0.08)' : 'none',
               }}
             />
           </div>
@@ -245,7 +245,7 @@ export default function ClientOnboarding() {
                 fontSize: 14, color: '#111827', outline: 'none',
                 resize: 'none', fontFamily: 'inherit', lineHeight: 1.7,
                 transition: 'border-color 0.15s, background 0.15s',
-                boxShadow: bioFocus ? '0 0 0 3px rgba(21,101,192,0.08)' : 'none',
+                boxShadow: bioFocus ? '0 0 0 3px rgba(1,96,185,0.08)' : 'none',
               }}
             />
             <div style={{ marginTop: 7, display: 'flex', alignItems: 'center', gap: 9 }}>
@@ -281,7 +281,7 @@ export default function ClientOnboarding() {
                   borderRadius: 9, padding: '12px 15px',
                   fontSize: 15, color: '#111827', outline: 'none', fontFamily: 'inherit',
                   transition: 'border-color 0.15s, background 0.15s',
-                  boxShadow: countryFocus ? '0 0 0 3px rgba(21,101,192,0.08)' : 'none',
+                  boxShadow: countryFocus ? '0 0 0 3px rgba(1,96,185,0.08)' : 'none',
                 }}
               />
             </div>
@@ -301,7 +301,7 @@ export default function ClientOnboarding() {
                   borderRadius: 9, padding: '12px 15px',
                   fontSize: 15, color: '#111827', outline: 'none', fontFamily: 'inherit',
                   transition: 'border-color 0.15s, background 0.15s',
-                  boxShadow: cityFocus ? '0 0 0 3px rgba(21,101,192,0.08)' : 'none',
+                  boxShadow: cityFocus ? '0 0 0 3px rgba(1,96,185,0.08)' : 'none',
                 }}
               />
             </div>
@@ -322,7 +322,7 @@ export default function ClientOnboarding() {
                 padding: '13px 18px', fontSize: 14, fontWeight: 700,
                 cursor: isSubmitting ? 'not-allowed' : 'pointer',
                 opacity: isSubmitting ? 0.65 : 1, fontFamily: 'inherit',
-                boxShadow: btnHover && !isSubmitting ? '0 8px 24px rgba(0,119,181,0.42)' : '0 4px 14px rgba(0,119,181,0.25)',
+                boxShadow: btnHover && !isSubmitting ? '0 8px 24px rgba(1,96,185,0.42)' : '0 4px 14px rgba(1,96,185,0.25)',
                 transform: btnHover && !isSubmitting ? 'translateY(-1px)' : 'translateY(0)',
                 transition: 'box-shadow 0.2s, transform 0.2s',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,

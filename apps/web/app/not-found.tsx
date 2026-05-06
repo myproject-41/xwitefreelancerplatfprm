@@ -7,7 +7,7 @@ export default function NotFound() {
     <div className="min-h-screen bg-[linear-gradient(180deg,#faf9f6_0%,#f3f4ef_100%)] flex items-center justify-center px-6 py-16">
       <div className="mx-auto w-full max-w-lg text-center">
         <div className="mb-6">
-          <p className="text-6xl font-extrabold text-[#1565C0]">404</p>
+          <p className="text-6xl font-extrabold text-[#0160B9]">404</p>
         </div>
         <h1 className="text-2xl font-extrabold tracking-tight text-[#1b1c1a] mb-2">
           Page not found
@@ -18,7 +18,7 @@ export default function NotFound() {
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
           <Link
             href="/"
-            className="inline-flex items-center justify-center rounded-full bg-[#1565C0] px-8 py-3 text-sm font-bold text-white hover:bg-[#0D47A1] transition active:scale-95"
+            className="inline-flex items-center justify-center rounded-full bg-[#0160B9] px-8 py-3 text-sm font-bold text-white hover:bg-[#014A8C] transition active:scale-95"
           >
             Go Home
           </Link>

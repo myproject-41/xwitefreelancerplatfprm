@@ -21,7 +21,7 @@ export default function PrivacyPage() {
           <ul className="space-y-2">
             {['Name, email address, and phone number', 'Transaction and payment details', 'Platform usage data and activity'].map((item, i) => (
               <li key={i} className="flex items-start gap-3">
-                <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#1565C0]" />
+                <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#0160B9]" />
                 <p className="text-sm text-[#404850]">{item}</p>
               </li>
             ))}
@@ -34,7 +34,7 @@ export default function PrivacyPage() {
           <ul className="space-y-2">
             {['To provide and continuously improve our services', 'To process secure payments on your behalf', 'To communicate with users about their accounts and activity'].map((item, i) => (
               <li key={i} className="flex items-start gap-3">
-                <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#1565C0]" />
+                <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#0160B9]" />
                 <p className="text-sm text-[#404850]">{item}</p>
               </li>
             ))}

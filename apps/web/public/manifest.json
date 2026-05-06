@@ -6,7 +6,7 @@
   "scope": "https://xwite.com/",
   "display": "standalone",
   "orientation": "portrait",
-  "theme_color": "#005d8f",
+  "theme_color": "#0160B9",
   "background_color": "#EDF1F7",
   "prefer_related_applications": false,
   "related_applications": [],

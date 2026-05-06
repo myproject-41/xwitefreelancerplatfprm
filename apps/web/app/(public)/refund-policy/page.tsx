@@ -18,18 +18,18 @@ export default function RefundPolicyPage() {
         {/* Cancellation */}
         <section className="rounded-2xl border border-[#e3e2df] bg-white p-6 shadow-sm">
           <h2 className="text-lg font-bold text-[#1b1c1a] mb-4 flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E3F2FD] text-[#1565C0] text-sm font-extrabold">1</span>
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E3F2FD] text-[#0160B9] text-sm font-extrabold">1</span>
             Cancellation
           </h2>
           <ul className="space-y-3">
             <li className="flex items-start gap-3">
-              <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#1565C0]" />
+              <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#0160B9]" />
               <p className="text-sm text-[#404850] leading-relaxed">
                 Clients may cancel a project <strong>before work begins</strong> and receive a full refund.
               </p>
             </li>
             <li className="flex items-start gap-3">
-              <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#1565C0]" />
+              <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#0160B9]" />
               <p className="text-sm text-[#404850] leading-relaxed">
                 If work has started, cancellation will be reviewed based on the progress made.
               </p>
@@ -40,12 +40,12 @@ export default function RefundPolicyPage() {
         {/* Refund */}
         <section className="rounded-2xl border border-[#e3e2df] bg-white p-6 shadow-sm">
           <h2 className="text-lg font-bold text-[#1b1c1a] mb-4 flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E3F2FD] text-[#1565C0] text-sm font-extrabold">2</span>
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E3F2FD] text-[#0160B9] text-sm font-extrabold">2</span>
             Refund Policy
           </h2>
           <ul className="space-y-3">
             <li className="flex items-start gap-3">
-              <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#1565C0]" />
+              <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#0160B9]" />
               <p className="text-sm text-[#404850] leading-relaxed">
                 Refunds are issued if the freelancer <strong>fails to deliver</strong> the agreed service.
               </p>
@@ -62,7 +62,7 @@ export default function RefundPolicyPage() {
         {/* Processing Time */}
         <section className="rounded-2xl border border-[#e3e2df] bg-white p-6 shadow-sm">
           <h2 className="text-lg font-bold text-[#1b1c1a] mb-4 flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E3F2FD] text-[#1565C0] text-sm font-extrabold">3</span>
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E3F2FD] text-[#0160B9] text-sm font-extrabold">3</span>
             Processing Time
           </h2>
           <p className="text-sm text-[#404850] leading-relaxed">

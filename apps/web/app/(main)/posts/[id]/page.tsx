@@ -62,7 +62,7 @@ export default function PostDetailsPage() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="mb-5 rounded-full border border-[#d6dce3] bg-white px-4 py-2 text-sm font-bold text-[#1565C0] transition hover:bg-[#f4f8fb]"
+          className="mb-5 rounded-full border border-[#d6dce3] bg-white px-4 py-2 text-sm font-bold text-[#0160B9] transition hover:bg-[#f4f8fb]"
         >
           Back
         </button>

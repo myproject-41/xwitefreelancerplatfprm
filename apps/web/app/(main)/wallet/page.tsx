@@ -18,7 +18,7 @@ const TX_COLORS: Record<string, string> = {
   CREDIT: 'text-green-600',
   DEBIT: 'text-red-500',
   ESCROW_HOLD: 'text-orange-500',
-  ESCROW_RELEASE: 'text-[#1976D2]',
+  ESCROW_RELEASE: 'text-[#0277CC]',
   WITHDRAWAL: 'text-red-500',
   REFUND: 'text-green-600',
 }
@@ -41,7 +41,7 @@ function loadRazorpayScript(): Promise<boolean> {
   })
 }
 
-const inputCls = 'mt-1 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm text-[#1b1c1a] outline-none placeholder:text-[#9ca3af] focus:ring-2 focus:ring-[#1565C0]/25'
+const inputCls = 'mt-1 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm text-[#1b1c1a] outline-none placeholder:text-[#9ca3af] focus:ring-2 focus:ring-[#0160B9]/25'
 
 export default function WalletPage() {
   const router = useRouter()
@@ -102,7 +102,7 @@ export default function WalletPage() {
         description: 'Add funds to wallet',
         order_id: order.orderId,
         prefill: { name: '', email: '', contact: '' },
-        theme: { color: '#1976D2' },
+        theme: { color: '#0277CC' },
         handler: async (response: any) => {
           try {
             await walletService.verifyPayment({
@@ -168,7 +168,7 @@ export default function WalletPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#f1f5f9]">
-        <div className="w-8 h-8 border-4 border-[#1565C0] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-[#0160B9] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -182,7 +182,7 @@ export default function WalletPage() {
         <div className="mb-5 flex items-center gap-3">
           <button
             onClick={() => router.back()}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-[#d6dce3] bg-white text-[#1565C0] transition hover:bg-[#E3F2FD]"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-[#d6dce3] bg-white text-[#0160B9] transition hover:bg-[#E3F2FD]"
             aria-label="Back"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
@@ -196,7 +196,7 @@ export default function WalletPage() {
 
           {/* ── LEFT: Balance card (always visible) ── */}
           <div className="lg:sticky lg:top-24">
-            <div className="bg-[linear-gradient(135deg,#1565C0_0%,#1976D2_100%)] rounded-2xl p-6 text-white shadow-[0_4px_16px_rgba(21,101,192,0.3)]">
+            <div className="bg-[linear-gradient(135deg,#0160B9_0%,#0277CC_100%)] rounded-2xl p-6 text-white shadow-[0_4px_16px_rgba(1,96,185,0.3)]">
               <p className="text-blue-100 text-sm font-medium">Available Balance</p>
               <p className="text-4xl font-extrabold mt-1">
                 ₹{wallet?.balance?.toLocaleString() || '0'}
@@ -211,8 +211,8 @@ export default function WalletPage() {
                   onClick={() => { setActiveTab('add'); setAmount('') }}
                   className={`flex-1 py-2.5 rounded-xl font-bold text-sm transition ${
                     activeTab === 'add'
-                      ? 'bg-white text-[#1565C0] ring-2 ring-white/50'
-                      : 'bg-white text-[#1565C0] hover:bg-[#E3F2FD]'
+                      ? 'bg-white text-[#0160B9] ring-2 ring-white/50'
+                      : 'bg-white text-[#0160B9] hover:bg-[#E3F2FD]'
                   }`}
                 >
                   + Add Funds
@@ -248,7 +248,7 @@ export default function WalletPage() {
             {activeTab !== 'overview' && (
               <button
                 onClick={() => { setActiveTab('overview'); setAmount('') }}
-                className="mt-3 hidden w-full rounded-xl border border-[#d6dce3] bg-white px-4 py-2.5 text-sm font-bold text-[#6b7280] transition hover:border-[#1565C0] hover:text-[#1565C0] lg:block"
+                className="mt-3 hidden w-full rounded-xl border border-[#d6dce3] bg-white px-4 py-2.5 text-sm font-bold text-[#6b7280] transition hover:border-[#0160B9] hover:text-[#0160B9] lg:block"
               >
                 ← Back to Transactions
               </button>
@@ -284,8 +284,8 @@ export default function WalletPage() {
                         onClick={() => setAmount(qa.toString())}
                         className={`px-4 py-2 rounded-xl text-sm font-bold border-2 transition-colors ${
                           amount === qa.toString()
-                            ? 'border-[#1565C0] bg-[#E3F2FD] text-[#1565C0]'
-                            : 'border-[#e2e8f0] text-[#6b7280] hover:border-[#1565C0]/40'
+                            ? 'border-[#0160B9] bg-[#E3F2FD] text-[#0160B9]'
+                            : 'border-[#e2e8f0] text-[#6b7280] hover:border-[#0160B9]/40'
                         }`}
                       >
                         ₹{qa.toLocaleString()}
@@ -315,7 +315,7 @@ export default function WalletPage() {
                 <button
                   onClick={handleAddFunds}
                   disabled={actionLoading || !amount}
-                  className="w-full rounded-xl bg-[linear-gradient(135deg,#1565C0_0%,#1976D2_100%)] py-3 text-sm font-bold text-white shadow-[0_4px_12px_rgba(21,101,192,0.25)] transition hover:opacity-95 active:scale-[0.98] disabled:opacity-60"
+                  className="w-full rounded-xl bg-[linear-gradient(135deg,#0160B9_0%,#0277CC_100%)] py-3 text-sm font-bold text-white shadow-[0_4px_12px_rgba(1,96,185,0.25)] transition hover:opacity-95 active:scale-[0.98] disabled:opacity-60"
                 >
                   {actionLoading ? 'Processing...' : `Pay ₹${amount || '0'} via Razorpay`}
                 </button>
@@ -392,7 +392,7 @@ export default function WalletPage() {
                 <button
                   onClick={handleWithdraw}
                   disabled={actionLoading || !amount || Number(amount) < 100 || Number(amount) > (wallet?.balance ?? 0)}
-                  className="w-full rounded-xl bg-[linear-gradient(135deg,#1565C0_0%,#1976D2_100%)] py-3 text-sm font-bold text-white shadow-[0_4px_12px_rgba(21,101,192,0.25)] transition hover:opacity-95 active:scale-[0.98] disabled:opacity-60"
+                  className="w-full rounded-xl bg-[linear-gradient(135deg,#0160B9_0%,#0277CC_100%)] py-3 text-sm font-bold text-white shadow-[0_4px_12px_rgba(1,96,185,0.25)] transition hover:opacity-95 active:scale-[0.98] disabled:opacity-60"
                 >
                   {actionLoading ? 'Processing...' : `Request Withdrawal of ₹${amount || '0'}`}
                 </button>

@@ -64,8 +64,8 @@ const config: Config = {
         'on-primary': '#ffffff',
         'on-secondary-fixed-variant': '#2f4865',
         // ── extra utility colors used in onboarding ─────────────
-        'brand': '#1565C0',
-        'brand-light': '#1565C0',
+        'brand': '#0160B9',
+        'brand-light': '#0160B9',
         'brand-muted': '#e8f2fb',
         'page-bg': '#f5f4f1',
         'card-bg': '#ffffff',
@@ -92,11 +92,11 @@ const config: Config = {
       },
       boxShadow: {
         'card': '0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04)',
-        'btn': '0 4px 14px rgba(21,101,192,0.25)',
-        'btn-hover': '0 8px 24px rgba(21,101,192,0.4)',
+        'btn': '0 4px 14px rgba(1,96,185,0.25)',
+        'btn-hover': '0 8px 24px rgba(1,96,185,0.4)',
         'avatar': '0 6px 20px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.08)',
         'avatar-hover': '0 8px 28px rgba(0,0,0,0.28), 0 2px 6px rgba(0,0,0,0.12)',
-        'ring-brand': '0 0 0 3px rgba(21,101,192,0.08)',
+        'ring-brand': '0 0 0 3px rgba(1,96,185,0.08)',
       },
       animation: {
         'fade-up': 'fadeUp 0.4s ease both',

@@ -11,7 +11,7 @@ type Page = 'menu' | 'security' | 'data-privacy' | 'privacy-policy' | 'accessibi
 
 function ChevronRight({ active = false }: { active?: boolean }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`h-4 w-4 ${active ? 'text-[#1565C0]' : 'text-[#9ca3af]'}`}>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`h-4 w-4 ${active ? 'text-[#0160B9]' : 'text-[#9ca3af]'}`}>
       <path d="m9 18 6-6-6-6" />
     </svg>
   )
@@ -139,12 +139,12 @@ export default function SettingsPage() {
               <h1 className="text-2xl font-extrabold text-[#1b1c1a]">Settings</h1>
 
               <div className="flex items-center gap-4 rounded-2xl border border-[#e2e8f0] bg-white p-4 shadow-sm">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#e8f4fd] text-xl font-extrabold text-[#1565C0]">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#e8f4fd] text-xl font-extrabold text-[#0160B9]">
                   {user?.email?.[0]?.toUpperCase() ?? 'U'}
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-bold text-[#1b1c1a]">{user?.email}</p>
-                  <span className="mt-0.5 inline-block rounded-full bg-[#e8f4fd] px-2.5 py-0.5 text-[11px] font-bold text-[#1976D2]">
+                  <span className="mt-0.5 inline-block rounded-full bg-[#e8f4fd] px-2.5 py-0.5 text-[11px] font-bold text-[#0277CC]">
                     {user?.role}
                   </span>
                 </div>
@@ -178,7 +178,7 @@ export default function SettingsPage() {
                             {item.icon}
                           </span>
                           <div className="min-w-0 flex-1">
-                            <p className={`text-sm font-bold ${isActive ? 'text-[#1565C0]' : 'text-[#1b1c1a]'}`}>
+                            <p className={`text-sm font-bold ${isActive ? 'text-[#0160B9]' : 'text-[#1b1c1a]'}`}>
                               {item.label}
                             </p>
                             <p className="text-[11px] text-[#6b7280]">{item.desc}</p>
@@ -210,7 +210,7 @@ export default function SettingsPage() {
               <div className="mb-5 flex items-center gap-3">
                 <button
                   onClick={() => navigateTo('menu')}
-                  className="flex items-center gap-1.5 rounded-full border border-[#d6dce3] bg-white px-3 py-1.5 text-sm font-bold text-[#1565C0] transition hover:bg-[#f4f8fb] lg:hidden"
+                  className="flex items-center gap-1.5 rounded-full border border-[#d6dce3] bg-white px-3 py-1.5 text-sm font-bold text-[#0160B9] transition hover:bg-[#f4f8fb] lg:hidden"
                 >
                   <BackArrow />
                   Back
@@ -242,7 +242,7 @@ export default function SettingsPage() {
                     </div>
                     <button
                       onClick={() => setShowPwForm(v => !v)}
-                      className="shrink-0 rounded-xl bg-[#1565C0] px-3 py-1.5 text-xs font-bold text-white transition hover:opacity-90"
+                      className="shrink-0 rounded-xl bg-[#0160B9] px-3 py-1.5 text-xs font-bold text-white transition hover:opacity-90"
                     >
                       {showPwForm ? 'Cancel' : 'Change'}
                     </button>
@@ -252,23 +252,23 @@ export default function SettingsPage() {
                       <div>
                         <label className="text-xs font-bold text-[#374151]">Current Password</label>
                         <input type="password" value={oldPassword} onChange={e => setOldPassword(e.target.value)}
-                          className="mt-1 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm outline-none focus:ring-2 focus:ring-[#1565C0]/30"
+                          className="mt-1 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm outline-none focus:ring-2 focus:ring-[#0160B9]/30"
                           placeholder="Your current password" />
                       </div>
                       <div>
                         <label className="text-xs font-bold text-[#374151]">New Password</label>
                         <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)}
-                          className="mt-1 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm outline-none focus:ring-2 focus:ring-[#1565C0]/30"
+                          className="mt-1 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm outline-none focus:ring-2 focus:ring-[#0160B9]/30"
                           placeholder="Min 8 characters" />
                       </div>
                       <div>
                         <label className="text-xs font-bold text-[#374151]">Confirm New Password</label>
                         <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)}
-                          className="mt-1 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm outline-none focus:ring-2 focus:ring-[#1565C0]/30"
+                          className="mt-1 w-full rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm outline-none focus:ring-2 focus:ring-[#0160B9]/30"
                           placeholder="Repeat new password" />
                       </div>
                       <button type="submit" disabled={pwLoading}
-                        className="w-full rounded-xl bg-[linear-gradient(135deg,#1565C0,#1976D2)] py-3 text-sm font-bold text-white shadow-sm transition hover:opacity-95 disabled:opacity-60">
+                        className="w-full rounded-xl bg-[linear-gradient(135deg,#0160B9,#0277CC)] py-3 text-sm font-bold text-white shadow-sm transition hover:opacity-95 disabled:opacity-60">
                         {pwLoading ? 'Changing…' : 'Change Password'}
                       </button>
                     </form>
@@ -340,7 +340,7 @@ export default function SettingsPage() {
                   </ul>
                 </StaticCard>
                 <StaticCard title="Contact">
-                  <p>For data-related requests, contact us at <span className="font-semibold text-[#1565C0]">privacy@xwite.com</span></p>
+                  <p>For data-related requests, contact us at <span className="font-semibold text-[#0160B9]">privacy@xwite.com</span></p>
                 </StaticCard>
               </div>
             )}
@@ -349,8 +349,8 @@ export default function SettingsPage() {
             {page === 'privacy-policy' && (
               <div className="space-y-4">
                 <div className="rounded-2xl border border-[#e2e8f0] bg-[#e8f4fd] p-4">
-                  <p className="text-xs font-bold text-[#1976D2]">Last updated: May 2026</p>
-                  <p className="mt-1 text-sm font-bold text-[#1565C0]">Xwite Privacy Policy</p>
+                  <p className="text-xs font-bold text-[#0277CC]">Last updated: May 2026</p>
+                  <p className="mt-1 text-sm font-bold text-[#0160B9]">Xwite Privacy Policy</p>
                 </div>
                 <StaticCard title="1. Introduction">
                   <p>Welcome to Xwite. We respect your privacy and are committed to protecting your personal data. This policy explains how Xwite ("we", "us", "our") collects, uses, and safeguards your information when you use our platform.</p>
@@ -382,13 +382,13 @@ export default function SettingsPage() {
                   <p>We use essential cookies for authentication and session management. We do not use third-party advertising cookies.</p>
                 </StaticCard>
                 <StaticCard title="7. Your Rights">
-                  <p>Depending on your location, you may have rights including access, correction, deletion, and portability of your data. Contact us at <span className="font-semibold text-[#1565C0]">privacy@xwite.com</span> to exercise these rights.</p>
+                  <p>Depending on your location, you may have rights including access, correction, deletion, and portability of your data. Contact us at <span className="font-semibold text-[#0160B9]">privacy@xwite.com</span> to exercise these rights.</p>
                 </StaticCard>
                 <StaticCard title="8. Changes to This Policy">
                   <p>We may update this policy from time to time. We will notify you of significant changes via email or an in-app notice.</p>
                 </StaticCard>
                 <StaticCard title="9. Contact Us">
-                  <p>Xwite Inc. · <span className="font-semibold text-[#1565C0]">legal@xwite.com</span></p>
+                  <p>Xwite Inc. · <span className="font-semibold text-[#0160B9]">legal@xwite.com</span></p>
                 </StaticCard>
               </div>
             )}
@@ -416,7 +416,7 @@ export default function SettingsPage() {
                   </ul>
                 </StaticCard>
                 <StaticCard title="Feedback">
-                  <p>If you encounter any accessibility barriers on Xwite, please let us know at <span className="font-semibold text-[#1565C0]">accessibility@xwite.com</span>. We aim to respond within 2 business days.</p>
+                  <p>If you encounter any accessibility barriers on Xwite, please let us know at <span className="font-semibold text-[#0160B9]">accessibility@xwite.com</span>. We aim to respond within 2 business days.</p>
                 </StaticCard>
               </div>
             )}
@@ -425,8 +425,8 @@ export default function SettingsPage() {
             {page === 'user-agreement' && (
               <div className="space-y-4">
                 <div className="rounded-2xl border border-[#e2e8f0] bg-[#e8f4fd] p-4">
-                  <p className="text-xs font-bold text-[#1976D2]">Effective: May 2026</p>
-                  <p className="mt-1 text-sm font-bold text-[#1565C0]">Xwite User Agreement</p>
+                  <p className="text-xs font-bold text-[#0277CC]">Effective: May 2026</p>
+                  <p className="mt-1 text-sm font-bold text-[#0160B9]">Xwite User Agreement</p>
                 </div>
                 <StaticCard title="1. Acceptance">
                   <p>By creating an account on Xwite, you agree to be bound by this User Agreement and our Privacy Policy. If you do not agree, do not use the platform.</p>
@@ -466,7 +466,7 @@ export default function SettingsPage() {
                   <p>This agreement is governed by the laws of India. Disputes shall be resolved by arbitration in accordance with applicable rules.</p>
                 </StaticCard>
                 <StaticCard title="10. Contact">
-                  <p><span className="font-semibold text-[#1565C0]">legal@xwite.com</span></p>
+                  <p><span className="font-semibold text-[#0160B9]">legal@xwite.com</span></p>
                 </StaticCard>
               </div>
             )}

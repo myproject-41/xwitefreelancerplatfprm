@@ -175,7 +175,7 @@ export default function ImageUpload({
         )}
 
         {showActionBadge && (
-          <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-[#1565C0] rounded-full flex items-center justify-center shadow-md border-2 border-white">
+          <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-[#0160B9] rounded-full flex items-center justify-center shadow-md border-2 border-white">
             <span className="text-white text-xs">+</span>
           </div>
         )}

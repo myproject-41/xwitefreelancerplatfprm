@@ -12,7 +12,7 @@ export default function ContactPage() {
     <div className="mx-auto max-w-3xl px-6 py-16">
       {/* Hero */}
       <div className="mb-12 text-center">
-        <span className="inline-block rounded-full bg-[#E3F2FD] px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#1565C0] mb-4">
+        <span className="inline-block rounded-full bg-[#E3F2FD] px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#0160B9] mb-4">
           Support
         </span>
         <h1 className="text-4xl font-extrabold tracking-tight text-[#1b1c1a]">Contact Us</h1>
@@ -32,7 +32,7 @@ export default function ContactPage() {
             <div>
               <p className="text-xs font-bold uppercase tracking-widest text-[#9ca3af] mb-1">{d.label}</p>
               {d.href ? (
-                <a href={d.href} className="text-sm font-semibold text-[#1565C0] hover:underline break-all">
+                <a href={d.href} className="text-sm font-semibold text-[#0160B9] hover:underline break-all">
                   {d.value}
                 </a>
               ) : (
@@ -45,7 +45,7 @@ export default function ContactPage() {
 
       {/* Response time note */}
       <div className="mt-8 rounded-2xl bg-[#E3F2FD] border border-[#BBDEFB] p-6 text-center">
-        <p className="text-sm font-semibold text-[#1565C0]">
+        <p className="text-sm font-semibold text-[#0160B9]">
           We aim to respond within <strong>24–48 hours</strong> on all business days.
         </p>
       </div>

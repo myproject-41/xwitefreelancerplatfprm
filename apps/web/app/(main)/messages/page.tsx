@@ -97,7 +97,7 @@ function MessagesPageInner() {
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#707881]">Messages</p>
-            <h1 className="mt-2 text-3xl font-extrabold text-[#1565C0]">Conversation history</h1>
+            <h1 className="mt-2 text-3xl font-extrabold text-[#0160B9]">Conversation history</h1>
             <p className="mt-2 text-sm text-[#5a6470]">
               {unreadCount > 0 ? `${unreadCount} unread message${unreadCount > 1 ? 's' : ''}` : 'Open any conversation to continue chatting'}
             </p>
@@ -125,7 +125,7 @@ function MessagesPageInner() {
                       isHighlighted ? 'bg-[#f5fbff]' : 'bg-white'
                     }`}
                   >
-                    <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-[#E3F2FD] text-sm font-bold text-[#1565C0]">
+                    <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-[#E3F2FD] text-sm font-bold text-[#0160B9]">
                       {conversation.participant?.profileImage ? (
                         <img
                           src={conversation.participant.profileImage}
@@ -155,11 +155,11 @@ function MessagesPageInner() {
                     </div>
 
                     {conversation.unreadCount > 0 ? (
-                      <span className="rounded-full bg-[#1976D2] px-2.5 py-1 text-xs font-bold text-white">
+                      <span className="rounded-full bg-[#0277CC] px-2.5 py-1 text-xs font-bold text-white">
                         {conversation.unreadCount}
                       </span>
                     ) : (
-                      <span className="rounded-full border border-[#d6dce3] px-3 py-1.5 text-xs font-bold text-[#1565C0]">
+                      <span className="rounded-full border border-[#d6dce3] px-3 py-1.5 text-xs font-bold text-[#0160B9]">
                         Open
                       </span>
                     )}

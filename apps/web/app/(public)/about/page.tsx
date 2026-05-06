@@ -43,7 +43,7 @@ export default function AboutPage() {
       </div>
 
       {/* Founder */}
-      <div className="rounded-2xl bg-gradient-to-br from-[#1565C0] to-[#1976D2] text-white p-8 shadow-md mb-6">
+      <div className="rounded-2xl bg-gradient-to-br from-[#0160B9] to-[#0277CC] text-white p-8 shadow-md mb-6">
         <p className="text-sm font-bold uppercase tracking-widest text-white/60 mb-2">Founder</p>
         <h2 className="text-xl font-extrabold mb-1">Abhishek Anand</h2>
         <p className="text-white/80 text-sm leading-relaxed">
@@ -56,7 +56,7 @@ export default function AboutPage() {
         <div className="flex justify-center gap-3">
           <Link
             href="/signup"
-            className="rounded-full bg-[#1565C0] px-6 py-2.5 text-sm font-bold text-white hover:bg-[#0D47A1] transition active:scale-95"
+            className="rounded-full bg-[#0160B9] px-6 py-2.5 text-sm font-bold text-white hover:bg-[#014A8C] transition active:scale-95"
           >
             Join Free
           </Link>

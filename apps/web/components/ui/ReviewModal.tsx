@@ -4,7 +4,7 @@ import toast from 'react-hot-toast'
 import { reviewService } from '../../services/review.service'
 
 const RATINGS = [
-  { value: 2, label: 'Good',      emoji: '👍', stars: '⭐⭐',    color: 'border-blue-300 bg-blue-50 text-[#1565C0]' },
+  { value: 2, label: 'Good',      emoji: '👍', stars: '⭐⭐',    color: 'border-blue-300 bg-blue-50 text-[#0160B9]' },
   { value: 3, label: 'Very Good', emoji: '😊', stars: '⭐⭐⭐',  color: 'border-green-300 bg-green-50 text-green-700' },
   { value: 5, label: 'Excellent', emoji: '🌟', stars: '⭐⭐⭐⭐⭐', color: 'border-yellow-300 bg-yellow-50 text-yellow-700' },
 ]
@@ -70,7 +70,7 @@ export default function ReviewModal({ escrowId, reviewedId, freelancerName, task
                 className={`flex flex-col items-center gap-1.5 rounded-xl border-2 py-3 px-2 transition-all ${
                   selected === r.value
                     ? r.color + ' scale-[1.03] shadow-md'
-                    : 'border-[#e2e8f0] bg-[#f8fafc] hover:border-[#1565C0]/40'
+                    : 'border-[#e2e8f0] bg-[#f8fafc] hover:border-[#0160B9]/40'
                 }`}
               >
                 <span className="text-2xl">{r.emoji}</span>
@@ -90,7 +90,7 @@ export default function ReviewModal({ escrowId, reviewedId, freelancerName, task
               onChange={(e) => setComment(e.target.value)}
               rows={3}
               placeholder="Describe your experience..."
-              className="mt-1 w-full resize-none rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm text-[#1b1c1a] outline-none placeholder:text-[#9ca3af] focus:ring-2 focus:ring-[#1565C0]/25"
+              className="mt-1 w-full resize-none rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3 text-sm text-[#1b1c1a] outline-none placeholder:text-[#9ca3af] focus:ring-2 focus:ring-[#0160B9]/25"
             />
           </div>
 
@@ -104,7 +104,7 @@ export default function ReviewModal({ escrowId, reviewedId, freelancerName, task
             <button
               onClick={handleSubmit}
               disabled={loading || !selected}
-              className="flex-1 rounded-xl bg-[linear-gradient(135deg,#1565C0,#1976D2)] py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-95 disabled:opacity-50"
+              className="flex-1 rounded-xl bg-[linear-gradient(135deg,#0160B9,#0277CC)] py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-95 disabled:opacity-50"
             >
               {loading ? 'Submitting…' : 'Submit Review'}
             </button>

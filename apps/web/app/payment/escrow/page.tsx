@@ -126,7 +126,7 @@ function EscrowCard({ escrow, myId, onClick }: { escrow: EscrowItem; myId?: stri
     <div
       onClick={onClick}
       style={{ background: '#fff', borderRadius: 16, padding: '16px 20px', boxShadow: '0 1px 8px rgba(0,0,0,0.06)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, transition: 'box-shadow .15s' }}
-      onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,119,181,0.13)')}
+      onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 20px rgba(1,96,185,0.13)')}
       onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 1px 8px rgba(0,0,0,0.06)')}
     >
       <div style={{ flex: 1, minWidth: 0 }}>
