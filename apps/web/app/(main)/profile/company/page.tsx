@@ -471,7 +471,14 @@ export default function CompanyProfile() {
                 ? <div className="skel cp-cover-inner" />
                 : coverSrc
                   ? <img src={coverSrc} alt="Cover" className="cp-cover-img" />
-                  : <div className="cp-cover-ph" />
+                  : (
+                    <div className="cp-cover-ph">
+                      <div className="cp-cover-hint">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                        <span>Click to add a cover · <strong>1200×400</strong> recommended</span>
+                      </div>
+                    </div>
+                  )
               }
               {coverUploading && <div className="cp-cover-loader"><Spin /></div>}
               {!pageLoading && (
@@ -1609,14 +1616,23 @@ const STYLES = `
 @media(min-width:900px){.cp-card{border-radius:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04),0 8px 32px rgba(0,0,0,0.1);border:1px solid rgba(0,0,0,0.04);}}
 
 /* ── COVER ── */
-.cp-cover{position:relative;margin:0;border-radius:20px 20px 0 0;overflow:hidden;height:120px;cursor:pointer;}
+.cp-cover{position:relative;margin:0;border-radius:20px 20px 0 0;overflow:hidden;height:160px;cursor:pointer;background:#0a3d6e;}
 .cp-cover-inner{width:100%;height:100%;}
-.cp-cover-img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform .35s ease;}
-.cp-cover:hover .cp-cover-img{transform:scale(1.03);}
-.cp-cover-ph{width:100%;height:100%;background:linear-gradient(135deg,#0f4c75 0%,#1b6ca8 30%,#0160B9 55%,#2196c4 80%,#4db8d9 100%);}
-.cp-cover-ph::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(255,255,255,0.15) 0%,transparent 55%),radial-gradient(ellipse at 80% 30%,rgba(255,255,255,0.08) 0%,transparent 45%);pointer-events:none;}
-.cp-cover::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 35%,rgba(0,0,0,0.22) 100%);pointer-events:none;}
+.cp-cover-img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform .6s cubic-bezier(.2,.8,.2,1);}
+.cp-cover:hover .cp-cover-img{transform:scale(1.04);}
+.cp-cover-ph{width:100%;height:100%;position:relative;background:
+  radial-gradient(ellipse 70% 90% at 18% 22%, rgba(255,255,255,0.20) 0%, transparent 55%),
+  radial-gradient(ellipse 60% 80% at 85% 78%, rgba(70,180,230,0.45) 0%, transparent 60%),
+  radial-gradient(ellipse 50% 60% at 55% 50%, rgba(2,119,204,0.45) 0%, transparent 60%),
+  linear-gradient(135deg, #013F78 0%, #0160B9 55%, #1A7AC9 100%);}
+.cp-cover-ph::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1.4px);background-size:26px 26px;pointer-events:none;}
+.cp-cover-ph::after{content:'';position:absolute;right:-60px;top:-50px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle at center, rgba(255,255,255,0.10) 0%, transparent 65%);pointer-events:none;}
+.cp-cover::after{content:'';position:absolute;inset:auto 0 0 0;height:60%;background:linear-gradient(to top, rgba(0,0,0,0.32) 0%, rgba(0,0,0,0.10) 45%, transparent 100%);pointer-events:none;z-index:1;}
 .cp-cover-loader{position:absolute;inset:0;z-index:6;background:rgba(255,255,255,0.72);display:flex;align-items:center;justify-content:center;}
+.cp-cover-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:8px;color:rgba(255,255,255,0.92);font-size:13px;font-weight:600;letter-spacing:.01em;text-shadow:0 1px 2px rgba(0,0,0,0.15);z-index:2;padding:0 16px;text-align:center;}
+.cp-cover-hint svg{flex-shrink:0;opacity:.85;}
+.cp-cover-hint strong{font-weight:800;}
+@media(min-width:900px){.cp-cover{height:200px;}}
 @media(min-width:900px){.cp-cover{height:155px;}}
 .cp-btn-cover{position:absolute;bottom:10px;right:10px;z-index:10;background:rgba(255,255,255,0.95);color:#0160B9;border:none;padding:5px 11px;border-radius:999px;font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:5px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.18);font-family:'Inter',sans-serif;transition:all .15s;white-space:nowrap;line-height:1.4;max-height:28px;}
 .cp-btn-cover:hover{background:#fff;box-shadow:0 3px 12px rgba(0,0,0,0.22);}

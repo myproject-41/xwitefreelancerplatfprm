@@ -803,11 +803,22 @@ const STYLES = `
 @media(min-width:900px){.pub-card{border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,0.05),0 8px 28px rgba(0,0,0,0.09);}}
 
 /* ── COVER ── */
-.pub-cover{position:relative;margin:0;border-radius:20px 20px 0 0;overflow:hidden;height:120px;}
-.pub-cover-img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;}
-.pub-cover-ph{width:100%;height:100%;background:linear-gradient(135deg,#0f4c75 0%,#1b6ca8 30%,#0160B9 55%,#2196c4 80%,#4db8d9 100%);}
-.pub-cover-ph::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(255,255,255,0.15) 0%,transparent 55%);pointer-events:none;}
-@media(min-width:900px){.pub-cover{height:150px;}}
+.pub-cover{position:relative;margin:0;border-radius:20px 20px 0 0;overflow:hidden;height:160px;background:#0a3d6e;}
+.pub-cover-img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform .6s cubic-bezier(.2,.8,.2,1);}
+.pub-cover:hover .pub-cover-img{transform:scale(1.04);}
+/* Bottom darken so name/avatar pop on top of any photo */
+.pub-cover::after{content:'';position:absolute;inset:auto 0 0 0;height:60%;background:linear-gradient(to top, rgba(0,0,0,0.32) 0%, rgba(0,0,0,0.10) 45%, transparent 100%);pointer-events:none;z-index:1;}
+/* Refined mesh-gradient default */
+.pub-cover-ph{width:100%;height:100%;position:relative;background:
+  radial-gradient(ellipse 70% 90% at 18% 22%, rgba(255,255,255,0.20) 0%, transparent 55%),
+  radial-gradient(ellipse 60% 80% at 85% 78%, rgba(70,180,230,0.45) 0%, transparent 60%),
+  radial-gradient(ellipse 50% 60% at 55% 50%, rgba(2,119,204,0.45) 0%, transparent 60%),
+  linear-gradient(135deg, #013F78 0%, #0160B9 55%, #1A7AC9 100%);}
+/* Subtle dot grid overlay for a designed feel */
+.pub-cover-ph::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1.4px);background-size:26px 26px;pointer-events:none;}
+/* Soft circular highlight on the right */
+.pub-cover-ph::after{content:'';position:absolute;right:-60px;top:-50px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle at center, rgba(255,255,255,0.10) 0%, transparent 65%);pointer-events:none;}
+@media(min-width:900px){.pub-cover{height:200px;}}
 
 /* ── BELOW COVER ── */
 .pub-below-cover{display:flex;align-items:flex-end;justify-content:space-between;padding:0 18px;margin-top:-42px;margin-bottom:10px;position:relative;z-index:20;}
