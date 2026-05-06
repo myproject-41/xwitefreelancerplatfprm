@@ -477,8 +477,11 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
               return (
                 <div
                   key={u.id}
-                  className="bg-white rounded-2xl p-5 border border-[#eef0f3] shadow-[0_4px_18px_rgba(27,28,26,0.04)] hover:shadow-[0_14px_36px_rgba(27,28,26,0.10)] hover:border-[#dbe6f1] hover:-translate-y-0.5 transition-all duration-300"
+                  className="group relative bg-white rounded-2xl p-5 border border-[#eef0f3] shadow-[0_4px_18px_rgba(27,28,26,0.04)] hover:shadow-[0_18px_44px_rgba(1,96,185,0.10)] hover:border-[#cfe1f3] hover:-translate-y-1 transition-all duration-300 overflow-hidden"
                 >
+                  {/* Decorative top accent — appears on hover */}
+                  <span className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-[#0160B9] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
                   {/* Top row: avatar + status pill */}
                   <div className="flex items-start justify-between mb-4">
                     {/* Square avatar with online dot */}
@@ -486,28 +489,31 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                       type="button"
                       onClick={() => u.id && router.push(getProfilePath(u))}
                       aria-label={`View ${name}'s profile`}
-                      className="relative active:scale-95 transition-transform"
+                      className="relative active:scale-95 transition-all"
                     >
+                      <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-br from-[#0160B9]/0 to-[#0160B9]/0 group-hover:from-[#0160B9]/15 group-hover:to-[#0160B9]/0 transition-all duration-500 blur-md" />
                       {image ? (
                         <img
                           src={image}
                           alt={name}
-                          className="w-20 h-20 rounded-2xl object-cover"
+                          className="relative w-20 h-20 rounded-2xl object-cover ring-1 ring-[#eef0f3] shadow-[0_4px_14px_rgba(27,28,26,0.10)]"
                         />
                       ) : (
-                        <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-xl font-black text-white bg-gradient-to-br from-[#0160B9] to-[#0277CC]">
+                        <div className="relative w-20 h-20 rounded-2xl flex items-center justify-center text-xl font-black text-white bg-gradient-to-br from-[#0160B9] to-[#0277CC] shadow-[0_4px_14px_rgba(1,96,185,0.30)]">
                           {getInitials(name)}
                         </div>
                       )}
                       {isAvailable && (
-                        <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[#16a34a] ring-[3px] ring-white" />
+                        <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#16a34a] ring-[3px] ring-white shadow-sm" />
                       )}
                     </button>
 
                     {/* Status pill — only for freelancers */}
                     {isFreelancer && (
                       <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold ${
-                        isAvailable ? 'bg-[#dcfce7] text-[#15803d]' : 'bg-[#f1f5f9] text-[#64748b]'
+                        isAvailable
+                          ? 'bg-[#dcfce7] text-[#15803d] ring-1 ring-[#bbf7d0]/60'
+                          : 'bg-[#f1f5f9] text-[#64748b] ring-1 ring-[#e2e8f0]/60'
                       }`}>
                         <span className={`h-1.5 w-1.5 rounded-full ${isAvailable ? 'bg-[#16a34a]' : 'bg-[#94a3b8]'}`} />
                         {isAvailable ? 'Online' : 'Offline'}
@@ -522,7 +528,7 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                     className="block w-full text-left mb-1"
                   >
                     <div className="flex items-center gap-1.5">
-                      <h3 className="font-[Manrope] font-bold text-lg text-[#1b1c1a] leading-snug truncate hover:text-[#0160B9] transition-colors">{name}</h3>
+                      <h3 className="font-[Manrope] font-bold text-lg text-[#1b1c1a] leading-snug truncate group-hover:text-[#0160B9] transition-colors">{name}</h3>
                       {isVerified && <VerifiedBadge size="sm" />}
                     </div>
                   </button>
@@ -530,13 +536,21 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                   {/* Title / role */}
                   <p className="text-[#536279] text-[13px] truncate">{subtitle}</p>
 
+                  {/* Location — above the skills */}
+                  {country && (
+                    <p className="flex items-center gap-1 text-[#707881] text-[12px] font-medium mt-2 truncate">
+                      <Icons.Location />
+                      <span className="truncate">{country}</span>
+                    </p>
+                  )}
+
                   {/* Skills — only render when freelancer has skills */}
                   {showSkills && (
                     <div className="grid grid-cols-2 gap-1.5 mt-3">
                       {skills.slice(0, 4).map((s: string) => (
                         <span
                           key={s}
-                          className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-[11px] font-semibold truncate ${palette.bg} ${palette.text}`}
+                          className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-[11px] font-semibold truncate ${palette.bg} ${palette.text} ring-1 ring-inset ring-current/10`}
                         >
                           {s}
                         </span>
@@ -544,29 +558,27 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                     </div>
                   )}
 
-                  {/* Bottom row: rate (or location) + arrow button */}
-                  <div className="flex items-center justify-between gap-3 mt-4 pt-4 border-t border-[#f1f3f5]">
+                  {/* Bottom row: rate (left) + arrow button (right) */}
+                  <div className="flex items-center justify-between gap-3 mt-4 pt-4 relative">
+                    {/* Soft gradient divider (replaces solid border) */}
+                    <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#e5eaf0] to-transparent" />
+
                     {isFreelancer && hourlyRate ? (
-                      <p className="whitespace-nowrap">
-                        <span className="text-[#707881] font-medium text-xs">From </span>
-                        <span className="font-extrabold text-lg text-[#1b1c1a]">{currencySymbol}{hourlyRate}</span>
-                        <span className="text-[#707881] font-medium text-xs"> /hr</span>
-                      </p>
-                    ) : country ? (
-                      <p className="flex items-center gap-1 text-[#707881] text-xs font-medium truncate">
-                        <Icons.Location />
-                        <span className="truncate">{country}</span>
+                      <p className="whitespace-nowrap leading-none">
+                        <span className="text-[#707881] font-medium text-[11px] uppercase tracking-wider">From </span>
+                        <span className="font-extrabold text-[22px] text-[#0160B9] ml-0.5 tracking-tight">{currencySymbol}{hourlyRate}</span>
+                        <span className="text-[#707881] font-medium text-xs ml-0.5">/hr</span>
                       </p>
                     ) : (
-                      <span className="text-[#707881] text-xs font-medium">{roleLabel}</span>
+                      <span className="text-[#707881] text-[12px] font-semibold uppercase tracking-wider">{roleLabel}</span>
                     )}
 
                     <button
                       onClick={() => u.id && router.push(getProfilePath(u))}
                       aria-label={`View ${name}'s profile`}
-                      className="w-10 h-10 rounded-xl bg-[#E3F2FD] hover:bg-[#0160B9] text-[#0160B9] hover:text-white flex items-center justify-center shrink-0 active:scale-95 transition-all"
+                      className="w-10 h-10 rounded-xl bg-[#E3F2FD] hover:bg-[#0160B9] text-[#0160B9] hover:text-white flex items-center justify-center shrink-0 active:scale-95 hover:shadow-[0_6px_18px_rgba(1,96,185,0.32)] transition-all duration-200"
                     >
-                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <svg className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M5 12h14m-7-7l7 7-7 7"/>
                       </svg>
                     </button>
