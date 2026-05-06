@@ -432,7 +432,7 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
             <p className="text-xs text-[#707881] mt-1">Complete your profile to get better recommendations</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
             {peopleSuggestions.map((u: any) => {
               const { name, title, image, country, isVerified } = getUserInfo(u)
               const isConnected = connected.has(u.id)
@@ -448,100 +448,102 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
               return (
                 <div
                   key={u.id}
-                  className="relative bg-white rounded-2xl border border-[#e3e2df] shadow-sm hover:shadow-lg hover:border-[#bfd9ef] hover:-translate-y-0.5 transition-all duration-200 group flex flex-col"
+                  className="relative bg-white rounded-2xl border border-[#e3e2df] shadow-sm hover:shadow-lg hover:border-[#bfd9ef] hover:-translate-y-0.5 transition-all duration-200 group p-4"
                 >
                   {/* Dismiss button */}
                   <button
                     type="button"
                     onClick={() => setDismissed((prev) => new Set(prev).add(u.id))}
                     aria-label="Dismiss"
-                    className="absolute top-3 right-3 p-1.5 rounded-full text-[#707881] hover:bg-[#f4f3f0] hover:text-[#1b1c1a] transition opacity-0 group-hover:opacity-100"
+                    className="absolute top-2.5 right-2.5 p-1.5 rounded-full text-[#707881] hover:bg-[#f4f3f0] hover:text-[#1b1c1a] transition opacity-0 group-hover:opacity-100"
                   >
                     <Icons.Close />
                   </button>
 
-                  <div className="px-5 pt-7 pb-4 text-center flex-1">
-                    {/* Avatar — centered, prominent, with brand ring on hover */}
+                  {/* Top row: avatar + info */}
+                  <div className="flex gap-4">
+                    {/* Avatar — left */}
                     <button
                       type="button"
                       onClick={() => u.id && router.push(getProfilePath(u))}
-                      className="inline-block mb-3 ring-2 ring-white outline outline-2 outline-[#e3e2df]/70 group-hover:outline-[#0160B9]/40 rounded-2xl shadow-sm transition-all duration-200"
+                      className="shrink-0 self-start ring-2 ring-white outline outline-2 outline-[#e3e2df]/70 group-hover:outline-[#0160B9]/40 rounded-2xl shadow-sm transition-all duration-200"
                     >
                       {image ? (
                         <img
                           src={image}
                           alt={name}
-                          className="w-20 h-20 rounded-2xl object-cover"
+                          className="w-16 h-16 rounded-2xl object-cover"
                         />
                       ) : (
-                        <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-2xl font-black text-white bg-gradient-to-br from-[#0160B9] to-[#0277CC]">
+                        <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-black text-white bg-gradient-to-br from-[#0160B9] to-[#0277CC]">
                           {getInitials(name)}
                         </div>
                       )}
                     </button>
 
-                    {/* Role pill */}
-                    <div className="mb-2">
-                      <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${rolePillStyle}`}>
-                        {roleLabel}
-                      </span>
-                    </div>
+                    {/* Info — middle */}
+                    <div className="flex-1 min-w-0 pr-7">
+                      {/* Name + verified badge */}
+                      <button
+                        type="button"
+                        className="block w-full text-left"
+                        onClick={() => u.id && router.push(getProfilePath(u))}
+                      >
+                        <div className="flex items-center gap-1 mb-1">
+                          <h4 className="font-[Manrope] font-bold text-[15px] text-[#1b1c1a] leading-snug truncate group-hover:text-[#0160B9] transition-colors">{name}</h4>
+                          {isVerified && <VerifiedBadge size="sm" />}
+                        </div>
+                      </button>
 
-                    {/* Name + verified badge */}
-                    <button
-                      type="button"
-                      className="block w-full text-center"
-                      onClick={() => u.id && router.push(getProfilePath(u))}
-                    >
-                      <div className="flex items-center justify-center gap-1 mb-0.5 px-2">
-                        <h4 className="font-[Manrope] font-bold text-[15px] text-[#1b1c1a] leading-snug truncate group-hover:text-[#0160B9] transition-colors">{name}</h4>
-                        {isVerified && <VerifiedBadge size="sm" />}
+                      {/* Role pill + title */}
+                      <div className="flex items-center gap-2 mb-1 min-w-0">
+                        <span className={`shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${rolePillStyle}`}>
+                          {roleLabel}
+                        </span>
+                        {showTitle && (
+                          <span className="text-xs text-[#536279] truncate">{title}</span>
+                        )}
                       </div>
-                      {showTitle && (
-                        <p className="text-xs text-[#536279] leading-tight px-2 truncate">{title}</p>
+
+                      {/* Location */}
+                      {country && (
+                        <p className="flex items-center gap-1 text-[11px] text-[#707881]">
+                          <Icons.Location />
+                          <span className="truncate">{country}</span>
+                        </p>
                       )}
-                    </button>
 
-                    {/* Location */}
-                    {country && (
-                      <p className="flex items-center justify-center gap-1 text-[11px] text-[#707881] mt-1.5">
-                        <Icons.Location />
-                        <span className="truncate">{country}</span>
-                      </p>
-                    )}
-
-                    {/* Skills — freelancers only */}
-                    {isFreelancer && skills.length > 0 && (
-                      <div className="flex flex-wrap justify-center gap-1 mt-3">
-                        {skills.slice(0, 3).map((s: string) => (
-                          <span key={s} className="text-[10px] font-semibold bg-[#f4f3f0] text-[#536279] px-2 py-0.5 rounded-full">
-                            {s}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                      {/* Skills — freelancers only */}
+                      {isFreelancer && skills.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {skills.slice(0, 3).map((s: string) => (
+                            <span key={s} className="text-[10px] font-semibold bg-[#f4f3f0] text-[#536279] px-2 py-0.5 rounded-full">
+                              {s}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
-                  {/* Connect button — full width at bottom */}
-                  <div className="px-5 pb-5">
-                    <button
-                      onClick={async () => {
-                        if (isConnected) return
-                        setConnected((prev) => new Set(prev).add(u.id))
-                        try { await onConnect(u.id) }
-                        catch { setConnected((prev) => { const s = new Set(prev); s.delete(u.id); return s }) }
-                      }}
-                      disabled={isConnected}
-                      className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-full font-bold text-sm transition-all active:scale-95 ${
-                        isConnected
-                          ? 'bg-[#efeeeb] text-[#707881] cursor-default'
-                          : 'bg-[#0160B9] text-white shadow-[0_3px_10px_rgba(1,96,185,0.25)] hover:bg-[#0160B9]/90 hover:shadow-[0_5px_14px_rgba(1,96,185,0.32)]'
-                      }`}
-                    >
-                      <Icons.PersonAdd />
-                      {isConnected ? 'Request Sent' : 'Connect'}
-                    </button>
-                  </div>
+                  {/* Connect button — full width below */}
+                  <button
+                    onClick={async () => {
+                      if (isConnected) return
+                      setConnected((prev) => new Set(prev).add(u.id))
+                      try { await onConnect(u.id) }
+                      catch { setConnected((prev) => { const s = new Set(prev); s.delete(u.id); return s }) }
+                    }}
+                    disabled={isConnected}
+                    className={`mt-3 w-full flex items-center justify-center gap-2 py-2 rounded-full font-bold text-sm transition-all active:scale-95 ${
+                      isConnected
+                        ? 'bg-[#efeeeb] text-[#707881] cursor-default'
+                        : 'bg-[#0160B9] text-white shadow-[0_3px_10px_rgba(1,96,185,0.25)] hover:bg-[#0160B9]/90 hover:shadow-[0_5px_14px_rgba(1,96,185,0.32)]'
+                    }`}
+                  >
+                    <Icons.PersonAdd />
+                    {isConnected ? 'Request Sent' : 'Connect'}
+                  </button>
                 </div>
               )
             })}
