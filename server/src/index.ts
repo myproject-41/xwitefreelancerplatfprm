@@ -66,14 +66,24 @@ const start = async () => {
       void shutdown(server, 'SIGTERM')
     })
 
+    // ─── Process-level error handlers ────────────────────────────────────────
+    // CRITICAL: do NOT shut down on uncaught errors. The Express error-middleware
+    // catches request-level errors. If something escapes that, killing the
+    // process cascades 502s to every active user while Railway restarts the
+    // container. Logging + staying alive is safer for production uptime.
     process.on('unhandledRejection', (reason) => {
       logger.error(`Unhandled promise rejection: ${String(reason)}`)
     })
 
     process.on('uncaughtException', (error) => {
-      logger.error(`Uncaught exception: ${error.stack || error.message}`)
-      void shutdown(server, 'uncaughtException')
+      logger.error(`Uncaught exception (continuing): ${error.stack || error.message}`)
+      // Intentionally do not call shutdown() — see comment above.
     })
+
+    // Reasonable HTTP timeouts so slow clients don't pile up
+    server.keepAliveTimeout = 65_000
+    server.headersTimeout   = 70_000
+    server.requestTimeout   = 60_000
   } catch (error) {
     logger.error(`Failed to start server: ${String(error)}`)
     process.exit(1)
