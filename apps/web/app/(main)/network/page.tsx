@@ -433,100 +433,97 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-            {peopleSuggestions.map((u: any, i: number) => {
+            {peopleSuggestions.map((u: any) => {
               const { name, title, image, country, isVerified } = getUserInfo(u)
               const isConnected = connected.has(u.id)
               const isFreelancer = u.role === 'FREELANCER'
               const roleLabel = isFreelancer ? 'Freelancer' : u.role === 'CLIENT' ? 'Client' : u.role?.replace(/_/g, ' ')
               const skills: string[] = u.freelancerProfile?.skills || []
-              // Don't show title if it's blank or identical to the role label
               const showTitle = title && title.toLowerCase() !== roleLabel?.toLowerCase() && title.toLowerCase() !== u.role?.toLowerCase()
 
-              const freelancerGrads = ['from-[#dbeafe] to-[#93c5fd]', 'from-[#ede9fe] to-[#c4b5fd]', 'from-[#cffafe] to-[#67e8f9]']
-              const clientGrads     = ['from-[#dcfce7] to-[#86efac]', 'from-[#fef3c7] to-[#fde047]', 'from-[#fce7f3] to-[#f9a8d4]']
-              const grad = isFreelancer ? freelancerGrads[i % freelancerGrads.length] : clientGrads[i % clientGrads.length]
-
               const rolePillStyle = isFreelancer
-                ? 'bg-[#dbeafe] text-[#1d4ed8]'
+                ? 'bg-[#E3F2FD] text-[#0160B9]'
                 : 'bg-[#dcfce7] text-[#15803d]'
 
               return (
                 <div
                   key={u.id}
-                  className="bg-white rounded-2xl border border-[#e3e2df] shadow-sm overflow-hidden group hover:shadow-md transition-shadow"
+                  className="relative bg-white rounded-2xl border border-[#e3e2df] shadow-sm hover:shadow-lg hover:border-[#bfd9ef] hover:-translate-y-0.5 transition-all duration-200 group flex flex-col"
                 >
-                  {/* Header banner — avatar anchored inside so it overlaps */}
-                  <div className={`h-16 bg-gradient-to-br ${grad} relative`}>
-                    {/* Avatar — absolute so it sits ON TOP of the banner */}
+                  {/* Dismiss button */}
+                  <button
+                    type="button"
+                    onClick={() => setDismissed((prev) => new Set(prev).add(u.id))}
+                    aria-label="Dismiss"
+                    className="absolute top-3 right-3 p-1.5 rounded-full text-[#707881] hover:bg-[#f4f3f0] hover:text-[#1b1c1a] transition opacity-0 group-hover:opacity-100"
+                  >
+                    <Icons.Close />
+                  </button>
+
+                  <div className="px-5 pt-7 pb-4 text-center flex-1">
+                    {/* Avatar — centered, prominent, with brand ring on hover */}
                     <button
                       type="button"
                       onClick={() => u.id && router.push(getProfilePath(u))}
-                      className="absolute -bottom-7 left-4 z-10"
+                      className="inline-block mb-3 ring-2 ring-white outline outline-2 outline-[#e3e2df]/70 group-hover:outline-[#0160B9]/40 rounded-2xl shadow-sm transition-all duration-200"
                     >
                       {image ? (
                         <img
                           src={image}
                           alt={name}
-                          className="w-14 h-14 rounded-xl object-cover border-2 border-white shadow-md hover:opacity-90 transition-opacity"
+                          className="w-20 h-20 rounded-2xl object-cover"
                         />
                       ) : (
-                        <div className={`w-14 h-14 rounded-xl border-2 border-white shadow-md flex items-center justify-center text-lg font-black text-[#0160B9] hover:opacity-90 transition-opacity bg-gradient-to-br ${grad}`}>
+                        <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-2xl font-black text-white bg-gradient-to-br from-[#0160B9] to-[#0277CC]">
                           {getInitials(name)}
                         </div>
                       )}
                     </button>
-                    {/* Dismiss button */}
-                    <button
-                      onClick={() => setDismissed((prev) => new Set(prev).add(u.id))}
-                      className="absolute top-2 right-2 p-1 rounded-full bg-white/30 hover:bg-white/60 transition opacity-0 group-hover:opacity-100"
-                    >
-                      <Icons.Close />
-                    </button>
-                  </div>
 
-                  {/* Body — pt-10 leaves room for the overlapping avatar */}
-                  <div className="px-4 pt-10 pb-4">
-                    {/* Role pill — right aligned */}
-                    <div className="flex justify-end -mt-6 mb-2">
-                      <span className={`text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full ${rolePillStyle}`}>
+                    {/* Role pill */}
+                    <div className="mb-2">
+                      <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${rolePillStyle}`}>
                         {roleLabel}
                       </span>
                     </div>
-                    {/* Name + badge */}
+
+                    {/* Name + verified badge */}
                     <button
                       type="button"
-                      className="text-left w-full mb-1"
+                      className="block w-full text-center"
                       onClick={() => u.id && router.push(getProfilePath(u))}
                     >
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <h4 className="font-[Manrope] font-bold text-[15px] text-[#1b1c1a] leading-snug hover:text-[#0160B9] transition-colors">{name}</h4>
+                      <div className="flex items-center justify-center gap-1 mb-0.5 px-2">
+                        <h4 className="font-[Manrope] font-bold text-[15px] text-[#1b1c1a] leading-snug truncate group-hover:text-[#0160B9] transition-colors">{name}</h4>
                         {isVerified && <VerifiedBadge size="sm" />}
                       </div>
                       {showTitle && (
-                        <p className="text-xs text-[#536279] mt-0.5 leading-tight">{title}</p>
+                        <p className="text-xs text-[#536279] leading-tight px-2 truncate">{title}</p>
                       )}
                     </button>
 
                     {/* Location */}
                     {country && (
-                      <p className="flex items-center gap-1 text-xs text-[#707881] mb-2">
+                      <p className="flex items-center justify-center gap-1 text-[11px] text-[#707881] mt-1.5">
                         <Icons.Location />
-                        {country}
+                        <span className="truncate">{country}</span>
                       </p>
                     )}
 
                     {/* Skills — freelancers only */}
                     {isFreelancer && skills.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mb-3">
+                      <div className="flex flex-wrap justify-center gap-1 mt-3">
                         {skills.slice(0, 3).map((s: string) => (
-                          <span key={s} className="text-[10px] font-semibold bg-[#dbeafe] text-[#1d4ed8] px-2 py-0.5 rounded-full">
+                          <span key={s} className="text-[10px] font-semibold bg-[#f4f3f0] text-[#536279] px-2 py-0.5 rounded-full">
                             {s}
                           </span>
                         ))}
                       </div>
                     )}
+                  </div>
 
-                    {/* Connect button */}
+                  {/* Connect button — full width at bottom */}
+                  <div className="px-5 pb-5">
                     <button
                       onClick={async () => {
                         if (isConnected) return
@@ -535,10 +532,10 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                         catch { setConnected((prev) => { const s = new Set(prev); s.delete(u.id); return s }) }
                       }}
                       disabled={isConnected}
-                      className={`mt-1 w-full flex items-center justify-center gap-2 py-2 rounded-full font-bold text-sm transition-all active:scale-95 ${
+                      className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-full font-bold text-sm transition-all active:scale-95 ${
                         isConnected
                           ? 'bg-[#efeeeb] text-[#707881] cursor-default'
-                          : 'bg-[#0160B9] text-white shadow-[0_3px_10px_rgba(1,96,185,0.25)] hover:bg-[#1251a3]'
+                          : 'bg-[#0160B9] text-white shadow-[0_3px_10px_rgba(1,96,185,0.25)] hover:bg-[#0160B9]/90 hover:shadow-[0_5px_14px_rgba(1,96,185,0.32)]'
                       }`}
                     >
                       <Icons.PersonAdd />
