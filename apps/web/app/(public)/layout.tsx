@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import SiteFooter from '../../components/ui/SiteFooter'
+import PageTransition from '../../components/ui/PageTransition'
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -25,7 +26,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       </header>
 
       <main className="min-h-screen bg-[#faf9f6]">
-        {children}
+        <PageTransition>{children}</PageTransition>
       </main>
 
       <SiteFooter />

@@ -1,4 +1,4 @@
-﻿/* @import MUST be first — before any @tailwind directives */
+/* @import MUST be first — before any @tailwind directives */
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 
@@ -12,20 +12,76 @@
     margin: 0;
     padding: 0;
   }
+
   html {
     font-family: 'Manrope', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    /* Smooth in-page anchor scrolling */
+    scroll-behavior: smooth;
   }
+
+  /* Honour OS-level "Reduce Motion" preference */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
   body {
     background-color: #f9f9ff;
     color: #101b30;
+    /* Remove the grey flash on tap (mobile) — we use scale/opacity instead */
+    -webkit-tap-highlight-color: transparent;
   }
+
+  /* All interactive elements transition smoothly by default */
+  button, a, input, textarea, select, [role="button"] {
+    transition-property: color, background-color, border-color, opacity, transform, box-shadow, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 180ms;
+  }
+
+  /* Show focus ring for keyboard nav, hide for mouse — accessible without ugly */
+  :focus { outline: none; }
+  :focus-visible {
+    outline: 2px solid #0160B9;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Custom scrollbar — subtle, modern */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover { background-color: rgba(0, 0, 0, 0.24); background-clip: padding-box; }
+
+  /* Disable scrollbar on horizontal scroll containers that opt-in */
+  .scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+  /* Selection color matches brand */
+  ::selection { background: rgba(1, 96, 185, 0.18); color: inherit; }
+
   .material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     vertical-align: middle;
     user-select: none;
   }
+
+  /* Prevent layout shift from images that haven't loaded */
+  img { max-width: 100%; height: auto; }
 }
 
 @layer components {
@@ -66,4 +122,54 @@
     @apply rounded-2xl border border-gray-200 bg-white
            shadow-[0_1px_3px_rgba(0,0,0,0.04),0_4px_16px_rgba(0,0,0,0.04)];
   }
+
+  /* ─── Skeleton shimmer ────────────────────────────────────────────────── */
+  .skeleton {
+    background: linear-gradient(90deg, #eef0f4 0%, #f7f8fa 40%, #eef0f4 80%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.4s ease-in-out infinite;
+    border-radius: 8px;
+  }
+
+  /* ─── Page-mount fade-in ──────────────────────────────────────────────── */
+  .page-fade-in {
+    animation: page-fade-in 0.32s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+
+  /* ─── Press-feedback for any element ──────────────────────────────────── */
+  .press {
+    transition: transform 120ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .press:active { transform: scale(0.97); }
+}
+
+@layer utilities {
+  /* Animation primitives */
+  @keyframes skeleton-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  @keyframes page-fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.6; }
+  }
+
+  .animate-fade-in   { animation: fade-in 0.25s cubic-bezier(0.4,0,0.2,1) both; }
+  .animate-slide-up  { animation: slide-up 0.32s cubic-bezier(0.4,0,0.2,1) both; }
+  .animate-pulse-soft { animation: pulse-soft 1.6s ease-in-out infinite; }
+
+  /* Hide focus ring outline only when there's no keyboard intent */
+  .no-tap-highlight { -webkit-tap-highlight-color: transparent; }
 }
