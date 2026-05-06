@@ -416,11 +416,30 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
 
       {/* People you may know — real CLIENT + FREELANCER users */}
       <section>
-        <div className="flex items-end justify-between mb-6">
-          <div>
-            <h2 className="font-[Manrope] text-2xl font-extrabold tracking-tight text-[#1b1c1a]">People you may know</h2>
-            <p className="text-[#404850] mt-1 text-sm">Connect with talented freelancers like you.</p>
+        <div className="flex items-center justify-between mb-6 gap-4">
+          <div className="flex items-center gap-4 min-w-0">
+            <div className="w-12 h-12 rounded-2xl bg-[#E3F2FD] flex items-center justify-center shrink-0">
+              <svg className="w-6 h-6 text-[#0160B9]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <div className="min-w-0">
+              <h2 className="font-[Manrope] text-2xl font-extrabold tracking-tight text-[#1b1c1a]">People you may know</h2>
+              <p className="text-[#404850] mt-0.5 text-sm">Discover and connect with top freelancers tailored for you.</p>
+            </div>
           </div>
+          {allPeopleSuggestions.length > peopleLimit && (
+            <button
+              onClick={() => setPeopleLimit(allPeopleSuggestions.length)}
+              className="hidden sm:inline-flex items-center gap-1.5 px-5 py-3 rounded-xl bg-white border border-[#e3e2df] text-[#0160B9] font-bold text-sm shadow-sm hover:shadow-md hover:border-[#0160B9]/40 transition-all shrink-0"
+            >
+              View all freelancers
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+          )}
         </div>
 
         {peopleSuggestions.length === 0 ? (
@@ -433,62 +452,119 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-            {peopleSuggestions.map((u: any) => {
+            {peopleSuggestions.map((u: any, i: number) => {
               const { name, title, image, isVerified } = getUserInfo(u)
               const isFreelancer = u.role === 'FREELANCER'
               const roleLabel = isFreelancer ? 'Freelancer' : u.role === 'CLIENT' ? 'Client' : u.role?.replace(/_/g, ' ')
               const showTitle = title && title.toLowerCase() !== roleLabel?.toLowerCase() && title.toLowerCase() !== u.role?.toLowerCase()
               const subtitle = showTitle ? title : roleLabel
 
+              const isAvailable  = Boolean(u.freelancerProfile?.availability)
+              const skills: string[] = u.freelancerProfile?.skills || []
+              const hourlyRate   = u.freelancerProfile?.hourlyRate
+              const currency     = u.freelancerProfile?.currency || 'INR'
+              const currencySymbol = currency === 'USD' ? '$' : currency === 'EUR' ? '€' : currency === 'GBP' ? '£' : '₹'
+
+              // Cycle skill-chip palettes per card for visual variety
+              const SKILL_PALETTES = [
+                { bg: 'bg-[#E3F2FD]', text: 'text-[#0160B9]' },
+                { bg: 'bg-[#fef3e7]', text: 'text-[#d97706]' },
+                { bg: 'bg-[#dcfce7]', text: 'text-[#15803d]' },
+              ]
+              const palette = SKILL_PALETTES[i % SKILL_PALETTES.length]
+
               return (
                 <div
                   key={u.id}
-                  className="bg-white rounded-lg p-4 flex flex-col items-center text-center shadow-[0_8px_24px_rgba(27,28,26,0.05)] border border-[#bfc7d1]/15 hover:scale-[1.02] hover:shadow-[0_12px_32px_rgba(27,28,26,0.09)] transition-all duration-300"
+                  className="bg-white rounded-2xl p-5 shadow-[0_8px_24px_rgba(27,28,26,0.05)] hover:shadow-[0_14px_36px_rgba(27,28,26,0.10)] hover:-translate-y-0.5 transition-all duration-300"
                 >
-                  {/* Avatar — square with subtle radius, white frame */}
-                  <button
-                    type="button"
-                    onClick={() => u.id && router.push(getProfilePath(u))}
-                    aria-label={`View ${name}'s profile`}
-                    className="relative mb-3 active:scale-95 transition-transform"
-                  >
-                    {image ? (
-                      <img
-                        src={image}
-                        alt={name}
-                        className="w-16 h-16 rounded-lg object-cover border-[3px] border-white shadow-sm"
-                      />
-                    ) : (
-                      <div className="w-16 h-16 rounded-lg flex items-center justify-center text-base font-black text-white bg-gradient-to-br from-[#0160B9] to-[#0277CC] border-[3px] border-white shadow-sm">
-                        {getInitials(name)}
-                      </div>
-                    )}
-                  </button>
+                  {/* Top row: avatar + status pill */}
+                  <div className="flex items-start justify-between mb-4">
+                    {/* Square avatar with online dot */}
+                    <button
+                      type="button"
+                      onClick={() => u.id && router.push(getProfilePath(u))}
+                      aria-label={`View ${name}'s profile`}
+                      className="relative active:scale-95 transition-transform"
+                    >
+                      {image ? (
+                        <img
+                          src={image}
+                          alt={name}
+                          className="w-20 h-20 rounded-2xl object-cover"
+                        />
+                      ) : (
+                        <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-xl font-black text-white bg-gradient-to-br from-[#0160B9] to-[#0277CC]">
+                          {getInitials(name)}
+                        </div>
+                      )}
+                      {isAvailable && (
+                        <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[#16a34a] ring-[3px] ring-white" />
+                      )}
+                    </button>
+
+                    {/* Status pill */}
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
+                      isAvailable ? 'bg-[#dcfce7] text-[#15803d]' : 'bg-[#f1f5f9] text-[#64748b]'
+                    }`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${isAvailable ? 'bg-[#16a34a]' : 'bg-[#94a3b8]'}`} />
+                      {isAvailable ? 'Online' : 'Offline'}
+                    </span>
+                  </div>
 
                   {/* Name + verified badge */}
                   <button
                     type="button"
                     onClick={() => u.id && router.push(getProfilePath(u))}
-                    className="block mb-0.5"
+                    className="block w-full text-left mb-1"
                   >
-                    <div className="flex items-center justify-center gap-1">
-                      <h3 className="font-[Manrope] font-bold text-[15px] text-[#1b1c1a] leading-tight hover:text-[#0160B9] transition-colors truncate">{name}</h3>
-                      {isVerified && <VerifiedBadge size="sm" />}
+                    <div className="flex items-center gap-1.5">
+                      <h3 className="font-[Manrope] font-bold text-xl text-[#1b1c1a] leading-snug truncate hover:text-[#0160B9] transition-colors">{name}</h3>
+                      {isVerified && <VerifiedBadge size="md" />}
                     </div>
                   </button>
 
-                  {/* Title / role — fixed two-line height for consistency */}
-                  <p className="text-[#404850] text-xs mb-3 line-clamp-2 leading-snug" style={{ minHeight: '2rem' }}>
-                    {subtitle}
-                  </p>
+                  {/* Title / role */}
+                  <p className="text-[#536279] text-sm mb-4 truncate">{subtitle}</p>
 
-                  {/* View Profile button — full width */}
-                  <button
-                    onClick={() => u.id && router.push(getProfilePath(u))}
-                    className="w-full py-2 rounded-lg font-bold text-xs transition-all duration-300 active:scale-95 shadow-sm bg-[#0160B9] hover:bg-[#014a8c] text-white"
-                  >
-                    View Profile
-                  </button>
+                  {/* Skills — 2×2 grid */}
+                  {isFreelancer && skills.length > 0 ? (
+                    <div className="grid grid-cols-2 gap-2 mb-5">
+                      {skills.slice(0, 4).map((s: string) => (
+                        <span
+                          key={s}
+                          className={`inline-flex items-center justify-center px-3 py-1.5 rounded-full text-xs font-semibold truncate ${palette.bg} ${palette.text}`}
+                        >
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="mb-5" />
+                  )}
+
+                  {/* Bottom row: rate + arrow button */}
+                  <div className="flex items-center justify-between gap-3">
+                    {isFreelancer && hourlyRate ? (
+                      <p className="whitespace-nowrap">
+                        <span className="text-[#707881] font-medium text-sm">From </span>
+                        <span className="font-extrabold text-xl text-[#1b1c1a]">{currencySymbol}{hourlyRate}</span>
+                        <span className="text-[#707881] font-medium text-sm"> /hr</span>
+                      </p>
+                    ) : (
+                      <span className="text-[#707881] text-sm font-medium">{roleLabel}</span>
+                    )}
+
+                    <button
+                      onClick={() => u.id && router.push(getProfilePath(u))}
+                      aria-label={`View ${name}'s profile`}
+                      className="w-11 h-11 rounded-xl bg-[#E3F2FD] hover:bg-[#0160B9] text-[#0160B9] hover:text-white flex items-center justify-center shrink-0 active:scale-95 transition-all"
+                    >
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M5 12h14m-7-7l7 7-7 7"/>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               )
             })}
