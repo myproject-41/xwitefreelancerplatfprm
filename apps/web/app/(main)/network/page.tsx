@@ -434,36 +434,32 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
             {peopleSuggestions.map((u: any) => {
-              const { name, title, image, country, isVerified } = getUserInfo(u)
-              const isConnected = connected.has(u.id)
+              const { name, title, image, isVerified } = getUserInfo(u)
               const isFreelancer = u.role === 'FREELANCER'
               const roleLabel = isFreelancer ? 'Freelancer' : u.role === 'CLIENT' ? 'Client' : u.role?.replace(/_/g, ' ')
               const showTitle = title && title.toLowerCase() !== roleLabel?.toLowerCase() && title.toLowerCase() !== u.role?.toLowerCase()
               const subtitle = showTitle ? title : roleLabel
-              const subtleLine = country
-                ? `${country} · Suggested for you`
-                : 'Suggested for you'
 
               return (
                 <div
                   key={u.id}
-                  className="bg-white rounded-lg p-6 flex flex-col items-center text-center shadow-[0_20px_40px_rgba(27,28,26,0.06)] border border-[#bfc7d1]/15 hover:scale-[1.02] hover:shadow-[0_24px_50px_rgba(27,28,26,0.10)] transition-all duration-300"
+                  className="bg-white rounded-lg p-4 flex flex-col items-center text-center shadow-[0_8px_24px_rgba(27,28,26,0.05)] border border-[#bfc7d1]/15 hover:scale-[1.02] hover:shadow-[0_12px_32px_rgba(27,28,26,0.09)] transition-all duration-300"
                 >
                   {/* Avatar — square with subtle radius, white frame */}
                   <button
                     type="button"
                     onClick={() => u.id && router.push(getProfilePath(u))}
                     aria-label={`View ${name}'s profile`}
-                    className="relative mb-4 active:scale-95 transition-transform"
+                    className="relative mb-3 active:scale-95 transition-transform"
                   >
                     {image ? (
                       <img
                         src={image}
                         alt={name}
-                        className="w-24 h-24 rounded-lg object-cover border-4 border-white shadow-sm"
+                        className="w-16 h-16 rounded-lg object-cover border-[3px] border-white shadow-sm"
                       />
                     ) : (
-                      <div className="w-24 h-24 rounded-lg flex items-center justify-center text-2xl font-black text-white bg-gradient-to-br from-[#0160B9] to-[#0277CC] border-4 border-white shadow-sm">
+                      <div className="w-16 h-16 rounded-lg flex items-center justify-center text-base font-black text-white bg-gradient-to-br from-[#0160B9] to-[#0277CC] border-[3px] border-white shadow-sm">
                         {getInitials(name)}
                       </div>
                     )}
@@ -473,40 +469,25 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                   <button
                     type="button"
                     onClick={() => u.id && router.push(getProfilePath(u))}
-                    className="block mb-1"
+                    className="block mb-0.5"
                   >
-                    <div className="flex items-center justify-center gap-1.5">
-                      <h3 className="font-[Manrope] font-bold text-lg text-[#1b1c1a] leading-tight hover:text-[#0160B9] transition-colors">{name}</h3>
+                    <div className="flex items-center justify-center gap-1">
+                      <h3 className="font-[Manrope] font-bold text-[15px] text-[#1b1c1a] leading-tight hover:text-[#0160B9] transition-colors truncate">{name}</h3>
                       {isVerified && <VerifiedBadge size="sm" />}
                     </div>
                   </button>
 
                   {/* Title / role — fixed two-line height for consistency */}
-                  <p className="text-[#404850] text-sm mb-4 line-clamp-2 leading-tight" style={{ minHeight: '2.5rem' }}>
+                  <p className="text-[#404850] text-xs mb-3 line-clamp-2 leading-snug" style={{ minHeight: '2rem' }}>
                     {subtitle}
                   </p>
 
-                  {/* Subtle metadata line */}
-                  <div className="flex items-center justify-center mb-6">
-                    <span className="text-[11px] font-medium text-[#707881]">{subtleLine}</span>
-                  </div>
-
-                  {/* Connect button — full width */}
+                  {/* View Profile button — full width */}
                   <button
-                    onClick={async () => {
-                      if (isConnected) return
-                      setConnected((prev) => new Set(prev).add(u.id))
-                      try { await onConnect(u.id) }
-                      catch { setConnected((prev) => { const s = new Set(prev); s.delete(u.id); return s }) }
-                    }}
-                    disabled={isConnected}
-                    className={`w-full py-2.5 rounded-lg font-bold text-sm transition-all duration-300 active:scale-95 shadow-sm ${
-                      isConnected
-                        ? 'bg-[#efeeeb] text-[#707881] cursor-default'
-                        : 'bg-[#0160B9] hover:bg-[#014a8c] text-white'
-                    }`}
+                    onClick={() => u.id && router.push(getProfilePath(u))}
+                    className="w-full py-2 rounded-lg font-bold text-xs transition-all duration-300 active:scale-95 shadow-sm bg-[#0160B9] hover:bg-[#014a8c] text-white"
                   >
-                    {isConnected ? 'Request Sent' : 'Connect'}
+                    View Profile
                   </button>
                 </div>
               )
