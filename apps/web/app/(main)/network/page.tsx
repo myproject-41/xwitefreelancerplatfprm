@@ -449,7 +449,7 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
             <p className="text-xs text-[#707881] mt-1">Complete your profile to get better recommendations</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-start">
+          <div className="grid grid-cols-2 gap-3 sm:gap-5 items-start">
             {peopleSuggestions.map((u: any, i: number) => {
               const { name, title, image, isVerified } = getUserInfo(u)
               const isFreelancer = u.role === 'FREELANCER'
@@ -459,9 +459,6 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
 
               const isAvailable  = Boolean(u.freelancerProfile?.availability)
               const skills: string[] = u.freelancerProfile?.skills || []
-              const hourlyRate   = u.freelancerProfile?.hourlyRate
-              const currency     = u.freelancerProfile?.currency || 'INR'
-              const currencySymbol = currency === 'USD' ? '$' : currency === 'EUR' ? '€' : currency === 'GBP' ? '£' : '₹'
 
               // Cycle skill-chip palettes per card for visual variety
               const SKILL_PALETTES = [
@@ -477,89 +474,100 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
               return (
                 <div
                   key={u.id}
-                  className="group relative bg-white rounded-xl p-6 border border-[#e8ebf0] shadow-[0_2px_12px_rgba(15,23,42,0.04)] hover:shadow-[0_12px_32px_rgba(1,96,185,0.08)] hover:border-[#bdd6ee] hover:-translate-y-0.5 transition-all duration-300"
+                  className="group relative bg-white rounded-2xl border border-[#eef0f3] shadow-[0_2px_12px_rgba(15,23,42,0.04)] hover:shadow-[0_16px_40px_rgba(1,96,185,0.12)] hover:border-[#bdd6ee] hover:-translate-y-1 transition-all duration-300 overflow-hidden"
                 >
-                  {/* Top section: avatar (left) + info (right) */}
-                  <div className="flex items-start gap-5">
-                    {/* Avatar — refined corners, elegant border */}
+                  {/* Decorative gradient header — subtle brand accent */}
+                  <div className="relative h-12 bg-gradient-to-br from-[#E3F2FD] via-[#cfe1f3] to-[#BBDEFB]">
+                    <div className="absolute -bottom-3 -right-3 w-20 h-20 rounded-full bg-white/30 blur-xl" />
+                    <div className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/40 blur-md" />
+                  </div>
+
+                  <div className="px-3 sm:px-4 pb-4">
+                    {/* Avatar — overlaps the gradient header */}
                     <button
                       type="button"
                       onClick={() => u.id && router.push(getProfilePath(u))}
                       aria-label={`View ${name}'s profile`}
-                      className="relative shrink-0 active:scale-95 transition-transform"
+                      className="relative -mt-9 active:scale-95 transition-transform inline-block"
                     >
                       {image ? (
                         <img
                           src={image}
                           alt={name}
-                          className="w-[88px] h-[88px] rounded-lg object-cover border border-[#e2e8f0] shadow-[0_2px_8px_rgba(15,23,42,0.06)]"
+                          className="w-[68px] h-[68px] rounded-xl object-cover ring-[3px] ring-white shadow-[0_4px_12px_rgba(15,23,42,0.12)]"
                         />
                       ) : (
-                        <div className="w-[88px] h-[88px] rounded-lg flex items-center justify-center text-2xl font-black text-white bg-gradient-to-br from-[#0160B9] via-[#1976D2] to-[#0277CC] shadow-[0_2px_8px_rgba(1,96,185,0.25)]">
+                        <div className="w-[68px] h-[68px] rounded-xl flex items-center justify-center text-xl font-black text-white bg-gradient-to-br from-[#0160B9] via-[#1976D2] to-[#0277CC] ring-[3px] ring-white shadow-[0_4px_12px_rgba(1,96,185,0.25)]">
                           {getInitials(name)}
                         </div>
                       )}
                       {isAvailable && (
-                        <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[#16a34a] ring-[3px] ring-white" />
+                        <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-[#16a34a] ring-[2.5px] ring-white" />
                       )}
                     </button>
 
-                    {/* Info column */}
-                    <div className="flex-1 min-w-0 pt-0.5">
-                      <button
-                        type="button"
-                        onClick={() => u.id && router.push(getProfilePath(u))}
-                        className="block w-full text-left"
-                      >
-                        <div className="flex items-center gap-1.5 min-w-0">
-                          <h3 className="font-[Manrope] font-bold text-[17px] text-[#0f172a] leading-snug truncate group-hover:text-[#0160B9] transition-colors">{name}</h3>
-                          {isVerified && <VerifiedBadge size="sm" />}
-                        </div>
-                      </button>
+                    {/* Name + verified */}
+                    <button
+                      type="button"
+                      onClick={() => u.id && router.push(getProfilePath(u))}
+                      className="block w-full text-left mt-2"
+                    >
+                      <div className="flex items-center gap-1 min-w-0">
+                        <h3 className="font-[Manrope] font-bold text-[14px] sm:text-[15px] text-[#0f172a] leading-tight truncate group-hover:text-[#0160B9] transition-colors">{name}</h3>
+                        {isVerified && <VerifiedBadge size="sm" />}
+                      </div>
+                    </button>
 
-                      {/* Title */}
-                      {subtitle && (
-                        <p className="text-[#475569] text-[13px] font-medium truncate mt-1">{subtitle}</p>
-                      )}
+                    {/* Title */}
+                    {subtitle && (
+                      <p className="text-[#475569] text-[11px] sm:text-[12px] font-medium truncate mt-0.5">{subtitle}</p>
+                    )}
 
-                      {/* Location */}
-                      {country && (
-                        <p className="flex items-center gap-1 text-[#64748b] text-[12px] mt-1.5 truncate">
-                          <Icons.Location />
-                          <span className="truncate">{country}</span>
-                        </p>
-                      )}
-
-                      {/* Role pill */}
-                      <span className="inline-flex items-center mt-2.5 px-2.5 py-0.5 rounded-md bg-[#E3F2FD] text-[10px] font-bold text-[#0160B9] uppercase tracking-wider">
-                        {roleLabel}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Skills */}
-                  {showSkills && (
-                    <div className="flex flex-wrap gap-1.5 mt-5">
-                      {skills.slice(0, 6).map((s: string) => (
-                        <span
-                          key={s}
-                          className={`inline-flex items-center px-3 py-1 rounded-md text-[11px] font-semibold ${palette.bg} ${palette.text}`}
-                        >
-                          {s}
+                    {/* Location */}
+                    {country && (
+                      <p className="flex items-center gap-1 text-[#64748b] text-[11px] mt-1 truncate">
+                        <span className="inline-flex shrink-0">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-3 h-3">
+                            <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/>
+                            <circle cx="12" cy="10" r="3"/>
+                          </svg>
                         </span>
-                      ))}
-                    </div>
-                  )}
+                        <span className="truncate">{country}</span>
+                      </p>
+                    )}
 
-                  {/* Bottom: arrow to view profile */}
-                  <div className="flex justify-end mt-5 pt-4 border-t border-[#f1f5f9]">
+                    {/* Role pill */}
+                    <span className="inline-flex items-center mt-2 px-2 py-0.5 rounded-md bg-[#E3F2FD] text-[9px] font-bold text-[#0160B9] uppercase tracking-wider">
+                      {roleLabel}
+                    </span>
+
+                    {/* Skills */}
+                    {showSkills && (
+                      <div className="flex flex-wrap gap-1 mt-3">
+                        {skills.slice(0, 4).map((s: string) => (
+                          <span
+                            key={s}
+                            className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold truncate max-w-full ${palette.bg} ${palette.text}`}
+                          >
+                            {s}
+                          </span>
+                        ))}
+                        {skills.length > 4 && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-[#f1f5f9] text-[#64748b]">
+                            +{skills.length - 4}
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* View profile CTA */}
                     <button
                       onClick={() => u.id && router.push(getProfilePath(u))}
                       aria-label={`View ${name}'s profile`}
-                      className="inline-flex items-center gap-1.5 text-[12px] font-bold text-[#0160B9] hover:text-[#0150A0] transition-colors group/btn"
+                      className="mt-3 pt-3 w-full flex items-center justify-between border-t border-[#f1f5f9] text-[11px] font-bold text-[#0160B9] hover:text-[#0150A0] transition-colors group/btn"
                     >
-                      View Profile
-                      <svg className="w-4 h-4 transition-transform duration-200 group-hover/btn:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <span>View Profile</span>
+                      <svg className="w-3.5 h-3.5 transition-transform duration-200 group-hover/btn:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M5 12h14m-7-7l7 7-7 7"/>
                       </svg>
                     </button>
