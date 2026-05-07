@@ -1769,13 +1769,13 @@ const STYLES = `
   align-items:flex-end;
   justify-content:space-between;
   padding:0 18px;
-  margin-top:-42px;
+  margin-top:-56px;
   margin-bottom:10px;
   position:relative;
   z-index:20;
   pointer-events:none;
 }
-@media(min-width:900px){.cp-below-cover{padding:0 22px;margin-top:-46px;margin-bottom:16px;}}
+@media(min-width:900px){.cp-below-cover{padding:0 22px;margin-top:-64px;margin-bottom:16px;}}
 
 /* Re-enable pointer events for the interactive children inside below-cover */
 .cp-below-cover .cp-avatar,

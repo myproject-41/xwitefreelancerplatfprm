@@ -2092,8 +2092,8 @@ const STYLES = `
 .fp-btn-cover:active{transform:scale(.95);}
 
 /* ── BELOW COVER (avatar + availability + edit profile) ── */
-.fp-below-cover{display:flex;align-items:flex-end;justify-content:space-between;padding:0 18px;margin-top:-42px;margin-bottom:10px;position:relative;z-index:20;pointer-events:none;}
-@media(min-width:900px){.fp-below-cover{padding:0 22px;margin-top:-46px;margin-bottom:16px;}}
+.fp-below-cover{display:flex;align-items:flex-end;justify-content:space-between;padding:0 18px;margin-top:-56px;margin-bottom:10px;position:relative;z-index:20;pointer-events:none;}
+@media(min-width:900px){.fp-below-cover{padding:0 22px;margin-top:-64px;margin-bottom:16px;}}
 .fp-avatar{position:relative;margin-left:2px;width:80px;height:80px;border-radius:14px;overflow:hidden;background:#e2e5e9;border:3px solid #fff;box-shadow:0 2px 12px rgba(0,0,0,0.18);cursor:pointer;padding:0;flex-shrink:0;display:block;transition:box-shadow .2s;pointer-events:auto;}
 .fp-avatar:hover{box-shadow:0 4px 18px rgba(0,0,0,0.26);}
 .fp-avatar img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;}

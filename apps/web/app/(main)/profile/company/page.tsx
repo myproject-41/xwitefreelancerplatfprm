@@ -1639,8 +1639,8 @@ const STYLES = `
 .cp-btn-cover:active{transform:scale(.95);}
 
 /* ── LOGO ROW ── */
-.cp-logo-row{display:flex;align-items:flex-end;justify-content:space-between;padding:0 18px;margin-top:-44px;margin-bottom:10px;position:relative;z-index:20;}
-@media(min-width:900px){.cp-logo-row{padding:0 22px;margin-top:-48px;margin-bottom:16px;}}
+.cp-logo-row{display:flex;align-items:flex-end;justify-content:space-between;padding:0 18px;margin-top:-58px;margin-bottom:10px;position:relative;z-index:20;}
+@media(min-width:900px){.cp-logo-row{padding:0 22px;margin-top:-66px;margin-bottom:16px;}}
 
 /* ── COMPANY LOGO — square with rounded corners ── */
 .cp-logo{position:relative;margin-left:2px;width:84px;height:84px;border-radius:14px;overflow:hidden;background:#fff;border:3px solid #fff;box-shadow:0 2px 14px rgba(0,0,0,0.16);cursor:pointer;padding:0;flex-shrink:0;display:block;transition:box-shadow .2s;}
