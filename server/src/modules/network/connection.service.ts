@@ -246,7 +246,7 @@ export class ConnectionService {
       },
     }
 
-    // Fetch ALL eligible companies and people (no hard limit)
+    // Fetch a bounded set of companies and people (capped for perf)
     const [companies, people] = await Promise.all([
       prisma.user.findMany({
         where: {
@@ -255,6 +255,7 @@ export class ConnectionService {
           companyProfile: { isNot: null },
         },
         orderBy: { createdAt: 'desc' },
+        take: 30,
         select: selectFields,
       }).catch(() => [] as any[]),
       prisma.user.findMany({
@@ -264,6 +265,7 @@ export class ConnectionService {
           NOT: { role: 'COMPANY' },
         },
         orderBy: { createdAt: 'desc' },
+        take: 50,
         select: selectFields,
       }).catch(() => [] as any[]),
     ])

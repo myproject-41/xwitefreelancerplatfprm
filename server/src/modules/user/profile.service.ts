@@ -36,7 +36,15 @@ export class ProfileService {
     coverImage?: string
     profileImage?: string
   }) {
-    const freelancerData = {
+    // Build update payload — only include fields the caller actually sent.
+    // This prevents partial PUTs (e.g. image upload) from wiping arrays.
+    const updateData: Record<string, unknown> = {}
+    for (const [key, value] of Object.entries(data)) {
+      if (value !== undefined) updateData[key] = value
+    }
+
+    // For brand-new profiles, arrays must default to [] so Prisma is happy.
+    const createData = {
       ...data,
       skills: data.skills ?? [],
       languages: data.languages ?? [],
@@ -46,8 +54,8 @@ export class ProfileService {
 
     const profile = await prisma.freelancerProfile.upsert({
       where: { userId },
-      update: freelancerData,
-      create: { userId, ...freelancerData },
+      update: updateData,
+      create: { userId, ...createData },
     })
 
     await prisma.user.update({
@@ -73,7 +81,13 @@ export class ProfileService {
     coverImage?: string
     profileImage?: string
   }) {
-    const companyData = {
+    // Only include explicitly-sent fields in update to preserve untouched arrays.
+    const updateData: Record<string, unknown> = {}
+    for (const [key, value] of Object.entries(data)) {
+      if (value !== undefined) updateData[key] = value
+    }
+
+    const createData = {
       ...data,
       workType: data.workType ?? [],
       hiringSkills: data.hiringSkills ?? [],
@@ -81,8 +95,8 @@ export class ProfileService {
 
     const profile = await prisma.companyProfile.upsert({
       where: { userId },
-      update: companyData,
-      create: { userId, ...companyData },
+      update: updateData,
+      create: { userId, ...createData },
     })
 
     await prisma.user.update({
@@ -105,15 +119,21 @@ export class ProfileService {
     taskCategories?: string[]
     workPreference?: string
   }) {
-    const clientData = {
+    // Only include explicitly-sent fields in update to preserve untouched arrays.
+    const updateData: Record<string, unknown> = {}
+    for (const [key, value] of Object.entries(data)) {
+      if (value !== undefined) updateData[key] = value
+    }
+
+    const createData = {
       ...data,
       taskCategories: data.taskCategories ?? [],
     }
 
     const profile = await prisma.clientProfile.upsert({
       where: { userId },
-      update: clientData,
-      create: { userId, ...clientData },
+      update: updateData,
+      create: { userId, ...createData },
     })
 
     await prisma.user.update({

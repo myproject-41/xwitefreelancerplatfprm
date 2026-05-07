@@ -482,24 +482,23 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                   {/* Decorative top accent — appears on hover */}
                   <span className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-[#0160B9] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                  {/* Top row: avatar + status pill */}
-                  <div className="flex items-start justify-between mb-4">
-                    {/* Square avatar with online dot */}
+                  {/* Top section: avatar (left) + info (right) */}
+                  <div className="flex items-start gap-4">
+                    {/* Avatar */}
                     <button
                       type="button"
                       onClick={() => u.id && router.push(getProfilePath(u))}
                       aria-label={`View ${name}'s profile`}
-                      className="relative active:scale-95 transition-all"
+                      className="relative shrink-0 active:scale-95 transition-all"
                     >
-                      <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-br from-[#0160B9]/0 to-[#0160B9]/0 group-hover:from-[#0160B9]/15 group-hover:to-[#0160B9]/0 transition-all duration-500 blur-md" />
                       {image ? (
                         <img
                           src={image}
                           alt={name}
-                          className="relative w-20 h-20 rounded-2xl object-cover ring-1 ring-[#eef0f3] shadow-[0_4px_14px_rgba(27,28,26,0.10)]"
+                          className="w-20 h-20 rounded-2xl object-cover ring-1 ring-[#eef0f3] shadow-[0_4px_14px_rgba(27,28,26,0.10)]"
                         />
                       ) : (
-                        <div className="relative w-20 h-20 rounded-2xl flex items-center justify-center text-xl font-black text-white bg-gradient-to-br from-[#0160B9] to-[#0277CC] shadow-[0_4px_14px_rgba(1,96,185,0.30)]">
+                        <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-xl font-black text-white bg-gradient-to-br from-[#0160B9] to-[#0277CC] shadow-[0_4px_14px_rgba(1,96,185,0.30)]">
                           {getInitials(name)}
                         </div>
                       )}
@@ -508,49 +507,44 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                       )}
                     </button>
 
-                    {/* Status pill — only for freelancers */}
-                    {isFreelancer && (
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold ${
-                        isAvailable
-                          ? 'bg-[#dcfce7] text-[#15803d] ring-1 ring-[#bbf7d0]/60'
-                          : 'bg-[#f1f5f9] text-[#64748b] ring-1 ring-[#e2e8f0]/60'
-                      }`}>
-                        <span className={`h-1.5 w-1.5 rounded-full ${isAvailable ? 'bg-[#16a34a]' : 'bg-[#94a3b8]'}`} />
-                        {isAvailable ? 'Online' : 'Offline'}
-                      </span>
-                    )}
+                    {/* Info column */}
+                    <div className="flex-1 min-w-0">
+                      <button
+                        type="button"
+                        onClick={() => u.id && router.push(getProfilePath(u))}
+                        className="block w-full text-left"
+                      >
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <h3 className="font-[Manrope] font-bold text-lg text-[#1b1c1a] leading-snug truncate group-hover:text-[#0160B9] transition-colors">{name}</h3>
+                          {isVerified && <VerifiedBadge size="sm" />}
+                        </div>
+                      </button>
+
+                      {/* Title */}
+                      {subtitle && (
+                        <p className="text-[#536279] text-[13px] truncate mt-0.5">{subtitle}</p>
+                      )}
+
+                      {/* Location */}
+                      {country && (
+                        <p className="flex items-center gap-1 text-[#707881] text-[12px] font-medium mt-1 truncate">
+                          <Icons.Location />
+                          <span className="truncate">{country}</span>
+                        </p>
+                      )}
+
+                      {/* Role label */}
+                      <span className="inline-block mt-1.5 text-[10px] font-bold text-[#0160B9] uppercase tracking-wider">{roleLabel}</span>
+                    </div>
                   </div>
 
-                  {/* Name + verified badge */}
-                  <button
-                    type="button"
-                    onClick={() => u.id && router.push(getProfilePath(u))}
-                    className="block w-full text-left mb-1"
-                  >
-                    <div className="flex items-center gap-1.5">
-                      <h3 className="font-[Manrope] font-bold text-lg text-[#1b1c1a] leading-snug truncate group-hover:text-[#0160B9] transition-colors">{name}</h3>
-                      {isVerified && <VerifiedBadge size="sm" />}
-                    </div>
-                  </button>
-
-                  {/* Title / role */}
-                  <p className="text-[#536279] text-[13px] truncate">{subtitle}</p>
-
-                  {/* Location — above the skills */}
-                  {country && (
-                    <p className="flex items-center gap-1 text-[#707881] text-[12px] font-medium mt-2 truncate">
-                      <Icons.Location />
-                      <span className="truncate">{country}</span>
-                    </p>
-                  )}
-
-                  {/* Skills — only render when freelancer has skills */}
+                  {/* Skills — full width below the top section */}
                   {showSkills && (
-                    <div className="grid grid-cols-2 gap-1.5 mt-3">
-                      {skills.slice(0, 4).map((s: string) => (
+                    <div className="flex flex-wrap gap-1.5 mt-4">
+                      {skills.slice(0, 6).map((s: string) => (
                         <span
                           key={s}
-                          className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-[11px] font-semibold truncate ${palette.bg} ${palette.text} ring-1 ring-inset ring-current/10`}
+                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold ${palette.bg} ${palette.text} ring-1 ring-inset ring-current/10`}
                         >
                           {s}
                         </span>
@@ -558,20 +552,9 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                     </div>
                   )}
 
-                  {/* Bottom row: rate (left) + arrow button (right) */}
-                  <div className="flex items-center justify-between gap-3 mt-4 pt-4 relative">
-                    {/* Soft gradient divider (replaces solid border) */}
+                  {/* Bottom: arrow to view profile */}
+                  <div className="flex justify-end mt-4 pt-4 relative">
                     <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#e5eaf0] to-transparent" />
-
-                    {isFreelancer && hourlyRate ? (
-                      <p className="whitespace-nowrap leading-none">
-                        <span className="text-[#707881] font-medium text-[11px] uppercase tracking-wider">From </span>
-                        <span className="font-extrabold text-[22px] text-[#0160B9] ml-0.5 tracking-tight">{currencySymbol}{hourlyRate}</span>
-                        <span className="text-[#707881] font-medium text-xs ml-0.5">/hr</span>
-                      </p>
-                    ) : (
-                      <span className="text-[#707881] text-[12px] font-semibold uppercase tracking-wider">{roleLabel}</span>
-                    )}
 
                     <button
                       onClick={() => u.id && router.push(getProfilePath(u))}
@@ -926,55 +909,91 @@ function NetworkPageInner() {
   const [following, setFollowing] = useState<any[]>([])
   const [followers, setFollowers] = useState<any[]>([])
   const [isGuest, setIsGuest] = useState(false)
+  const [loadedSections, setLoadedSections] = useState<Set<string>>(new Set())
 
+  // Load only what each tab needs, on demand.
+  const loadSection = async (section: string) => {
+    if (loadedSections.has(section)) return
+    try {
+      if (section === 'overview') {
+        const [sugg, fwing] = await Promise.allSettled([
+          networkService.getSuggestions(),
+          networkService.getFollowing(),
+        ])
+        if (sugg.status === 'fulfilled') setSuggestions(sugg.value.data || [])
+        if (fwing.status === 'fulfilled') setFollowing(fwing.value.data || [])
+      } else if (section === 'connections') {
+        const conn = await networkService.getConnections()
+        setConnections(conn.data || [])
+      } else if (section === 'following') {
+        const [fwing, fwers] = await Promise.allSettled([
+          networkService.getFollowing(),
+          networkService.getFollowers(),
+        ])
+        if (fwing.status === 'fulfilled') setFollowing(fwing.value.data || [])
+        if (fwers.status === 'fulfilled') setFollowers(fwers.value.data || [])
+      }
+      setLoadedSections((prev) => new Set(prev).add(section))
+    } catch {
+      // silent — tab will retry on next visit
+    }
+  }
+
+  // Initial load: pending requests (lightweight, needed for badges) + active tab data
   useEffect(() => {
     if (!authService.isLoggedIn()) { setLoading(false); setIsGuest(true); return }
-    void loadAll()
+    ;(async () => {
+      try {
+        const pendRes = await networkService.getPendingRequests().catch(() => null)
+        if (pendRes) setPending(pendRes.data || [])
+        await loadSection(activeSection)
+      } finally {
+        setLoading(false)
+      }
+    })()
   }, [])
+
+  // Lazy-load each section the first time it's opened
+  useEffect(() => {
+    if (loading || isGuest) return
+    void loadSection(activeSection)
+  }, [activeSection, loading, isGuest])
 
   useEffect(() => {
     const section = searchParams.get('section')
     if (section) setActiveSection(section)
   }, [searchParams])
 
-  const loadAll = async () => {
-    try {
-      const results = await Promise.allSettled([
-        networkService.getPendingRequests(),
-        networkService.getSuggestions(),
-        networkService.getConnections(),
-        networkService.getFollowing(),
-        networkService.getFollowers(),
-      ])
-      const val = (r: PromiseSettledResult<any>) => r.status === 'fulfilled' ? r.value : null
-      const [pend, sugg, conn, fwing, fwers] = results.map(val)
-      if (pend)  setPending(pend.data || [])
-      if (sugg)  setSuggestions(sugg.data || [])
-      if (conn)  setConnections(conn.data || [])
-      if (fwing) setFollowing(fwing.data || [])
-      if (fwers) setFollowers(fwers.data || [])
-    } catch {
-      toast.error('Failed to load network')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleAccept = async (connectionId: string) => {
+    const removed = pending.find((p) => p.id === connectionId)
     setPending((prev) => prev.filter((p) => p.id !== connectionId))
     try {
       await networkService.acceptRequest(connectionId)
       toast.success('Connection accepted!')
-      void loadAll()
-    } catch (e: any) { toast.error(e.response?.data?.message || 'Failed'); void loadAll() }
+      // Optimistic: append to connections without a full refetch
+      if (removed?.fromUser) {
+        setConnections((prev) => [
+          { connectionId, connectedAt: new Date().toISOString(), user: removed.fromUser },
+          ...prev,
+        ])
+      }
+    } catch (e: any) {
+      toast.error(e.response?.data?.message || 'Failed')
+      if (removed) setPending((prev) => [removed, ...prev])
+    }
   }
 
   const handleIgnore = async (connectionId: string) => {
+    const removed = pending.find((p) => p.id === connectionId)
     setPending((prev) => prev.filter((p) => p.id !== connectionId))
     try {
       await networkService.rejectRequest(connectionId)
       toast.success('Invitation ignored')
-    } catch (e: any) { toast.error(e.response?.data?.message || 'Failed'); void loadAll() }
+    } catch (e: any) {
+      toast.error(e.response?.data?.message || 'Failed')
+      if (removed) setPending((prev) => [removed, ...prev])
+    }
   }
 
   const handleConnect = async (userId: string) => {
