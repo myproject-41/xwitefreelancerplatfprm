@@ -449,7 +449,7 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
             <p className="text-xs text-[#707881] mt-1">Complete your profile to get better recommendations</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 items-start">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-start">
             {peopleSuggestions.map((u: any, i: number) => {
               const { name, title, image, isVerified } = getUserInfo(u)
               const isFreelancer = u.role === 'FREELANCER'
@@ -477,74 +477,73 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
               return (
                 <div
                   key={u.id}
-                  className="group relative bg-white rounded-2xl p-5 border border-[#eef0f3] shadow-[0_4px_18px_rgba(27,28,26,0.04)] hover:shadow-[0_18px_44px_rgba(1,96,185,0.10)] hover:border-[#cfe1f3] hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+                  className="group relative bg-white rounded-xl p-6 border border-[#e8ebf0] shadow-[0_2px_12px_rgba(15,23,42,0.04)] hover:shadow-[0_12px_32px_rgba(1,96,185,0.08)] hover:border-[#bdd6ee] hover:-translate-y-0.5 transition-all duration-300"
                 >
-                  {/* Decorative top accent — appears on hover */}
-                  <span className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-[#0160B9] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
                   {/* Top section: avatar (left) + info (right) */}
-                  <div className="flex items-start gap-4">
-                    {/* Avatar */}
+                  <div className="flex items-start gap-5">
+                    {/* Avatar — refined corners, elegant border */}
                     <button
                       type="button"
                       onClick={() => u.id && router.push(getProfilePath(u))}
                       aria-label={`View ${name}'s profile`}
-                      className="relative shrink-0 active:scale-95 transition-all"
+                      className="relative shrink-0 active:scale-95 transition-transform"
                     >
                       {image ? (
                         <img
                           src={image}
                           alt={name}
-                          className="w-20 h-20 rounded-2xl object-cover ring-1 ring-[#eef0f3] shadow-[0_4px_14px_rgba(27,28,26,0.10)]"
+                          className="w-[88px] h-[88px] rounded-lg object-cover border border-[#e2e8f0] shadow-[0_2px_8px_rgba(15,23,42,0.06)]"
                         />
                       ) : (
-                        <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-xl font-black text-white bg-gradient-to-br from-[#0160B9] to-[#0277CC] shadow-[0_4px_14px_rgba(1,96,185,0.30)]">
+                        <div className="w-[88px] h-[88px] rounded-lg flex items-center justify-center text-2xl font-black text-white bg-gradient-to-br from-[#0160B9] via-[#1976D2] to-[#0277CC] shadow-[0_2px_8px_rgba(1,96,185,0.25)]">
                           {getInitials(name)}
                         </div>
                       )}
                       {isAvailable && (
-                        <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#16a34a] ring-[3px] ring-white shadow-sm" />
+                        <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[#16a34a] ring-[3px] ring-white" />
                       )}
                     </button>
 
                     {/* Info column */}
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 pt-0.5">
                       <button
                         type="button"
                         onClick={() => u.id && router.push(getProfilePath(u))}
                         className="block w-full text-left"
                       >
                         <div className="flex items-center gap-1.5 min-w-0">
-                          <h3 className="font-[Manrope] font-bold text-lg text-[#1b1c1a] leading-snug truncate group-hover:text-[#0160B9] transition-colors">{name}</h3>
+                          <h3 className="font-[Manrope] font-bold text-[17px] text-[#0f172a] leading-snug truncate group-hover:text-[#0160B9] transition-colors">{name}</h3>
                           {isVerified && <VerifiedBadge size="sm" />}
                         </div>
                       </button>
 
                       {/* Title */}
                       {subtitle && (
-                        <p className="text-[#536279] text-[13px] truncate mt-0.5">{subtitle}</p>
+                        <p className="text-[#475569] text-[13px] font-medium truncate mt-1">{subtitle}</p>
                       )}
 
                       {/* Location */}
                       {country && (
-                        <p className="flex items-center gap-1 text-[#707881] text-[12px] font-medium mt-1 truncate">
+                        <p className="flex items-center gap-1 text-[#64748b] text-[12px] mt-1.5 truncate">
                           <Icons.Location />
                           <span className="truncate">{country}</span>
                         </p>
                       )}
 
-                      {/* Role label */}
-                      <span className="inline-block mt-1.5 text-[10px] font-bold text-[#0160B9] uppercase tracking-wider">{roleLabel}</span>
+                      {/* Role pill */}
+                      <span className="inline-flex items-center mt-2.5 px-2.5 py-0.5 rounded-md bg-[#E3F2FD] text-[10px] font-bold text-[#0160B9] uppercase tracking-wider">
+                        {roleLabel}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Skills — full width below the top section */}
+                  {/* Skills */}
                   {showSkills && (
-                    <div className="flex flex-wrap gap-1.5 mt-4">
+                    <div className="flex flex-wrap gap-1.5 mt-5">
                       {skills.slice(0, 6).map((s: string) => (
                         <span
                           key={s}
-                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold ${palette.bg} ${palette.text} ring-1 ring-inset ring-current/10`}
+                          className={`inline-flex items-center px-3 py-1 rounded-md text-[11px] font-semibold ${palette.bg} ${palette.text}`}
                         >
                           {s}
                         </span>
@@ -553,15 +552,14 @@ function OverviewSection({ pending, suggestions, following: initialFollowing = [
                   )}
 
                   {/* Bottom: arrow to view profile */}
-                  <div className="flex justify-end mt-4 pt-4 relative">
-                    <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#e5eaf0] to-transparent" />
-
+                  <div className="flex justify-end mt-5 pt-4 border-t border-[#f1f5f9]">
                     <button
                       onClick={() => u.id && router.push(getProfilePath(u))}
                       aria-label={`View ${name}'s profile`}
-                      className="w-10 h-10 rounded-xl bg-[#E3F2FD] hover:bg-[#0160B9] text-[#0160B9] hover:text-white flex items-center justify-center shrink-0 active:scale-95 hover:shadow-[0_6px_18px_rgba(1,96,185,0.32)] transition-all duration-200"
+                      className="inline-flex items-center gap-1.5 text-[12px] font-bold text-[#0160B9] hover:text-[#0150A0] transition-colors group/btn"
                     >
-                      <svg className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      View Profile
+                      <svg className="w-4 h-4 transition-transform duration-200 group-hover/btn:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M5 12h14m-7-7l7 7-7 7"/>
                       </svg>
                     </button>
